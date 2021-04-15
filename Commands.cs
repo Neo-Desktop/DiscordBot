@@ -15,6 +15,23 @@ namespace StarsiegeBot
     {
         private readonly Random rnd = new Random();
 
+        private string[] insult = {
+            "> {0} slaps {1} around a bit with a large trout.",
+            "> {0} puts a jellyfish on {1}'s head.",
+            "> {0} slaps {1} around a bit with the mustache of Caanon.",
+            "> {0} slaps {1} around a bit with a questionable rubber object.",
+            "> {0} slaps {1} around a bit with a rubber chicken."
+        };
+        private uint insultIndex;
+        public string Insult {
+            get {
+                if (insultIndex >= insult.Length) {
+                    insultIndex = 0;
+                }
+                return insult[insultIndex++ % insult.Length];
+            }
+        }
+
         public Commands()
         {
             Console.WriteLine("Basic Commands Loaded");
@@ -97,13 +114,6 @@ namespace StarsiegeBot
         [Command("slap")]
         public async Task Slap(CommandContext ctx, DiscordMember user = null)
         {
-            string[] insults = {
-                "{0} slaps {1} around a bit with a large trout.",
-                "{0} puts a jellyfish on {1}'s head.",
-                "{0} slaps {1} around a bit with the mustache of Caanon.",
-                "{0} slaps {1} around a bit with a questionable rubber object.",
-                "{0} slaps {1} around a bit with a rubber chicken."
-                };
             string user1;
             string user2;
 
@@ -118,7 +128,7 @@ namespace StarsiegeBot
                 user2 = user.Mention;
             }
 
-            await ctx.RespondAsync(string.Format(insults[rnd.Next(insults.Length)], user1, user2));
+            await ctx.RespondAsync(string.Format(Insult, user1, user2));
         }
 
         [Command("rpsls")]
