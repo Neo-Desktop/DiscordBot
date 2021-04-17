@@ -96,13 +96,23 @@ namespace StarsiegeBot
             if (File.Exists($"./qc/{chat.soundFile}"))
             {
                 FileStream sound = new FileStream($"./qc/{chat.soundFile}", FileMode.Open);
-                msg.WithFile(sound);
+                msg.WithFile(chat.soundFile, sound);
                 await ctx.RespondAsync(msg);
                 sound.Close();
             }
             else
             {
                 await ctx.RespondAsync(msg);
+            }
+        }
+
+        [Command("search"), Aliases("s")]
+        public async Task SearchQuickChats(CommandContext ctx, [RemainingText] string toSearch)
+        {
+            await ctx.TriggerTypingAsync();
+            for (int i = 0; i < Quickchats.Count; i++)
+            {
+
             }
         }
     }
