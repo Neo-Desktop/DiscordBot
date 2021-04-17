@@ -85,7 +85,7 @@ namespace StarsiegeBot
             {
                 int idnum = rnd.Next(Quickchats.Count);
                 chat = Quickchats[idnum];
-                msg.Content = idnum + ": " + chat.text;
+                msg.Content = $"[{idnum}] " + chat.text;
             }
             else
             {
@@ -110,10 +110,20 @@ namespace StarsiegeBot
         public async Task SearchQuickChats(CommandContext ctx, [RemainingText] string toSearch)
         {
             await ctx.TriggerTypingAsync();
+            DiscordMessageBuilder msg = new DiscordMessageBuilder();
+            msg.Content = "";
             for (int i = 0; i < Quickchats.Count; i++)
             {
-
+                if (Quickchats[i].text.ToLower().Contains(toSearch.ToLower()))
+                {
+                    msg.Content += $"[{i}] {Quickchats[i].text}\r\n";
+                }
             }
+            if (msg.Content == "")
+            {
+                msg.Content = "No results found.";
+            }
+            await ctx.RespondAsync(msg);
         }
     }
     public class Quickchats

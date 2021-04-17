@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,11 +30,6 @@ namespace StarsiegeBot
 
         protected string BotName { get; set; }
 
-        public Program()
-        {
-
-        }
-
         private async Task StartTimer(CancellationToken cancellationToken)
         {
             await Task.Run(async () =>
@@ -41,8 +37,7 @@ namespace StarsiegeBot
                 while (true)
                 {
                     string output = JsonConvert.SerializeObject(BotSettings.GuildSettings);
-                    await File.WriteAllTextAsync("GuildSettings.json", output);
-                    Console.WriteLine("Wrote new info to file.");
+                    await File.WriteAllTextAsync("guildSettings.json", output);
                     await Task.Delay(TimeSpan.FromSeconds(120), cancellationToken);
                     if (cancellationToken.IsCancellationRequested)
                     {
@@ -69,7 +64,7 @@ namespace StarsiegeBot
             if (args.Length > 0)
                 BotName = args[0].ToLower();
             else
-                BotName = "cybrid";
+                BotName = "ssp";
 
             BotEventId = new EventId(276, BotName);
         }
@@ -205,13 +200,36 @@ namespace StarsiegeBot
         {
             d.Logger.LogDebug(BotEventId, "Event_MessageCreated.");
 
-            var cnext = d.GetCommandsNext();
-            var msg = e.Message;
+            CommandsNextExtension cnext = d.GetCommandsNext();
+            DiscordMessage msg = e.Message;
 
             // Check if message has valid prefix.
             // json file loaded...
-            var cmdStart = msg.GetStringPrefixLength("!");
-            BotSettings.GuildSettings.ContainsKey(e.Guild.Id.ToString());
+            int cmdStart = msg.GetStringPrefixLength("!");
+
+            string gId = e.Guild.Id.ToString();
+            List<string> prefixes = BotSettings.GuildSettings["default"].Prefixes;
+            // Check to see if the guild has settings.
+            if (BotSettings.GuildSettings.ContainsKey(gId))
+            {
+                // see if the guild wants global prefixes.
+                if (BotSettings.GuildSettings[gId].UseGlobalPrefix)
+                {
+                    prefixes = prefixes.Concat(BotSettings.GuildSettings[gId].Prefixes).ToList();
+                }
+                else
+                {
+                    prefixes = BotSettings.GuildSettings[gId].Prefixes;
+                }
+            }
+
+            // check each prefix. break on the one that is evoked.
+            foreach (string item in prefixes) 
+            {
+                cmdStart = msg.GetStringPrefixLength(item);
+                if (cmdStart != -1) break;
+            }
+            // we didn't find a command prefix... Break.
             if (cmdStart == -1) return Task.CompletedTask;
 
             // Retrieve prefix.
@@ -323,6 +341,25 @@ namespace StarsiegeBot
         }
         private Task Event_GuildAvailable(DiscordClient d, GuildCreateEventArgs e)
         {
+            string gId = e.Guild.Id.ToString();
+            if (!BotSettings.GuildSettings.ContainsKey(gId))
+            {
+                Console.WriteLine("making config");
+                GuildSettings item = new GuildSettings();
+                item.UseAutoRoles = false;
+                item.UseGlobalPrefix = true;
+                item.UseLevelRoles = false;
+                item.UseLevels = false;
+                item.UseSelfRoles = false;
+                item.AllowRolesPurchase = false;
+                item.UseAutoRoles = false;
+                item.LevelRoles = new Dictionary<string, int>();
+                item.Prefixes = new List<string>();
+                item.SelfRoles = new Dictionary<string, int>();
+                item.Prefixes.Add(">");
+                // this line... is a test line.
+                BotSettings.GuildSettings.Add(gId, item);
+            }
             // let's log the name of the guild that was just
             // sent to our client
             d.Logger.LogInformation(BotEventId, $"Guild available: {e.Guild.Name}");

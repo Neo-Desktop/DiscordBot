@@ -30,10 +30,35 @@ namespace StarsiegeBot
         public BotSettings()
         {
             Console.WriteLine("Bot Setting Commands Loaded");
+            if (!File.Exists("guildSettings.json"))
+            {
+                Console.Write("Guild Settings Config File Not Found. Creating One...");
+                GuildSettings item = new GuildSettings();
+                item.UseAutoRoles = false;
+                item.UseGlobalPrefix = true;
+                item.UseLevelRoles = false;
+                item.UseLevels = false;
+                item.UseSelfRoles = false;
+                item.AllowRolesPurchase = false;
+                item.UseAutoRoles = false;
+                item.LevelRoles = new Dictionary<string, int>();
+                item.Prefixes = new List<string>();
+                item.SelfRoles = new Dictionary<string, int>();
+                item.Prefixes.Add(">");
+                // this line... is a test line.
+
+                GuildSettings = new Dictionary<string, GuildSettings>();
+                GuildSettings.Add("default", item);
+
+                string output = JsonConvert.SerializeObject(GuildSettings);
+                File.WriteAllTextAsync("guildSettings.json", output);
+                Console.WriteLine(" Done!");
+            }
             var json = "";
             using (var fs = File.OpenRead("guildSettings.json"))
             using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
                 json = sr.ReadToEnd();
+
             GuildSettings = JsonConvert.DeserializeObject<Dictionary<string, GuildSettings>>(json);
         }
 
@@ -80,7 +105,8 @@ namespace StarsiegeBot
             public async Task RemovePrefix (CommandContext ctx, string prefix)
             {
                 await ctx.TriggerTypingAsync();
-
+                GuildSettings.Remove(prefix);
+                await ctx.RespondAsync($"Removed `{prefix}` as a command prefix.");
             }
         }
     }
