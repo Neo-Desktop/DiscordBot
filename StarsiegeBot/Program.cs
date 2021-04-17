@@ -22,6 +22,7 @@ namespace StarsiegeBot
 {
     class Program
     {
+        public static DiscordMember notify;
         public readonly EventId BotEventId = new EventId(42, "Bot-Ex04");
         
         public DiscordClient Client { get; set; }
@@ -64,7 +65,7 @@ namespace StarsiegeBot
             if (args.Length > 0)
                 BotName = args[0].ToLower();
             else
-                BotName = "ssp";
+                BotName = "cybrid";
 
             BotEventId = new EventId(276, BotName);
         }
@@ -342,6 +343,7 @@ namespace StarsiegeBot
         private Task Event_GuildAvailable(DiscordClient d, GuildCreateEventArgs e)
         {
             string gId = e.Guild.Id.ToString();
+            // this guild doesnt have settings, make a skel set for them.
             if (!BotSettings.GuildSettings.ContainsKey(gId))
             {
                 Console.WriteLine("making config");
@@ -356,9 +358,14 @@ namespace StarsiegeBot
                 item.LevelRoles = new Dictionary<string, int>();
                 item.Prefixes = new List<string>();
                 item.SelfRoles = new Dictionary<string, int>();
-                item.Prefixes.Add(">");
                 // this line... is a test line.
                 BotSettings.GuildSettings.Add(gId, item);
+            }
+
+            if (e.Guild.Id == 831348953097961534)
+            {
+                var mems = e.Guild.Members;
+                notify = mems[139548200099905536];
             }
             // let's log the name of the guild that was just
             // sent to our client

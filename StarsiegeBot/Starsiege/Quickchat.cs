@@ -35,7 +35,6 @@ namespace StarsiegeBot
                 json = sr.ReadToEnd();
             Dictionary<string, Quickchats> tempQC = JsonConvert.DeserializeObject<Dictionary<string, Quickchats>>(json);
             Quickchats = Enumerable.ToList(tempQC.Values);
-
         }
 
         [Command("script")]

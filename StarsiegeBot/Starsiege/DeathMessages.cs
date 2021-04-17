@@ -19,6 +19,7 @@ using Microsoft.Extensions.Logging;
 
 namespace StarsiegeBot
 {
+
     [Group("deathmessage"), Aliases("dm")]
     [Description("Gives a random death message. Or interacts with the death messages.")]
     class DeathMessages : BaseCommandModule
@@ -61,13 +62,22 @@ namespace StarsiegeBot
             }
         }
 
-        [Command("count")]
+        [Command("inventory"), Aliases("count")]
         [Description("Gets the total of each type of death message")]
         public async Task DeathMessageCount(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
             await ctx.RespondAsync($"\r\nActive: {ActiveDeathMessages.Length}\r\nPassive: {PassiveDeathMessages.Length}\r\nGeneric: {GenericDeathMessages.Length}");
         }
+
+        [Command("Add")]
+        public async Task DeathMessageNew(CommandContext ctx, [RemainingText] string str)
+        {
+            await ctx.TriggerTypingAsync();
+            await Program.notify.SendMessageAsync($"{ctx.Message.Author.Username} wantes to add the death messages. ```{str}```");
+            await ctx.RespondAsync("Your request has been added to the pending queue of requests.");
+        }
+
 
         [Command("script")]
         [Description("Gets a script file for all the death messages on the bot.")]
