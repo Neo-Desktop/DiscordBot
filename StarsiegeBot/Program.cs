@@ -362,10 +362,8 @@ namespace StarsiegeBot
                 BotSettings.GuildSettings.Add(gId, item);
             }
 
-            if (e.Guild.Id == 831348953097961534)
+            if (e.Guild.Id == 376937422010974209)
             {
-                var mems = e.Guild.Members;
-                notify = mems[139548200099905536];
             }
             // let's log the name of the guild that was just
             // sent to our client
