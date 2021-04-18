@@ -65,7 +65,7 @@ namespace StarsiegeBot
             if (args.Length > 0)
                 BotName = args[0].ToLower();
             else
-                BotName = "sspdev";
+                BotName = "ssp";
 
             BotEventId = new EventId(276, BotName);
         }
