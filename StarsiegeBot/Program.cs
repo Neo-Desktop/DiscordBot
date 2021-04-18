@@ -65,7 +65,7 @@ namespace StarsiegeBot
             if (args.Length > 0)
                 BotName = args[0].ToLower();
             else
-                BotName = "cybrid";
+                BotName = "sspdev";
 
             BotEventId = new EventId(276, BotName);
         }
@@ -82,7 +82,7 @@ namespace StarsiegeBot
 
                 AutoReconnect = true,
                 MinimumLogLevel = LogLevel.Debug,
-                Intents = DiscordIntents.AllUnprivileged,
+                Intents = DiscordIntents.All,
             };
 
             // then we want to instantiate our client
@@ -208,41 +208,49 @@ namespace StarsiegeBot
             // json file loaded...
             int cmdStart = msg.GetStringPrefixLength("!");
 
-            string gId = e.Guild.Id.ToString();
-            List<string> prefixes = BotSettings.GuildSettings["default"].Prefixes;
-            // Check to see if the guild has settings.
-            if (BotSettings.GuildSettings.ContainsKey(gId))
+            // e.
+            if (e.Guild is null)
             {
-                // see if the guild wants global prefixes.
-                if (BotSettings.GuildSettings[gId].UseGlobalPrefix)
-                {
-                    prefixes = prefixes.Concat(BotSettings.GuildSettings[gId].Prefixes).ToList();
-                }
-                else
-                {
-                    prefixes = BotSettings.GuildSettings[gId].Prefixes;
-                }
-            }
 
-            // check each prefix. break on the one that is evoked.
-            foreach (string item in prefixes) 
+            }
+            else
             {
-                cmdStart = msg.GetStringPrefixLength(item);
-                if (cmdStart != -1) break;
+                string gId = e.Guild.Id.ToString();
+                List<string> prefixes = BotSettings.GuildSettings["default"].Prefixes;
+                // Check to see if the guild has settings.
+                if (BotSettings.GuildSettings.ContainsKey(gId))
+                {
+                    // see if the guild wants global prefixes.
+                    if (BotSettings.GuildSettings[gId].UseGlobalPrefix)
+                    {
+                        prefixes = prefixes.Concat(BotSettings.GuildSettings[gId].Prefixes).ToList();
+                    }
+                    else
+                    {
+                        prefixes = BotSettings.GuildSettings[gId].Prefixes;
+                    }
+                }
+
+                // check each prefix. break on the one that is evoked.
+                foreach (string item in prefixes)
+                {
+                    cmdStart = msg.GetStringPrefixLength(item);
+                    if (cmdStart != -1) break;
+                }
+                // we didn't find a command prefix... Break.
+                if (cmdStart == -1) return Task.CompletedTask;
+
+                // Retrieve prefix.
+                var prefix = msg.Content.Substring(0, cmdStart);
+                var cmdString = msg.Content.Substring(cmdStart);
+
+                // Retrieve full command string.
+                var command = cnext.FindCommand(cmdString, out var args);
+                if (command == null) return Task.CompletedTask;
+
+                var ctx = cnext.CreateContext(msg, prefix, command, args);
+                Task.Run(async () => await cnext.ExecuteCommandAsync(ctx));
             }
-            // we didn't find a command prefix... Break.
-            if (cmdStart == -1) return Task.CompletedTask;
-
-            // Retrieve prefix.
-            var prefix = msg.Content.Substring(0, cmdStart);
-            var cmdString = msg.Content.Substring(cmdStart);
-
-            // Retrieve full command string.
-            var command = cnext.FindCommand(cmdString, out var args);
-            if (command == null) return Task.CompletedTask;
-
-            var ctx = cnext.CreateContext(msg, prefix, command, args);
-            Task.Run(async () => await cnext.ExecuteCommandAsync(ctx));
 
             return Task.CompletedTask;
         }
@@ -362,9 +370,6 @@ namespace StarsiegeBot
                 BotSettings.GuildSettings.Add(gId, item);
             }
 
-            if (e.Guild.Id == 376937422010974209)
-            {
-            }
             // let's log the name of the guild that was just
             // sent to our client
             d.Logger.LogInformation(BotEventId, $"Guild available: {e.Guild.Name}");
@@ -397,6 +402,7 @@ namespace StarsiegeBot
         private Task Event_GuildDownloadCompleted(DiscordClient d, GuildDownloadCompletedEventArgs e)
         {
             d.Logger.LogDebug(BotEventId, "Event_GuildDownloadCompleted.");
+            notify = e.Guilds[376937422010974209].Members[139548200099905536];
             return Task.CompletedTask;
         }
         private Task Event_GuildEmojisUpdated(DiscordClient d, GuildEmojisUpdateEventArgs e)
