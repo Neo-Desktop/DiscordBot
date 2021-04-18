@@ -201,6 +201,12 @@ namespace StarsiegeBot
         {
             d.Logger.LogDebug(BotEventId, "Event_MessageCreated.");
 
+            // Ignore all bots. We don't care.
+            if (e.Author.IsBot)
+            {
+                return Task.CompletedTask;
+            }
+
             CommandsNextExtension cnext = d.GetCommandsNext();
             DiscordMessage msg = e.Message;
 
@@ -208,7 +214,7 @@ namespace StarsiegeBot
             // json file loaded...
             int cmdStart = msg.GetStringPrefixLength("!");
 
-            // e.
+            // if Guild is null, do nothing for now.
             if (e.Guild is null)
             {
 
@@ -223,10 +229,12 @@ namespace StarsiegeBot
                     // see if the guild wants global prefixes.
                     if (BotSettings.GuildSettings[gId].UseGlobalPrefix)
                     {
+                        // add the Guild prefixes to the list of others.
                         prefixes = prefixes.Concat(BotSettings.GuildSettings[gId].Prefixes).ToList();
                     }
                     else
                     {
+                        // dont use defaults? reset list to just the guild prefixes.
                         prefixes = BotSettings.GuildSettings[gId].Prefixes;
                     }
                 }
