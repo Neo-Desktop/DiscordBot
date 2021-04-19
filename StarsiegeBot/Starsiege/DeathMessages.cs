@@ -22,6 +22,7 @@ namespace StarsiegeBot
 
     [Group("deathmessage"), Aliases("dm")]
     [Description("Gives a random death message. Or interacts with the death messages.")]
+    [Cooldown(1, 2, CooldownBucketType.Guild)]
     class DeathMessages : BaseCommandModule
     {
         private readonly Random rnd = new Random();
@@ -118,6 +119,7 @@ namespace StarsiegeBot
 
         [Command("Add")]
         [Description("Adds a message to the Pending Death Message Queue. Generic Death Messages require just a [Killed] while any other death message requires both a [Killed] and a [Killer] tags. These will be replaced with the correct information in game, and in the usage of random DM generation.")]
+        [Cooldown(1, 2, CooldownBucketType.Guild)]
         public async Task DeathMessageNew(CommandContext ctx, [RemainingText,Description("The Death Message you want added. See help section.")] string msg)
         {
             // IF we're missing the Death Messages dot JSON file, we're going to get disabled... Check for that.
@@ -130,11 +132,17 @@ namespace StarsiegeBot
             // Let Discord know we're typing.
             await ctx.TriggerTypingAsync();
             // Message the owner know some one wants to add a new death message, along with a code block to that message.
-            await Program.notify.SendMessageAsync($"{ctx.Message.Author.Username} wantes to add the death messages. ```{msg}```");
+
+            // if the Queue is null, make it exist.
+            if (dmLines.queue is null)
+                dmLines.queue = new List<string>();
+            // add the message to the queue list.
+            dmLines.queue.Add(msg);
+            // Store the new stuff to file...
+            await StoreDeathMessages();
             // Tell the person that the message has been added to a 'queue'.
             await ctx.RespondAsync("Your request has been added to the pending queue of requests.");
         }
-
 
         [Command("script")]
         [Description("Gets a script file for all the death messages on the bot.")]
@@ -201,6 +209,13 @@ namespace StarsiegeBot
             // We're done with the file, so close access to it.
             sound.Close();
         }
+
+        private async Task StoreDeathMessages()
+        {
+            string output = JsonConvert.SerializeObject(dmLines);
+            await File.WriteAllTextAsync("DeathMessages.json", output);
+            return;
+        }
     }
     class DeathMessageLines
     {
@@ -211,9 +226,8 @@ namespace StarsiegeBot
         [JsonProperty("generic")]
         public string[] generic { get; set; }
 
-        public string[] flagged { get; set; }
+        public List<String> flagged { get; set; }
 
-        public string[] queue { get; set; }
+        public List<String> queue { get; set; }
     }
-
 }

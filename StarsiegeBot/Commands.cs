@@ -39,7 +39,7 @@ namespace StarsiegeBot
 
         [Command("dice"), Aliases("r", "d", "roll")]
         [Description("A classic dice throwing command. Limited to 1 use per 2 seconds. Format: <NumberOfDice>d<SidesOnDie> ")]
-        [Cooldown(1, 2, CooldownBucketType.User)]
+        [Cooldown(1, 2, CooldownBucketType.Guild)]
         public async Task Dice(CommandContext ctx, [RemainingText,Description("XdY")] String throwing = "d")
         {
             await ctx.TriggerTypingAsync();

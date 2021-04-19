@@ -281,23 +281,6 @@ namespace StarsiegeBot
             // let's log the error details
             e.Context.Client.Logger.LogError(BotEventId, $"{e.Context.User.Username} tried executing '{e.Command?.QualifiedName ?? "<unknown command>"}' but it errored: {e.Exception.GetType()}: {e.Exception.Message ?? "<no message>"}", DateTime.Now);
 
-            // let's check if the error is a result of lack
-            // of required permissions
-            if (e.Exception is ChecksFailedException)
-            {
-                // yes, the user lacks required permissions, 
-                // let them know
-                var emoji = DiscordEmoji.FromName(e.Context.Client, ":no_entry:");
-
-                // let's wrap the response into an embed
-                var embed = new DiscordEmbedBuilder
-                {
-                    Title = "Access denied",
-                    Description = $"{emoji} You do not have the permissions required to execute this command.",
-                    Color = new DiscordColor(0xFF0000) // red
-                };
-                await e.Context.RespondAsync("", embed: embed);
-            }
         }
 
         private Task Event_InteractionCreated(DiscordClient d, InteractionCreateEventArgs e)
