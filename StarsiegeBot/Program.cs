@@ -184,7 +184,8 @@ namespace StarsiegeBot
             //{
                 this.Commands.RegisterCommands<Quickchat>();
                 this.Commands.RegisterCommands<Functions>();
-                this.Commands.RegisterCommands<DeathMessages>();
+            this.Commands.RegisterCommands<DeathMessages>();
+            this.Commands.RegisterCommands<StarsiegeCommands>();
             //}
             Task thisTimer = StartTimer(new CancellationToken());
 
@@ -197,6 +198,7 @@ namespace StarsiegeBot
             // and this is to prevent premature quitting
             await Task.Delay(-1);
         }
+
         private Task Event_MessageCreated(DiscordClient d, MessageCreateEventArgs e)
         {
             d.Logger.LogDebug(BotEventId, "Event_MessageCreated.");
@@ -276,11 +278,11 @@ namespace StarsiegeBot
             return Task.CompletedTask;
         }
 
-        private async Task Event_CommandErrored(CommandsNextExtension ext, CommandErrorEventArgs e)
+        private Task Event_CommandErrored(CommandsNextExtension ext, CommandErrorEventArgs e)
         {
             // let's log the error details
             e.Context.Client.Logger.LogError(BotEventId, $"{e.Context.User.Username} tried executing '{e.Command?.QualifiedName ?? "<unknown command>"}' but it errored: {e.Exception.GetType()}: {e.Exception.Message ?? "<no message>"}", DateTime.Now);
-
+            return Task.CompletedTask;
         }
 
         private Task Event_InteractionCreated(DiscordClient d, InteractionCreateEventArgs e)
@@ -343,22 +345,29 @@ namespace StarsiegeBot
         {
             string gId = e.Guild.Id.ToString();
             // this guild doesnt have settings, make a skel set for them.
-            if (!BotSettings.GuildSettings.ContainsKey(gId))
+            if (BotSettings.GuildSettings is null)
             {
-                Console.WriteLine("making config");
-                GuildSettings item = new GuildSettings();
-                item.UseAutoRoles = false;
-                item.UseGlobalPrefix = true;
-                item.UseLevelRoles = false;
-                item.UseLevels = false;
-                item.UseSelfRoles = false;
-                item.AllowRolesPurchase = false;
-                item.UseAutoRoles = false;
-                item.LevelRoles = new Dictionary<string, int>();
-                item.Prefixes = new List<string>();
-                item.SelfRoles = new Dictionary<string, int>();
-                // this line... is a test line.
-                BotSettings.GuildSettings.Add(gId, item);
+
+            }
+            else
+            {
+                if (!BotSettings.GuildSettings.ContainsKey(gId))
+                {
+                    Console.WriteLine("making config");
+                    GuildSettings item = new GuildSettings();
+                    item.UseAutoRoles = false;
+                    item.UseGlobalPrefix = true;
+                    item.UseLevelRoles = false;
+                    item.UseLevels = false;
+                    item.UseSelfRoles = false;
+                    item.AllowRolesPurchase = false;
+                    item.UseAutoRoles = false;
+                    item.LevelRoles = new Dictionary<string, int>();
+                    item.Prefixes = new List<string>();
+                    item.SelfRoles = new Dictionary<string, int>();
+                    // this line... is a test line.
+                    BotSettings.GuildSettings.Add(gId, item);
+                }
             }
 
             // let's log the name of the guild that was just

@@ -22,7 +22,7 @@ using System.Threading;
 
 namespace StarsiegeBot
 {
-    [Group("ex")]
+    [Group("bot")]
     class BotSettings : BaseCommandModule
     {
         public static Dictionary<string, GuildSettings> GuildSettings;
@@ -47,8 +47,10 @@ namespace StarsiegeBot
                 item.Prefixes.Add(">");
                 // this line... is a test line.
 
-                GuildSettings = new Dictionary<string, GuildSettings>();
-                GuildSettings.Add("default", item);
+                GuildSettings = new Dictionary<string, GuildSettings>
+                {
+                    { "default", item }
+                };
 
                 string output = JsonConvert.SerializeObject(GuildSettings);
                 File.WriteAllTextAsync("guildSettings.json", output);
@@ -107,6 +109,15 @@ namespace StarsiegeBot
                 await ctx.TriggerTypingAsync();
                 GuildSettings.Remove(prefix);
                 await ctx.RespondAsync($"Removed `{prefix}` as a command prefix.");
+            }
+
+            [Command("global"), Aliases("g")]
+            public async Task UseGlobalPrefixes(CommandContext ctx, bool isEnabled)
+            {
+                await ctx.TriggerTypingAsync();
+                GuildSettings[ctx.Guild.Id.ToString()].UseGlobalPrefix = isEnabled;
+                await ctx.RespondAsync($"Global Prefix usage has been turned **{(isEnabled ? "on":"off")}**");
+
             }
         }
     }
