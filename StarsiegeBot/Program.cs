@@ -178,11 +178,16 @@ namespace StarsiegeBot
             this.Commands.RegisterCommands<Commands>();
             // this.Commands.RegisterCommands<SnappleFacts>();
             this.Commands.RegisterCommands<BotSettings>(); // Main Folder. Test Items.
+            this.Commands.RegisterCommands<RoleManagement>(); // Main Folder. Test Items.
+            this.Commands.RegisterCommands<LevelRoleManagement>(); // Main Folder. Test Items.
+            this.Commands.RegisterCommands<GroupRoleManagement>(); // Main Folder. Test Items.
+            this.Commands.RegisterCommands<LevelManagement>(); // Main Folder. Test Items.
+            this.Commands.RegisterCommands<GroupManagement>(); // Main Folder. Test Items.
 
             // All these commands are in the STARSIEGE folder.
             //if (BotName.Contains("ssp"))
             //{
-                this.Commands.RegisterCommands<Quickchat>();
+            this.Commands.RegisterCommands<Quickchat>();
                 this.Commands.RegisterCommands<Functions>();
             this.Commands.RegisterCommands<DeathMessages>();
             this.Commands.RegisterCommands<StarsiegeCommands>();
@@ -363,9 +368,9 @@ namespace StarsiegeBot
                     item.UseSelfRoles = false;
                     item.AllowRolesPurchase = false;
                     item.UseAutoRoles = false;
-                    item.LevelRoles = new Dictionary<string, int>();
+                    item.LevelRoles = new Dictionary<int, List<DiscordRole>>();
                     item.Prefixes = new List<string>();
-                    item.SelfRoles = new Dictionary<string, int>();
+                    item.SelfRoles = new Dictionary<string, Dictionary<string, int>>();
                     // this line... is a test line.
                     BotSettings.GuildSettings.Add(gId, item);
                 }
