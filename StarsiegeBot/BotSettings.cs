@@ -23,6 +23,7 @@ using System.Threading;
 namespace StarsiegeBot
 {
     [Group("bot")]
+    [Description("Allows, viewing and editing settings on the bot.")]
     class BotSettings : BaseCommandModule
     {
         public static Dictionary<string, GuildSettings> GuildSettings;
@@ -30,8 +31,10 @@ namespace StarsiegeBot
         public BotSettings()
         {
             Console.WriteLine("Bot Setting Commands Loaded");
+            // Check for guild settings file. If it doesnt exist, create it.
             if (!File.Exists("guildSettings.json"))
             {
+                // Since we need to creat it, we're going to set some default stuff.
                 Console.Write("Guild Settings Config File Not Found. Creating One...");
                 GuildSettings item = new GuildSettings();
                 item.UseAutoRoles = false;
@@ -52,36 +55,40 @@ namespace StarsiegeBot
                     { "default", item }
                 };
 
+                // Now that we have the initial stuff in memory, write it to file.
                 string output = JsonConvert.SerializeObject(GuildSettings);
                 File.WriteAllTextAsync("guildSettings.json", output);
+                // in form the console reader that we're done making the initial config.
                 Console.WriteLine(" Done!");
             }
-            var json = "";
-            using (var fs = File.OpenRead("guildSettings.json"))
-            using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
-                json = sr.ReadToEnd();
-
-            GuildSettings = JsonConvert.DeserializeObject<Dictionary<string, GuildSettings>>(json);
+            else
+            {
+                // load the config file to memory.
+                var json = "";
+                using (var fs = File.OpenRead("guildSettings.json"))
+                using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
+                    json = sr.ReadToEnd();
+                GuildSettings = JsonConvert.DeserializeObject<Dictionary<string, GuildSettings>>(json);
+            }
         }
 
         [Group("Prefix")]
         class BotPrefix : BotSettings
         {
-            public BotPrefix()
-            {
-
-            }
             [GroupCommand]
             public async Task GetPrefixes(CommandContext ctx)
             {
                 await ctx.TriggerTypingAsync();
-                var guild = ctx.Guild.Id.ToString();
+                // store the Guild ID as a string.
+                string guild = ctx.Guild.Id.ToString();
+                // if this server doesnt have a settings for whatever reason, let them know... why am i not creating it?
                 if (! GuildSettings.ContainsKey(guild))
                 {
                     await ctx.RespondAsync("No guild settings found.");
                 }
                 else
                 {
+                    // we have server settings... why does this give so much info? it should only show only prefix(es)
                     var server = GuildSettings[guild];
                     DiscordEmbedBuilder embed = new DiscordEmbedBuilder
                     {
@@ -96,6 +103,7 @@ namespace StarsiegeBot
                 }
             }
             [Command("Add")]
+            [Description("Adds a new prefix to the Server's list of prefixes.")]
             public async Task AddNewPrefix (CommandContext ctx, string prefix)
             {
                 await ctx.TriggerTypingAsync();
@@ -104,6 +112,7 @@ namespace StarsiegeBot
             }
 
             [Command("delete"), Aliases("del")]
+            [Description("Removes the specified prefix from accepted prefixes.")]
             public async Task RemovePrefix (CommandContext ctx, string prefix)
             {
                 await ctx.TriggerTypingAsync();
@@ -112,6 +121,7 @@ namespace StarsiegeBot
             }
 
             [Command("global"), Aliases("g")]
+            [Description("View or edit the status of allowing Global Prefix(es).")]
             public async Task UseGlobalPrefixes(CommandContext ctx, bool isEnabled)
             {
                 await ctx.TriggerTypingAsync();
