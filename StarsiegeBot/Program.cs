@@ -65,7 +65,7 @@ namespace StarsiegeBot
             if (args.Length > 0)
                 BotName = args[0].ToLower();
             else
-                BotName = "ssp";
+                BotName = "sspdev";
 
             BotEventId = new EventId(276, BotName);
         }
@@ -281,6 +281,7 @@ namespace StarsiegeBot
         private Task Event_CommandErrored(CommandsNextExtension ext, CommandErrorEventArgs e)
         {
             // let's log the error details
+            
             e.Context.Client.Logger.LogError(BotEventId, $"{e.Context.User.Username} tried executing '{e.Command?.QualifiedName ?? "<unknown command>"}' but it errored: {e.Exception.GetType()}: {e.Exception.Message ?? "<no message>"}", DateTime.Now);
             return Task.CompletedTask;
         }
