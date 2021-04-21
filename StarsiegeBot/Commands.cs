@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
-using System.IO;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.VoiceNext;
 using System.Text.RegularExpressions;
 using System.Linq;
 
