@@ -21,7 +21,8 @@ using DSharpPlus.Interactivity.Extensions;
 using System.Threading;
 
 namespace StarsiegeBot
-{
+{ 
+    [Group("role")]
     class RoleManagement : BotSettings
     {
         public RoleManagement()
@@ -35,11 +36,31 @@ namespace StarsiegeBot
             await ctx.TriggerTypingAsync();
         }
 
+        [Command("join")]
+        public async Task JoinSelfRole(CommandContext ctx, [RemainingText] string role)
+        {
+            await ctx.TriggerTypingAsync();
+        }
+
         [Command("leave")]
         public async Task LeaveSelfRole(CommandContext ctx, DiscordRole role)
         {
             await ctx.TriggerTypingAsync();
         }
 
+        [Command("leave")]
+        public async Task LeaveSelfRole(CommandContext ctx, [RemainingText] string role)
+        {
+            await ctx.TriggerTypingAsync();
+        }
+
+        private bool VerifiedRole(DiscordGuild guild, DiscordRole role)
+        {
+            return false;
+        }
+        private bool VerifiedRole(DiscordGuild guild, string role)
+        {
+            return false;
+        }
     }
 }
