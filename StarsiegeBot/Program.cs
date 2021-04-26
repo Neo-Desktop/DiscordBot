@@ -424,6 +424,10 @@ namespace StarsiegeBot
         private Task Event_GuildMemberAdded(DiscordClient d, GuildMemberAddEventArgs e)
         {
             d.Logger.LogDebug(BotEventId, "Event_GuildMemberAdded.");
+
+
+
+
             return Task.CompletedTask;
         }
         private Task Event_GuildMemberRemoved(DiscordClient d, GuildMemberRemoveEventArgs e)

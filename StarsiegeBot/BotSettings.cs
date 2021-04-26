@@ -90,5 +90,7 @@ namespace StarsiegeBot
         public List<String> Prefixes { get; set; }
         public Dictionary<string,Dictionary<string,int>> SelfRoles { get; set; }
         public Dictionary<int,List<DiscordRole>> LevelRoles { get; set; }
+        public DiscordChannel WelcomeChannel { get; set; }
+        public bool useWelcomeMessage { get; set; }
     }
 }
