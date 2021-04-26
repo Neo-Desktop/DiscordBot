@@ -18,6 +18,7 @@ namespace StarsiegeBot
     {
         public static Dictionary<string, GuildSettings> GuildSettings;
 
+        
         public BotSettings()
         {
             Console.WriteLine("Bot Setting Commands Loaded");
@@ -86,6 +87,10 @@ namespace StarsiegeBot
         public Dictionary<string,Dictionary<string,int>> SelfRoles { get; set; }
         public Dictionary<int,List<DiscordRole>> LevelRoles { get; set; }
 
-        public List<DiscordRole> hiddenRolesList { get; set; }
+        public List<DiscordRole> HiddenRolesList { get; set; }
+        public DiscordChannel WelcomeChannel { get; set; }
+        public bool UseWelcome { get; set; }
+        public string WelcomeMessage { get; set; }
+
     }
 }
