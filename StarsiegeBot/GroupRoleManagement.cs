@@ -44,7 +44,6 @@ namespace StarsiegeBot
             {
                 return;
             }
-
         }
 
         [Command("delete")]
