@@ -23,6 +23,7 @@ using System.Threading;
 namespace StarsiegeBot
 {
     [Group("Level")]
+    [RequireGuild, RequirePermissions(Permissions.ManageRoles)]
     class LevelManagement : BotSettings
     {
         public LevelManagement()

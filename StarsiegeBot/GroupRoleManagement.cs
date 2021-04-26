@@ -23,6 +23,7 @@ using System.Threading;
 namespace StarsiegeBot
 {
     [Group("GroupRole")]
+    [RequireGuild, RequirePermissions(Permissions.ManageRoles)]
     class GroupRoleManagement : BotSettings
     {
         public GroupRoleManagement()

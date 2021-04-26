@@ -31,7 +31,7 @@ namespace StarsiegeBot
             DiscordColor.Violet, DiscordColor.Wheat, DiscordColor.White, DiscordColor.Yellow };
         private readonly Random rnd = new Random();
         private readonly Dictionary<string, SSFunction> ssFunctions;
-        private readonly bool FunctionsEnabled;
+        private bool FunctionsEnabled;
 
         public Functions()
         {
@@ -136,6 +136,42 @@ namespace StarsiegeBot
             await ctx.RespondAsync($"There are {ssFunctions.Count} functions in the known list.");
         }
 
+        [Command("toggle"), Aliases("t")]
+        [RequireOwner]
+        public async Task ToggleQC(CommandContext ctx, [RemainingText] string isEnabled = null)
+        {
+            await ctx.TriggerTypingAsync();
+
+            isEnabled = isEnabled.ToLower();
+
+            string output = "";
+
+            string[] turnOn = { "on", "true", "1" };
+            string[] turnOff = { "off", "false", "0" };
+
+            if (File.Exists("functions.json"))
+            {
+                if (turnOn.Contains(isEnabled))
+                {
+                    FunctionsEnabled = true;
+                }
+                else if (turnOff.Contains(isEnabled))
+                {
+                    FunctionsEnabled = false;
+                }
+                else
+                {
+
+                }
+                output = $"Functions Enabled: {FunctionsEnabled}";
+            }
+            else
+            {
+                FunctionsEnabled = false;
+                output = "Functions.json file is missing, and it can not be enabled.";
+            }
+            await ctx.RespondAsync(output);
+        }
     }
 
     public class SSFunction

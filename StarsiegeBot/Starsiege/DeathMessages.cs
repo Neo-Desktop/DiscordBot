@@ -54,6 +54,43 @@ namespace StarsiegeBot
             }
         }
 
+        [Command("toggle"), Aliases("t")]
+        [RequireOwner]
+        public async Task ToggleQC(CommandContext ctx, [RemainingText] string isEnabled = null)
+        {
+            await ctx.TriggerTypingAsync();
+
+            isEnabled = isEnabled.ToLower();
+
+            string output = "";
+
+            string[] turnOn = { "on", "true", "1" };
+            string[] turnOff = { "off", "false", "0" };
+
+            if (File.Exists("DeathMessages.json"))
+            {
+                if (turnOn.Contains(isEnabled))
+                {
+                    DeathMessagesEnabled = true;
+                }
+                else if (turnOff.Contains(isEnabled))
+                {
+                    DeathMessagesEnabled = false;
+                }
+                else
+                {
+
+                }
+                output = $"DeathMessages Enabled: {DeathMessagesEnabled}";
+            }
+            else
+            {
+                DeathMessagesEnabled = false;
+                output = "DeathMessages.json file is missing, and it can not be enabled.";
+            }
+            await ctx.RespondAsync(output);
+        }
+
         [GroupCommand]
         public async Task DeathMessage(CommandContext ctx, [Description("Optional. Person you want to see kill you. If blank, will show generic death message.")]DiscordMember target = null)
         {

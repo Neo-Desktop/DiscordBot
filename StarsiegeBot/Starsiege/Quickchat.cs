@@ -24,7 +24,7 @@ namespace StarsiegeBot
     {
         private readonly List<Quickchats> Quickchats;
         private readonly Random rnd = new Random();
-        private readonly bool QuickChatsEnabled;
+        private bool QuickChatsEnabled;
 
         public Quickchat()
         {
@@ -170,8 +170,9 @@ namespace StarsiegeBot
             }
 
             // We're going to build a message.
+            using StreamWriter file = new StreamWriter("tempQC.txt");
             DiscordMessageBuilder msg = new DiscordMessageBuilder();
-            msg.Content = "";
+            int Content = 0;
             // We're going to search each QC for the stuff in toSearch.
             for (int i = 0; i < Quickchats.Count; i++)
             {
@@ -179,18 +180,67 @@ namespace StarsiegeBot
                 if (Quickchats[i].text.ToLower().Contains(toSearch.ToLower()))
                 {
                     // add it to the list!
-                    msg.Content += $"[{i}] {Quickchats[i].text}\r\n";
+                    await file.WriteLineAsync($"[{i}][T] {Quickchats[i].text}\r\n");
+                    Content++;
+                }
+                if (Quickchats[i].soundFile.ToLower().Contains(toSearch.ToLower()))
+                {
+                    // add it to the list!
+                    await file.WriteLineAsync($"[{i}][S] {Quickchats[i].text}\r\n");
+                    Content++;
                 }
             }
+            file.Close();
 
             // If message content is still nothing, report we found nothing.
-            if (msg.Content == "")
+            if (Content == 0)
             {
                 msg.Content = "No results found.";
+                await ctx.RespondAsync(msg);
+            }
+            else
+            {
+                msg.Content = "Here are your results.";
+                FileStream upload = new FileStream($"tempQC.txt", FileMode.Open);
+                msg.WithFile(upload);
+                await ctx.RespondAsync(msg);
+                upload.Close();
+            }
+        }
+
+        [Command("toggle"), Aliases("t")]
+        [RequireOwner]
+        public async Task ToggleQC (CommandContext ctx, [RemainingText] string isEnabled = null)
+        {
+            await ctx.TriggerTypingAsync();
+            isEnabled = isEnabled.ToLower();
+            string output = "";
+            string[] turnOn = { "on", "true", "1" };
+            string[] turnOff = { "off", "false", "0" };
+
+            if (File.Exists("quickchats.json"))
+            {
+                if (turnOn.Contains(isEnabled))
+                {
+                    QuickChatsEnabled = true;
+                }
+                else if (turnOff.Contains(isEnabled))
+                {
+                    QuickChatsEnabled = false;
+                }
+                else
+                {
+                    // we wont do anything here.
+                }
+                output = $"Quickchats Enabled: {QuickChatsEnabled}";
+            }
+            else
+            {
+                QuickChatsEnabled = false;
+                output = "QuickChats.json file is missing, and it can not be enabled.";
             }
 
-            // Tell the end user our results, or lack of.
-            await ctx.RespondAsync(msg);
+            await ctx.RespondAsync(output);
         }
     }
     public class Quickchats

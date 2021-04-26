@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Text;
+using DSharpPlus;
 
 namespace StarsiegeBot
 {
