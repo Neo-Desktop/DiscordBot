@@ -40,6 +40,10 @@ namespace StarsiegeBot
         public async Task AddSelfRole(CommandContext ctx, DiscordRole role, int price = 0, string group = null)
         {
             await ctx.TriggerTypingAsync();
+            if (price == -1)
+            {
+                return;
+            }
         }
 
         [Command("delete")]

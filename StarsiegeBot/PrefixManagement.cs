@@ -22,6 +22,7 @@ using System.Threading;
 
 namespace StarsiegeBot
 {
+    [Group("prefix")]
     class PrefixManagement : BotSettings
     {
         public PrefixManagement()
