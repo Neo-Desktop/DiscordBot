@@ -144,7 +144,7 @@ namespace StarsiegeBot
 
             isEnabled = isEnabled.ToLower();
 
-            string output = "";
+            string;
 
             string[] turnOn = { "on", "true", "1" };
             string[] turnOff = { "off", "false", "0" };

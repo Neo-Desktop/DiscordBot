@@ -15,7 +15,7 @@ namespace StarsiegeBot
         private readonly Random rnd = new Random();
 
         // start: neo wanted this shit....
-        private string[] insult = {
+        private readonly string[] insult = {
             "> {0} slaps {1} around a bit with a large trout.",
             "> {0} puts a jellyfish on {1}'s head.",
             "> {0} slaps {1} around a bit with the mustache of Caanon.",

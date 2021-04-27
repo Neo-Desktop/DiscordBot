@@ -34,13 +34,15 @@ namespace StarsiegeBot
             {
                 // Since we need to creat it, we're going to set some default stuff.
                 Console.Write("Guild Settings Config File Not Found. Creating One...");
-                GuildSettings item = new GuildSettings();
-                item.UseAutoRoles = false;
-                item.UseGlobalPrefix = true;
-                item.UseLevelRoles = false;
-                item.UseLevels = false;
-                item.UseSelfRoles = false;
-                item.AllowRolesPurchase = false;
+                GuildSettings item = new GuildSettings
+                {
+                    UseAutoRoles = false,
+                    UseGlobalPrefix = true,
+                    UseLevelRoles = false,
+                    UseLevels = false,
+                    UseSelfRoles = false,
+                    AllowRolesPurchase = false
+                };
                 item.UseAutoRoles = false;
                 item.LevelRoles = new Dictionary<int, List<DiscordRole>>();
                 item.Prefixes = new List<string>();

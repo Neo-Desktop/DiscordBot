@@ -86,7 +86,7 @@ namespace StarsiegeBot
         public async Task EditGroup(CommandContext ctx, [RemainingText] string groupInfo)
         {
             await ctx.TriggerTypingAsync();
-            string gId = ctx.Guild.Id.ToString();
+            // string gId = ctx.Guild.Id.ToString();
 
         }
     }

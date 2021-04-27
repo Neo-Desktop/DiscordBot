@@ -240,7 +240,7 @@ namespace StarsiegeBot
         {
             await ctx.TriggerTypingAsync();
             isEnabled = isEnabled.ToLower();
-            string output = "";
+            string output;
             string[] turnOn = { "on", "true", "1" };
             string[] turnOff = { "off", "false", "0" };
 

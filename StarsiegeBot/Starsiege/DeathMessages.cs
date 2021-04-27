@@ -79,7 +79,6 @@ namespace StarsiegeBot
             }
         }
 
-
         [Command("toggle"), Aliases("t")]
         [RequireOwner]
         public async Task ToggleDM(CommandContext ctx, [RemainingText] string isEnabled = null)
@@ -88,7 +87,7 @@ namespace StarsiegeBot
 
             isEnabled = isEnabled.ToLower();
 
-            string output = "";
+            string output;
 
             string[] turnOn = { "on", "true", "1" };
             string[] turnOff = { "off", "false", "0" };
@@ -136,8 +135,8 @@ namespace StarsiegeBot
             // if there is no target, we're going to "kill" the author.
             if (target == null)
             {
-                int choice = rnd.Next(0, dmLines.generic.Length);
-                line = dmLines.generic[choice];
+                int choice = rnd.Next(0, dmLines.Generic.Length);
+                line = dmLines.Generic[choice];
                 await ctx.RespondAsync(string.Format(line, ctx.Message.Author.Mention));
             }
             // we have a valid target... Have the bot kill them.
@@ -149,14 +148,14 @@ namespace StarsiegeBot
                 if (opt == 1)
                 {
                     // Pick an Active death message at random, and set our output to it.
-                    int choice = rnd.Next(0, dmLines.active.Length);
-                    line = dmLines.active[choice];
+                    int choice = rnd.Next(0, dmLines.Active.Length);
+                    line = dmLines.Active[choice];
                 }
                 else if (opt == 2)
                 {
                     // We picked a Passive death message type. Pick the exact line at random. Set it to the output.
-                    int choice = rnd.Next(0, dmLines.passive.Length);
-                    line = dmLines.passive[choice];
+                    int choice = rnd.Next(0, dmLines.Passive.Length);
+                    line = dmLines.Passive[choice];
                 }
                 // Give the selected death message to the user.
                 await ctx.RespondAsync(string.Format(line, ctx.Message.Author.Mention, target.Mention));
@@ -177,7 +176,7 @@ namespace StarsiegeBot
             // We're typing here!
             await ctx.TriggerTypingAsync();
             // List all the types of Death Message types, and how many we have of each one.
-            await ctx.RespondAsync($"\r\nActive: {dmLines.active.Length}\r\nPassive: {dmLines.passive.Length}\r\nGeneric: {dmLines.generic.Length}");
+            await ctx.RespondAsync($"\r\nActive: {dmLines.Active.Length}\r\nPassive: {dmLines.Passive.Length}\r\nGeneric: {dmLines.Generic.Length}");
         }
 
         [Command("Add")]
@@ -197,10 +196,10 @@ namespace StarsiegeBot
             // Message the owner know some one wants to add a new death message, along with a code block to that message.
 
             // if the Queue is null, make it exist.
-            if (dmLines.queue is null)
-                dmLines.queue = new List<string>();
+            if (dmLines.Queue is null)
+                dmLines.Queue = new List<string>();
             // add the message to the queue list.
-            dmLines.queue.Add(msg);
+            dmLines.Queue.Add(msg);
             // Store the new stuff to file...
             await StoreDeathMessages();
             // Tell the person that the message has been added to a 'queue'.
@@ -230,27 +229,27 @@ namespace StarsiegeBot
             using StreamWriter file = new StreamWriter("deathmessages.cs");
 
             // Write out the total lines for each. Requirement for Starsiege.
-            await file.WriteLineAsync($"$deathMessage::genericCount   = {dmLines.generic.Length};");
-            await file.WriteLineAsync($"$deathMessage::activeCount    = {dmLines.active.Length};");
-            await file.WriteLineAsync($"$deathMessage::passiveCount   = {dmLines.passive.Length};\r\n");
+            await file.WriteLineAsync($"$deathMessage::genericCount   = {dmLines.Generic.Length};");
+            await file.WriteLineAsync($"$deathMessage::activeCount    = {dmLines.Active.Length};");
+            await file.WriteLineAsync($"$deathMessage::passiveCount   = {dmLines.Passive.Length};\r\n");
 
             // Set count to 0. Iterate over each type of Death Message, and put it into the file.
             int count = 0;
-            foreach (string death in dmLines.generic)
+            foreach (string death in dmLines.Generic)
             {
                 await file.WriteLineAsync(string.Format($"$deathMessage::generic{count}   = \"{death}\";", "%s", "%s"));
                 count++;
             }
             // Reset the count...
             count = 0;
-            foreach (string death in dmLines.active)
+            foreach (string death in dmLines.Active)
             {
                 await file.WriteLineAsync(string.Format($"$deathMessage::active{count}   = \"{death}\";", "%s", "%s"));
                 count++;
             }
             // Reset the count one last time...
             count = 0;
-            foreach (string death in dmLines.passive)
+            foreach (string death in dmLines.Passive)
             {
                 await file.WriteLineAsync(string.Format($"$deathMessage::passive{count}   = \"{death}\";", "%s", "%s"));
                 count++;
@@ -283,14 +282,14 @@ namespace StarsiegeBot
     class DeathMessageLines
     {
         [JsonProperty("active")]
-        public string[] active { get; set; }
+        public string[] Active { get; set; }
         [JsonProperty("passive")]
-        public string[] passive { get; set; }
+        public string[] Passive { get; set; }
         [JsonProperty("generic")]
-        public string[] generic { get; set; }
-
-        public List<String> flagged { get; set; }
-
-        public List<String> queue { get; set; }
+        public string[] Generic { get; set; }
+        [JsonProperty("flagged")]
+        public List<String> Flagged { get; set; }
+        [JsonProperty("queue")]
+        public List<String> Queue { get; set; }
     }
 }

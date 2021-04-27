@@ -1,4 +1,5 @@
-﻿using System;
+﻿#pragma warning disable IDE0060 // Remove unused parameter
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,7 +16,6 @@ using DSharpPlus.VoiceNext;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-#pragma warning disable IDE0060 // Remove unused parameter
 namespace StarsiegeBot
 {
     class Triggers
