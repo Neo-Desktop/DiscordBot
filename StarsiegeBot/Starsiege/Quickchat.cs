@@ -22,7 +22,7 @@ namespace StarsiegeBot
     [Aliases("qc"), Group("quickchat")]
     class Quickchat : BaseCommandModule
     {
-        private readonly List<Quickchats> Quickchats;
+        private List<Quickchats> Quickchats;
         private readonly Random rnd = new Random();
         private bool QuickChatsEnabled;
 
@@ -50,6 +50,32 @@ namespace StarsiegeBot
                 QuickChatsEnabled = false;
             }
         }
+
+        [Command("load"), RequireOwner]
+        public async Task LoadQuickChats(CommandContext ctx)
+        {
+            await ctx.TriggerTypingAsync();
+            if (File.Exists("quickchats.json"))
+            {
+                // Load the JSON file.
+                var json = "";
+                using (var fs = File.OpenRead("quickchats.json"))
+                using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
+                    json = sr.ReadToEnd();
+                Dictionary<string, Quickchats> tempQC = JsonConvert.DeserializeObject<Dictionary<string, Quickchats>>(json);
+                // set the Quick Chat object.
+                Quickchats = Enumerable.ToList(tempQC.Values);
+                // enable the commands.
+                QuickChatsEnabled = true;
+                await ctx.RespondAsync("Loading Quick Chats successul.");
+            }
+            else
+            {
+                QuickChatsEnabled = false;
+                await ctx.RespondAsync("Loading Quick Chats failed. File does not exist.");
+            }
+        }
+
 
         [Command("script")]
         [Description("Gives the `say()` for use in the Quickchat.cs file.")]
@@ -239,7 +265,6 @@ namespace StarsiegeBot
                 QuickChatsEnabled = false;
                 output = "QuickChats.json file is missing, and it can not be enabled.";
             }
-
             await ctx.RespondAsync(output);
         }
     }

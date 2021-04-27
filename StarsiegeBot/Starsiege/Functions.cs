@@ -30,7 +30,7 @@ namespace StarsiegeBot
             DiscordColor.Rose, DiscordColor.SapGreen, DiscordColor.Sienna, DiscordColor.SpringGreen, DiscordColor.Teal, DiscordColor.Turquoise, DiscordColor.VeryDarkGray,
             DiscordColor.Violet, DiscordColor.Wheat, DiscordColor.White, DiscordColor.Yellow };
         private readonly Random rnd = new Random();
-        private readonly Dictionary<string, SSFunction> ssFunctions;
+        private Dictionary<string, SSFunction> ssFunctions;
         private bool FunctionsEnabled;
 
         public Functions()
@@ -138,7 +138,7 @@ namespace StarsiegeBot
 
         [Command("toggle"), Aliases("t")]
         [RequireOwner]
-        public async Task ToggleQC(CommandContext ctx, [RemainingText] string isEnabled = null)
+        public async Task ToggleFunctions(CommandContext ctx, [RemainingText] string isEnabled = null)
         {
             await ctx.TriggerTypingAsync();
 
@@ -171,6 +171,29 @@ namespace StarsiegeBot
                 output = "Functions.json file is missing, and it can not be enabled.";
             }
             await ctx.RespondAsync(output);
+        }
+        [Command("load"), RequireOwner]
+        public async Task LoadFunctions(CommandContext ctx)
+        {
+            await ctx.TriggerTypingAsync();
+
+            // Check for file, if not there, disable commands.
+            if (File.Exists("functions.json"))
+            {
+                // Load the Functions JSON file. Has all information regarding Starsiege in-game Functions.
+                var json = "";
+                using (var fs = File.OpenRead("functions.json"))
+                using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
+                    json = sr.ReadToEnd();
+                ssFunctions = JsonConvert.DeserializeObject<Dictionary<string, SSFunction>>(json);
+                FunctionsEnabled = true;
+                await ctx.RespondAsync("Loading Quick Chats successul.");
+            }
+            else
+            {
+                FunctionsEnabled = false;
+                await ctx.RespondAsync("Loading Functions failed. File does not exist.");
+            }
         }
     }
 

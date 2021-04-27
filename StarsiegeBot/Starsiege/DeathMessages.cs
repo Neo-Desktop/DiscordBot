@@ -26,7 +26,7 @@ namespace StarsiegeBot
     class DeathMessages : BaseCommandModule
     {
         private readonly Random rnd = new Random();
-        private readonly DeathMessageLines dmLines;
+        private DeathMessageLines dmLines;
         private bool DeathMessagesEnabled;
 
         public DeathMessages()
@@ -54,9 +54,35 @@ namespace StarsiegeBot
             }
         }
 
+        [Command("load")]
+        public async Task LoadDeathMessages(CommandContext ctx)
+        {
+            await ctx.TriggerTypingAsync();
+            if (File.Exists("DeathMessages.json"))
+            {
+                // set some JSON text to blank.
+                var json = "";
+                using (var fs = File.OpenRead("DeathMessages.json"))
+                using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
+                    json = sr.ReadToEnd();
+                // Decode the JSON and set it to dmLines.
+                dmLines = JsonConvert.DeserializeObject<DeathMessageLines>(json);
+                // Enable all the commands.
+                DeathMessagesEnabled = true;
+                await ctx.RespondAsync("Loading Death Messages successul.");
+            }
+            else
+            {
+                // Echo out that we're missing a file. Disable the commands due to that.
+                await ctx.RespondAsync("Can't load Death Messages. File missing.");
+                DeathMessagesEnabled = false;
+            }
+        }
+
+
         [Command("toggle"), Aliases("t")]
         [RequireOwner]
-        public async Task ToggleQC(CommandContext ctx, [RemainingText] string isEnabled = null)
+        public async Task ToggleDM(CommandContext ctx, [RemainingText] string isEnabled = null)
         {
             await ctx.TriggerTypingAsync();
 

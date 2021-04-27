@@ -24,6 +24,7 @@ using System.Threading;
 namespace StarsiegeBot
 {
     [Group("welcome")]
+    [RequireGuild, RequirePermissions(Permissions.ManageChannels)]
     class WelcomeMessage : BotSettings
     {
         [Command("enable")]
@@ -43,7 +44,7 @@ namespace StarsiegeBot
             await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();
             GuildSettings[gId].WelcomeChannel = ctx.Channel;
-            await ctx.RespondAsync("This channel is the welcome channle now!");
+            await ctx.RespondAsync("This channel is the welcome channel now!");
         }
 
         [Command("Message")]
@@ -54,6 +55,5 @@ namespace StarsiegeBot
             GuildSettings[gId].WelcomeMessage = msg;
             await ctx.RespondAsync("welcome message set.");
         }
-
     }
 }

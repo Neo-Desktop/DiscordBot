@@ -110,8 +110,6 @@ namespace StarsiegeBot
 
         public Task CommandErrored(CommandsNextExtension ext, CommandErrorEventArgs e)
         {
-            // let's log the error details
-
             e.Context.Client.Logger.LogError(BotEventId, $"{e.Context.User.Username} tried executing '{e.Command?.QualifiedName ?? "<unknown command>"}' but it errored: {e.Exception.GetType()}: {e.Exception.Message ?? "<no message>"}", DateTime.Now);
             return Task.CompletedTask;
         }
@@ -177,9 +175,7 @@ namespace StarsiegeBot
             string gId = e.Guild.Id.ToString();
             // this guild doesnt have settings, make a skel set for them.
             if (BotSettings.GuildSettings is null)
-            {
-
-            }
+            { }
             else
             {
                 if (!BotSettings.GuildSettings.ContainsKey(gId))
@@ -251,13 +247,16 @@ namespace StarsiegeBot
         public Task GuildMemberAdded(DiscordClient d, GuildMemberAddEventArgs e)
         {
             d.Logger.LogDebug(BotEventId, $"GuildMemberAdded.{e.Guild.Name}");
+            if (e.Member.IsBot)
+            {
+                return Task.CompletedTask;
+            }
+
             string gId = e.Guild.Id.ToString();
             if (BotSettings.GuildSettings[gId].UseWelcome)
             {
                 if (BotSettings.GuildSettings[gId].WelcomeChannel is null)
-                {
-
-                }
+                { }
                 else
                 {
                     if (BotSettings.GuildSettings[gId].WelcomeMessage is null)
@@ -269,7 +268,6 @@ namespace StarsiegeBot
                 }
             }
             
-
             return Task.CompletedTask;
         }
         public Task GuildMemberRemoved(DiscordClient d, GuildMemberRemoveEventArgs e)
