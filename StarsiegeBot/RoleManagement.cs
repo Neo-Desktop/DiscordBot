@@ -29,7 +29,7 @@ namespace StarsiegeBot
     {
         public RoleManagement()
         {
-
+            Console.WriteLine("Role Management Loaded.");
         }
 
         [Command("join")]

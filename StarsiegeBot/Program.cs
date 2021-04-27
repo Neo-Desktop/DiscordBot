@@ -131,6 +131,7 @@ namespace StarsiegeBot
             this.Commands.RegisterCommands<Functions>();
             this.Commands.RegisterCommands<DeathMessages>();
             this.Commands.RegisterCommands<StarsiegeCommands>();
+            this.Commands.RegisterCommands<GameInfo>();
             //}
             Task thisTimerf = StartTimer(new CancellationToken());
 
