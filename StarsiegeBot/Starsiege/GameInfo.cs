@@ -47,6 +47,25 @@ namespace StarsiegeBot
                 }
             }
         }
+        [GroupCommand]
+        public async Task Overview (CommandContext ctx)
+        {
+            await ctx.TriggerTypingAsync();
+            Update();
+            // setup an exit point check.
+            bool exit = false;
+            // if its null, we're going to exit.
+            if (gameData is null || gameData.Errors is null)
+            {
+                exit = true;
+            }
+            if (exit)
+            {
+                return;
+            }
+            DiscordMessageBuilder msg = new DiscordMessageBuilder();
+            msg.Content = $"";
+        }
 
         [Command("Errors")]
         public async Task ErrorsServer(CommandContext ctx)
