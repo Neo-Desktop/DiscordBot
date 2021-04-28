@@ -115,14 +115,16 @@ namespace StarsiegeBot
 
             // up next, let's register our commands
             this.Commands.RegisterCommands<Commands>();
-            // this.Commands.RegisterCommands<SnappleFacts>();
             this.Commands.RegisterCommands<BotSettings>(); // Main Folder. Test Items.
-            this.Commands.RegisterCommands<RoleManagement>(); // Main Folder. Test Items.
-            this.Commands.RegisterCommands<LevelRoleManagement>(); // Main Folder. Test Items.
-            this.Commands.RegisterCommands<GroupRoleManagement>(); // Main Folder. Test Items.
-            this.Commands.RegisterCommands<LevelManagement>(); // Main Folder. Test Items.
-            this.Commands.RegisterCommands<GroupManagement>(); // Main Folder. Test Items.
             this.Commands.RegisterCommands<WelcomeMessage>(); // Main Folder. Test Items.
+            this.Commands.RegisterCommands<PrefixManagement>();
+            // this.Commands.RegisterCommands<SnappleFacts>();
+            // this.Commands.RegisterCommands<RoleManagement>(); // Main Folder. Test Items.
+            // this.Commands.RegisterCommands<LevelRoleManagement>(); // Main Folder. Test Items.
+            // this.Commands.RegisterCommands<GroupRoleManagement>(); // Main Folder. Test Items.
+            // this.Commands.RegisterCommands<LevelManagement>(); // Main Folder. Test Items.
+            // this.Commands.RegisterCommands<GroupManagement>(); // Main Folder. Test Items.
+            // this.Commands.RegisterCommands<StarsiegeCommands>();
 
             // All these commands are in the STARSIEGE folder.
             //if (BotName.Contains("ssp"))
@@ -130,7 +132,6 @@ namespace StarsiegeBot
             this.Commands.RegisterCommands<Quickchat>();
             this.Commands.RegisterCommands<Functions>();
             this.Commands.RegisterCommands<DeathMessages>();
-            this.Commands.RegisterCommands<StarsiegeCommands>();
             this.Commands.RegisterCommands<GameInfo>();
             //}
             Task thisTimerf = StartTimer(new CancellationToken());

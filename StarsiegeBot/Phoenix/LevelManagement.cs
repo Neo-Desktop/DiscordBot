@@ -23,38 +23,43 @@ using System.Threading;
 
 namespace StarsiegeBot
 {
-    [Group("LevelRole")]
+    [Group("Level")]
     [RequireGuild, RequirePermissions(Permissions.ManageRoles)]
-    class LevelRoleManagement : BotSettings
+    [Description("Work in progress. Does nothing yet.")]
+    class LevelManagement : BotSettings
     {
-        public LevelRoleManagement()
+        public LevelManagement()
         {
-            Console.WriteLine("Level Role Management Loaded.");
+            Console.WriteLine("Level Management Loaded.");
         }
 
-        [Command("edit")]
-        public async Task EditRole(CommandContext ctx, int oldLevel, int newLevel, DiscordRole role)
+        [GroupCommand]
+        [Description("Work in progress. Does nothing yet.")]
+        public async Task ListLevels(CommandContext ctx)
+        {
+            await ctx.TriggerTypingAsync();
+        }
+
+        [Command("AddLevel"), Aliases("al")]
+        [Description("Work in progress. Does nothing yet.")]
+        public async Task AddLevel(CommandContext ctx, int newLevelGroup)
+        {
+            await ctx.TriggerTypingAsync();
+        }
+
+
+        [Command("DeleteLevel"), Aliases("dl")]
+        [Description("Work in progress. Does nothing yet.")]
+        public async Task DeleteLevel(CommandContext ctx, int oldLevelGroup)
         {
             await ctx.TriggerTypingAsync();
         }
 
         [Command("edit")]
-        public async Task EditRole(CommandContext ctx, int newLevel, [RemainingText] string role)
+        [Description("Work in progress. Does nothing yet.")]
+        public async Task EditLevel (CommandContext ctx, int oldLeve, int newLevel)
         {
             await ctx.TriggerTypingAsync();
         }
-
-        [Command("remove")]
-        public async Task RemoveRole(CommandContext ctx, DiscordRole role)
-        {
-            await ctx.TriggerTypingAsync();
-        }
-
-        [Command("remove")]
-        public async Task RemoveRole(CommandContext ctx, [RemainingText] string roleName)
-        {
-            await ctx.TriggerTypingAsync();
-        }
-
     }
 }

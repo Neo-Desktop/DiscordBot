@@ -55,6 +55,7 @@ namespace StarsiegeBot
         }
 
         [Command("load")]
+        [RequireOwner]
         public async Task LoadDeathMessages(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
@@ -263,7 +264,7 @@ namespace StarsiegeBot
             // Open the file to upload.
             FileStream sound = new FileStream($"deathmessages.cs", FileMode.Open);
             // Tell DSharp that we want to upload this file.
-            msg.WithFile(sound);
+            msg.WithFile("deathmessages.cs", sound);
             // Add some content so its not a blank file.
             msg.Content ="Here is your request for a death message script.";
             // send that message.

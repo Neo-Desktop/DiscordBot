@@ -33,24 +33,28 @@ namespace StarsiegeBot
         }
 
         [Command("join")]
+        [Description("Work in progress. Does nothing yet.")]
         public async Task JoinSelfRole(CommandContext ctx, DiscordRole role)
         {
             await ctx.TriggerTypingAsync();
         }
 
         [Command("join")]
+        [Description("Work in progress. Does nothing yet.")]
         public async Task JoinSelfRole(CommandContext ctx, [RemainingText] string role)
         {
             await ctx.TriggerTypingAsync();
         }
 
         [Command("leave")]
+        [Description("Work in progress. Does nothing yet.")]
         public async Task LeaveSelfRole(CommandContext ctx, DiscordRole role)
         {
             await ctx.TriggerTypingAsync();
         }
 
         [Command("leave")]
+        [Description("Work in progress. Does nothing yet.")]
         public async Task LeaveSelfRole(CommandContext ctx, [RemainingText] string role)
         {
             await ctx.TriggerTypingAsync();

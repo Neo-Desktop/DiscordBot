@@ -21,12 +21,14 @@ using System.Net;
 namespace StarsiegeBot
 {
     [Group("servers")]
+    [Description("Gives various reports on the game or master servers.")]
     class GameInfo : BaseCommandModule
     {
         private WebServerItems gameData;
         public GameInfo()
         {
             Update();
+            Console.WriteLine("Starsiege Game Info Commands Loaded");
         }
         private void Update()
         {
@@ -63,11 +65,17 @@ namespace StarsiegeBot
             {
                 return;
             }
-            DiscordMessageBuilder msg = new DiscordMessageBuilder();
-            msg.Content = $"";
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
+            embed.Title = "Master|Game Server Overview";
+            embed.Description = "Number of Master, and Game servers. Along with number of errors.";
+            embed.AddField("Masters", gameData.Masters.Length.ToString(),true);
+            embed.AddField("Games", gameData.Games.Length.ToString(),true);
+            embed.AddField("Errors", gameData.Errors.Length.ToString(),true);
+            await ctx.RespondAsync(embed);
         }
 
-        [Command("Errors")]
+        [Command("Errors"), Aliases("e")]
+        [Description("Lists all the errors from the server listing.")]
         public async Task ErrorsServer(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
@@ -92,7 +100,8 @@ namespace StarsiegeBot
             await ctx.RespondAsync(msg);
         }
 
-        [Command("Masters")]
+        [Command("Masters"), Aliases("m")]
+        [Description("Gives all the master servers as a script to be improted into `master.cs`.")]
         public async Task MasterServers (CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
@@ -120,8 +129,9 @@ namespace StarsiegeBot
             await ctx.RespondAsync(msg);
         }
 
-        [Command("games")]
-        public async Task GameServers(CommandContext ctx, int playerCount = 1)
+        [Command("games"), Aliases("g")]
+        [Description("Currently: Lists games that have been started (Player dropped in). End Result: Lists all games that have a player in the server (either dropped in or not)")]
+        public async Task GameServers(CommandContext ctx, [Description("Number of players you want to check for. Game servers will need at least this meaning or more to be listed.")]int playerCount = 1)
         {
             await ctx.TriggerTypingAsync();
             Update();
@@ -152,7 +162,7 @@ namespace StarsiegeBot
             }
             if (count == 0)
             {
-                msg.Content = "No active servers. We're sorry";
+                msg.Content = "No servers matching your requirements. We're sorry";
             }
             await ctx.RespondAsync(msg);
         }

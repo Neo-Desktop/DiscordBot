@@ -213,7 +213,7 @@ namespace StarsiegeBot
             }
 
 
-            return $"Name: {name} || Title: {title} || Desc: {description} || Fields: {fs}";
+            return $"Name: {name} || Title: {title} || Desc: {description} || Fields: {{{fs}}}";
         }
     }
     public class Fields

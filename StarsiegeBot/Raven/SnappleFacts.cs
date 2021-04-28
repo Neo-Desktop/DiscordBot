@@ -12,7 +12,7 @@ namespace StarsiegeBot
         private Random rnd = new Random();
 
         [Command("snapple"), Description("Get a Snapple \"Real Fact\".")]
-        public async Task Snapplefact(CommandContext ctx, int snapId = -1)
+        public async Task Snapplefact(CommandContext ctx, [Description("[Optional] A Snapple Fact ID")]int snapId = -1)
         {
             if (snapId == -1)
             {
@@ -36,6 +36,7 @@ namespace StarsiegeBot
 
         public SnappleFacts()
         {
+            Console.WriteLine("Snapple Commands Loaded");
             this.facts = new string[] { "Animals that lay eggs don't have belly buttons.",
                 "Beavers can hold their breath for 45 minutes under water.",
                 "Slugs have four noses.",

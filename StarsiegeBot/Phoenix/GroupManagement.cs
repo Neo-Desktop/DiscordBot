@@ -49,7 +49,7 @@ namespace StarsiegeBot
         }
 
         [Command("add")]
-        public async Task AddGroup(CommandContext ctx, [RemainingText] string groupName)
+        public async Task AddGroup(CommandContext ctx, [RemainingText, Description("Group to create.")] string groupName)
         {
             await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();
@@ -67,7 +67,7 @@ namespace StarsiegeBot
 
         // TODO: Delete all roles or assign new group?
         [Command("delete")]
-        public async Task RemoveGroup(CommandContext ctx, [RemainingText] string groupName)
+        public async Task RemoveGroup(CommandContext ctx, [RemainingText, Description("Group to delete")] string groupName)
         {
             await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();
@@ -83,6 +83,7 @@ namespace StarsiegeBot
         }
 
         [Command("edit")]
+        [Description("This is under construction. Does nothing yet.")]
         public async Task EditGroup(CommandContext ctx, [RemainingText] string groupInfo)
         {
             await ctx.TriggerTypingAsync();

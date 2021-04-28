@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <Folder Include="Unicorn\" />
-    <Folder Include="Phoenix\" />
   </ItemGroup>
 
 </Project>

@@ -52,6 +52,7 @@ namespace StarsiegeBot
         }
 
         [Command("load"), RequireOwner]
+        [Description("[Onwer Only] Reloads the QuickChat files. If they exist. Also enables QC's if file is found.")]
         public async Task LoadQuickChats(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
@@ -185,7 +186,8 @@ namespace StarsiegeBot
         }
 
         [Command("search"), Aliases("s")]
-        public async Task SearchQuickChats(CommandContext ctx, [RemainingText] string toSearch)
+        [Description("Searches all the [T]ext and [S]ound file names for the Search input.")]
+        public async Task SearchQuickChats(CommandContext ctx, [RemainingText,Description("What to search for.")] string toSearch)
         {
             await ctx.TriggerTypingAsync();
             // If we're disabled, let them know. And exit out.
@@ -228,7 +230,7 @@ namespace StarsiegeBot
             {
                 msg.Content = "Here are your results.";
                 FileStream upload = new FileStream($"tempQC.txt", FileMode.Open);
-                msg.WithFile(upload);
+                msg.WithFile("tempQC.txt", upload);
                 await ctx.RespondAsync(msg);
                 upload.Close();
             }
@@ -236,6 +238,7 @@ namespace StarsiegeBot
 
         [Command("toggle"), Aliases("t")]
         [RequireOwner]
+        [Description("[Onwer only] Enables or disables, or checks status of QuickChats.")]
         public async Task ToggleQC (CommandContext ctx, [RemainingText] string isEnabled = null)
         {
             await ctx.TriggerTypingAsync();

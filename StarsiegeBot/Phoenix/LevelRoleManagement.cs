@@ -23,36 +23,39 @@ using System.Threading;
 
 namespace StarsiegeBot
 {
-    [Group("Level")]
+    [Group("LevelRole")]
     [RequireGuild, RequirePermissions(Permissions.ManageRoles)]
-    class LevelManagement : BotSettings
+    class LevelRoleManagement : BotSettings
     {
-        public LevelManagement()
+        public LevelRoleManagement()
         {
-            Console.WriteLine("Level Management Loaded.");
+            Console.WriteLine("Level Role Management Loaded.");
         }
 
-        [GroupCommand]
-        public async Task ListLevels(CommandContext ctx)
-        {
-            await ctx.TriggerTypingAsync();
-        }
-
-        [Command("AddLevel"), Aliases("al")]
-        public async Task AddLevel(CommandContext ctx, int newLevelGroup)
-        {
-            await ctx.TriggerTypingAsync();
-        }
-
-
-        [Command("DeleteLevel"), Aliases("dl")]
-        public async Task DeleteLevel(CommandContext ctx, int oldLevelGroup)
+        [Command("edit")]
+        [Description("Work in progress. Does nothing yet.")]
+        public async Task EditRole(CommandContext ctx, int oldLevel, int newLevel, DiscordRole role)
         {
             await ctx.TriggerTypingAsync();
         }
 
         [Command("edit")]
-        public async Task EditLevel (CommandContext ctx, int oldLeve, int newLevel)
+        [Description("Work in progress. Does nothing yet.")]
+        public async Task EditRole(CommandContext ctx, int newLevel, [RemainingText] string role)
+        {
+            await ctx.TriggerTypingAsync();
+        }
+
+        [Command("remove")]
+        [Description("Work in progress. Does nothing yet.")]
+        public async Task RemoveRole(CommandContext ctx, DiscordRole role)
+        {
+            await ctx.TriggerTypingAsync();
+        }
+
+        [Command("remove")]
+        [Description("Work in progress. Does nothing yet.")]
+        public async Task RemoveRole(CommandContext ctx, [RemainingText] string roleName)
         {
             await ctx.TriggerTypingAsync();
         }

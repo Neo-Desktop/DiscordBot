@@ -72,6 +72,7 @@ namespace StarsiegeBot
             }
         }
         [GroupCommand]
+        [Description("Work in progress. Does nothing yet.")]
         public async Task BaseItem(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
