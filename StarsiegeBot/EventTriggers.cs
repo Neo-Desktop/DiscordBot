@@ -246,7 +246,7 @@ namespace StarsiegeBot
         }
         public Task GuildMemberAdded(DiscordClient d, GuildMemberAddEventArgs e)
         {
-            d.Logger.LogDebug(BotEventId, $"GuildMemberAdded.{e.Guild.Name}");
+            d.Logger.LogDebug(BotEventId, $"GuildMemberAdded.");
             if (e.Member.IsBot)
             {
                 return Task.CompletedTask;
@@ -255,15 +255,12 @@ namespace StarsiegeBot
             string gId = e.Guild.Id.ToString();
             if (BotSettings.GuildSettings[gId].UseWelcome)
             {
-                if (BotSettings.GuildSettings[gId].WelcomeChannel is null)
-                { }
-                else
+                if (!(BotSettings.GuildSettings[gId].WelcomeChannel is null))
                 {
-                    if (BotSettings.GuildSettings[gId].WelcomeMessage is null)
-                    { }
-                    else
+                    if (!(BotSettings.GuildSettings[gId].WelcomeMessage is null))
                     {
-                        BotSettings.GuildSettings[gId].WelcomeChannel.SendMessageAsync(BotSettings.GuildSettings[gId].WelcomeMessage);
+                        string msg = WelcomeMessage.WelcomeMessageProcessing(BotSettings.GuildSettings[gId].WelcomeMessage, e.Member, e.Guild);
+                        BotSettings.GuildSettings[gId].WelcomeChannel.SendMessageAsync(msg);
                     }
                 }
             }

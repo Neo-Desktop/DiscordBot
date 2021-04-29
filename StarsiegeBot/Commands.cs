@@ -6,6 +6,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using System.Text.RegularExpressions;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace StarsiegeBot
 {
@@ -14,35 +15,103 @@ namespace StarsiegeBot
         // this class depends a lot on the random stuff. so make it class level.
         private readonly Random rnd = new Random();
 
-        // start: neo wanted this shit....
-        private readonly string[] insult = {
-            "> {0} slaps {1} around a bit with a large trout.",
-            "> {0} puts a jellyfish on {1}'s head.",
-            "> {0} slaps {1} around a bit with the mustache of Caanon.",
-            "> {0} slaps {1} around a bit with a questionable rubber object.",
-            "> {0} slaps {1} around a bit with a rubber chicken."
+        // Master insult list.
+        private readonly string[] InsultMaster = {
+            "{0} slaps {1} around a bit with a large trout.",
+            "{0} puts a jellyfish on {1}'s head.",
+            "{0} slaps {1} around a bit with the mustache of Caanon.",
+            "{0} slaps {1} around a bit with a questionable rubber object.",
+            "{0} slaps {1} around a bit with a rubber chicken."
         };
-        private uint insultIndex;
-        public string Insult {
-            get {
-                if (insultIndex >= insult.Length) {
-                    insultIndex = 0;
-                }
-                return insult[insultIndex++ % insult.Length];
-            }
-        }
-        // end: neo's shit.
+        private List<string> InsultCopy;
 
         public Commands()
         {
             // Let the console know we've loaded basic commands.
             Console.WriteLine("Basic Commands Loaded");
+            InsultCopy = InsultMaster.ToList<string>();
         }
+        [Command("8ball"), Aliases(new String[] { "ball", "8" })]
+        [Description("The Magic 8-Ball is a fortune-telling or seeking advice")]
+        public async Task Eightball(CommandContext ctx, [RemainingText, Description("Your question to the 8 ball")] String remainingText = "")
+        {
+            await ctx.TriggerTypingAsync();
+            // Load all the traditional 8-Ball answers into an array.
+            string[] results = new string[] { "It is certain.", "It is decidedly so.", "Without a doubt.", "Yes - definitely.", "You may rely on it.", "As I see it, yes.", "Most likely.", "Outlook good.", "Yes.", "Signs point to yes.", "Reply hazy, try again", "Ask again later.", "Better not tell you now.", "Cannot predict now.", "Concentrate and ask again.", "Don't count on it.", "My reply is no.", "My sources say no", "Outlook not so good.", "Very doubtful." };
+            // give the end user the randomly choosen result.
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Description = results[rnd.Next(0, results.Length)],
+                Color = Program.colours[rnd.Next(0, Program.colours.Length)]
+            };
+            await ctx.RespondAsync(embed);
+        }
+        [Command("about")]
+        [Description("Gives some basic info about the bot")]
+        public async Task About(CommandContext ctx)
+        {
+            await ctx.TriggerTypingAsync();
+            // delcare an embed builder.
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
+            // Title the ebemd with the bot's name and discrim.
+            embed.WithTitle("About " + ctx.Client.CurrentUser.Username + "#" + ctx.Client.CurrentUser.Discriminator);
+            // add the bot's avatar as the Thumbnail.
+            embed.WithThumbnail(ctx.Client.CurrentUser.GetAvatarUrl(DSharpPlus.ImageFormat.Png, 32));
+            // Add a bit of color... the color from the member's top most role.
+            embed.WithColor(ctx.Member.Color);
+            // output various data abotu the bot.
+            embed.AddField("D#+ Ver", ctx.Client.VersionString, true);
+            embed.AddField("Guild Count", ctx.Client.Guilds.Count.ToString(), true);
+            embed.AddField("Ping", ctx.Client.Ping.ToString(), true);
+            embed.AddField("Shard Count", ctx.Client.ShardCount.ToString(), true);
+            embed.AddField("Shard", ctx.Client.ShardId.ToString(), true);
+            embed.Color = Program.colours[rnd.Next(0, Program.colours.Length)];
+            // list all the owners of the bot.
+            string owners = "";
+            foreach (DiscordUser owner in ctx.Client.CurrentApplication.Owners)
+            {
+                owners += owner.Username + "#" + owner.Discriminator + "\r\n";
+            }
 
+            embed.AddField("Owner(s)", owners, false);
+            // send the data to the end user.
+            await ctx.RespondAsync(embed);
+        }
+        [Command("coin")]
+        [Description("Flips a coin for ya!")]
+        public async Task Coinflip(CommandContext ctx)
+        {
+            // We're going to randomly select heads or tails and then give it to the user.
+            await ctx.TriggerTypingAsync();
+            string[] choices = { "heads", "tails" };
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Description = "The coin landed on... " + choices[rnd.Next(0, choices.Length)],
+                Color = Program.colours[rnd.Next(0, Program.colours.Length)]
+            };
+            await ctx.RespondAsync(embed);
+        }
+        [Command("credits")]
+        [Description("Shows all those that have helped with my bot(s) over the years!")]
+        public async Task Credits(CommandContext ctx)
+        {
+            await ctx.TriggerTypingAsync();
+            // just some people that have helped me build the bot.
+            string credits = "```asciidoc\r\n= CREDITS (Outdated) =\r\n" +
+                "• UndeadShadow            :: Flood Protection. Keepign teh bot from killing itself, and others.\r\n" +
+                "• Da_D_Master             :: For giving me my start in my first couple bots, and being a friendly rival.\r\n" +
+                "• ThinkExist & Bored.com  :: Quotes for the Quote Database\r\n" +
+                "• Hanibal, TaMeD, Liquid- :: For awlays proving the points of others.\r\n" +
+                "• Neo                     :: For all their hard work on all the things I've ever asked about.\r\n" +
+                "• Alias                   :: For helping me learn how to make IRC bots back in the day.\r\n" +
+                "• Drake, Eledore          :: Supporting the development of the bot and supplying code for it.\r\n" +
+                "\r\n```";
+            await ctx.RespondAsync(credits);
+        }
         [Command("dice"), Aliases("r", "d", "roll")]
         [Description("A classic dice throwing command. Limited to 1 use per 2 seconds. Format: <NumberOfDice>d<SidesOnDie> ")]
         [Cooldown(1, 2, CooldownBucketType.Guild)]
-        public async Task Dice(CommandContext ctx, [RemainingText,Description("XdY")] String throwing = "d")
+        public async Task Dice(CommandContext ctx, [RemainingText, Description("XdY")] String throwing = "d")
         {
             // let the end user know the bot is doing something...
             await ctx.TriggerTypingAsync();
@@ -95,7 +164,7 @@ namespace StarsiegeBot
                         dieResult += roll;
                     }
                     // If the end user is rolling more than 10 of any kind of die, dont show the results of the rolls. Just 
-                    if(volume < 11)
+                    if (volume < 11)
                         dieResults = $"{volume}d{sides}: Total: " + dieResult + " Avg: " + Math.Round(dieResult * 1.0 / volume, 2) + " Results: " + dieResults;
                     else
                         dieResults = $"{volume}d{sides}: Total: " + dieResult + " Avg: " + Math.Round(dieResult * 1.0 / volume, 2);
@@ -108,7 +177,6 @@ namespace StarsiegeBot
             else
                 await ctx.RespondAsync(overallResults);
         }
-
         [Command("random")]
         [Description("Random number generator.")]
         public async Task Random(CommandContext ctx, [Description("Lowest number choice. (Inclusive)")] int min, [Description("Highest Number Choice. (Inclusive)")] int max)
@@ -119,53 +187,91 @@ namespace StarsiegeBot
             int i = Math.Min(min, max);
             int a = Math.Max(min, max) + 1;
             // output the results
-            await ctx.RespondAsync($"🎲 Your random number is: {rnd.Next(i, a)}");
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Description = $"🎲 Your random number is: {rnd.Next(i, a)}",
+                Color = Program.colours[rnd.Next(0, Program.colours.Length)]
+            };
+            await ctx.RespondAsync(embed);
         }
-
         [Command("random")]
         public async Task Random(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
             // some one didn't read the HELP file on Random. Explain it to them.
-            await ctx.RespondAsync($"Gives you a random number between <Option 1> and <Option 2> Try someething like `random 3 30`!");
-        }
-
-        [Command("8ball"), Aliases(new String[] { "ball", "8" })]
-        [Description("The Magic 8-Ball is a fortune-telling or seeking advice")]
-        public async Task Eightball(CommandContext ctx, [RemainingText, Description("Your question to the 8 ball")] String remainingText = "")
-        {
-            await ctx.TriggerTypingAsync();
-            // Load all the traditional 8-Ball answers into an array.
-            string[] results = new string[] { "It is certain.", "It is decidedly so.", "Without a doubt.", "Yes - definitely.", "You may rely on it.", "As I see it, yes.", "Most likely.", "Outlook good.", "Yes.", "Signs point to yes.", "Reply hazy, try again", "Ask again later.", "Better not tell you now.", "Cannot predict now.", "Concentrate and ask again.", "Don't count on it.", "My reply is no.", "My sources say no", "Outlook not so good.", "Very doubtful." };
-            // give the end user the randomly choosen result.
-            await ctx.RespondAsync(results[rnd.Next(0, results.Length)]);
-        }
-
-        [Command("slap")]
-        public async Task Slap(CommandContext ctx, DiscordMember user = null)
-        {
-            await ctx.TriggerTypingAsync();
-            // we're going to find out who we're slapping. Declare their place holders now.
-            string user1;
-            string user2;
-
-            // If we have some one not slapping some one, or they're trying to slap themself, the one getting slapped is the 
-            // author, the one doing the slapping is the bot.
-            if (user == null || user.Mention == ctx.Message.Author.Mention)
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
             {
-                user1 = ctx.Client.CurrentUser.Mention;
-                user2 = ctx.Message.Author.Mention;
+                Description = $"Gives you a random number between <Option 1> and <Option 2> Try someething like `random 3 30`!",
+                Color = Program.colours[rnd.Next(0, Program.colours.Length)]
+            };
+            await ctx.RespondAsync(embed);
+        }
+        [Command("rps")]
+        [Description("Rock Paper Scissors")]
+        public async Task Rps(CommandContext ctx, [RemainingText, Description("Your choice of hand sign to  use.")] string text = "")
+        {
+            await ctx.TriggerTypingAsync();
+            /* --- THIS FUNCTION IS A COPY AND PASTE OF RPSLS. AND ALL LOGIC IS IDENTICAL TO IT. PLEASE REFER TO THAT METHOD. ---
+            // --- THIS FUNCTION IS A COPY AND PASTE OF RPSLS. AND ALL LOGIC IS IDENTICAL TO IT. PLEASE REFER TO THAT METHOD. ---
+            // --- THIS FUNCTION IS A COPY AND PASTE OF RPSLS. AND ALL LOGIC IS IDENTICAL TO IT. PLEASE REFER TO THAT METHOD. --- */
+            string[] choices = new string[] { "rock", "paper", "scissors" };
+            text = text.ToLower();
+            string botChoice = choices[rnd.Next(0, choices.Length)];
+            string result;
+
+            if (text.Equals(""))
+            {
+                result = "I'm handing you a";
+                switch (botChoice)
+                {
+                    case "rock":
+                        result += " shiny rock.";
+                        break;
+                    case "paper":
+                        result += " crumpled paper.";
+                        break;
+                    case "scissors":
+                        result += " set of child proof scissors.";
+                        break;
+                }
+                DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+                {
+                    Description = result,
+                    Color = Program.colours[rnd.Next(0, Program.colours.Length)]
+                };
+                await ctx.RespondAsync(embed);
             }
-            // We're attempting to slap user that isn't the author... Lets do it!
             else
             {
-                user1 = ctx.Message.Author.Mention;
-                user2 = user.Mention;
+                if (choices.Contains(text))
+                {
+                    if (((botChoice == "scissors") && (text == "paper")) ||
+                        ((botChoice == "paper") && (text == "rock")) ||
+                        ((botChoice == "rock") && (text == "scissors")))
+                    {
+                        result = $"{botChoice} beats {text}. I'm sorry about this.";
+                    }
+                    else if (text.Equals(botChoice))
+                    {
+                        result = $"We both picked {text}, looks like we drew, go again?";
+                    }
+                    else
+                    {
+                        result = $"{text} beats {botChoice}. **YOU WIN!!**";
+                    }
+                }
+                else
+                {
+                    result = "Please pick a valid option! Options: " + String.Join(", ", choices);
+                }
+                DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+                {
+                    Description = result,
+                    Color = Program.colours[rnd.Next(0, Program.colours.Length)]
+                };
+                await ctx.RespondAsync(embed);
             }
-            // pick a random insult, and populate the names correctly.
-            await ctx.RespondAsync(string.Format(Insult, user1, user2));
         }
-
         [Command("rpsls")]
         [Description("Rock Paper Scissors Lizard Spock")]
         public async Task Rpsls(CommandContext ctx, [RemainingText, Description("Your choice of hand sign to  use.")] string text = "")
@@ -203,7 +309,12 @@ namespace StarsiegeBot
                         break;
                 }
                 // tell the user we're giving them a thing.
-                await ctx.RespondAsync(result);
+                DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+                {
+                    Description = result,
+                    Color = Program.colours[rnd.Next(0, Program.colours.Length)]
+                };
+                await ctx.RespondAsync(embed);
             }
             // the end user actually wants to throw down... Lets go!
             else
@@ -241,127 +352,14 @@ namespace StarsiegeBot
                     result = "Please pick a valid option! Options: " + String.Join(", ", choices);
                 }
                 // Actually send out all our info now.
-                await ctx.RespondAsync(result);
-            }
-        }
-
-        [Command("rps")]
-        [Description("Rock Paper Scissors")]
-        public async Task Rps(CommandContext ctx, [RemainingText, Description("Your choice of hand sign to  use.")] string text = "")
-        {
-            await ctx.TriggerTypingAsync();
-            /* --- THIS FUNCTION IS A COPY AND PASTE OF RPSLS. AND ALL LOGIC IS IDENTICAL TO IT. PLEASE REFER TO THAT METHOD. ---
-            // --- THIS FUNCTION IS A COPY AND PASTE OF RPSLS. AND ALL LOGIC IS IDENTICAL TO IT. PLEASE REFER TO THAT METHOD. ---
-            // --- THIS FUNCTION IS A COPY AND PASTE OF RPSLS. AND ALL LOGIC IS IDENTICAL TO IT. PLEASE REFER TO THAT METHOD. --- */
-            string[] choices = new string[] { "rock", "paper", "scissors" };
-            text = text.ToLower();
-            string botChoice = choices[rnd.Next(0, choices.Length)];
-            string result;
-
-            if (text.Equals(""))
-            {
-                result = "I'm handing you a";
-                switch (botChoice)
+                DiscordEmbedBuilder embed = new DiscordEmbedBuilder
                 {
-                    case "rock":
-                        result += " shiny rock.";
-                        break;
-                    case "paper":
-                        result += " crumpled paper.";
-                        break;
-                    case "scissors":
-                        result += " set of child proof scissors.";
-                        break;
-                }
-                await ctx.RespondAsync(result);
-            }
-            else
-            {
-                if (choices.Contains(text))
-                {
-                    if (((botChoice == "scissors") && (text == "paper")) ||
-                        ((botChoice == "paper") && (text == "rock")) ||
-                        ((botChoice == "rock") && (text == "scissors")))
-                    {
-                        result = $"{botChoice} beats {text}. I'm sorry about this.";
-                    }
-                    else if (text.Equals(botChoice))
-                    {
-                        result = $"We both picked {text}, looks like we drew, go again?";
-                    }
-                    else
-                    {
-                        result = $"{text} beats {botChoice}. **YOU WIN!!**";
-                    }
-                }
-                else
-                {
-                    result = "Please pick a valid option! Options: " + String.Join(", ", choices);
-                }
-                await ctx.RespondAsync(result);
+                    Description = result,
+                    Color = Program.colours[rnd.Next(0, Program.colours.Length)]
+                };
+                await ctx.RespondAsync(embed);
             }
         }
-
-        [Command("about")]
-        [Description("Gives some basic info about the bot")]
-        public async Task About(CommandContext ctx)
-        {
-            await ctx.TriggerTypingAsync();
-            // delcare an embed builder.
-            DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
-            // Title the ebemd with the bot's name and discrim.
-            embed.WithTitle("About " + ctx.Client.CurrentUser.Username + "#" + ctx.Client.CurrentUser.Discriminator);
-            // add the bot's avatar as the Thumbnail.
-            embed.WithThumbnail(ctx.Client.CurrentUser.GetAvatarUrl(DSharpPlus.ImageFormat.Png, 32));
-            // Add a bit of color... the color from the member's top most role.
-            embed.WithColor(ctx.Member.Color);
-            // output various data abotu the bot.
-            embed.AddField("D#+ Ver", ctx.Client.VersionString, true);
-            embed.AddField("Guild Count", ctx.Client.Guilds.Count.ToString(), true);
-            embed.AddField("Ping", ctx.Client.Ping.ToString(), true);
-            embed.AddField("Shard Count", ctx.Client.ShardCount.ToString(), true);
-            embed.AddField("Shard", ctx.Client.ShardId.ToString(), true);
-
-            // list all the owners of the bot.
-            string owners = "";
-            foreach (DiscordUser owner in ctx.Client.CurrentApplication.Owners)
-            {
-                owners += owner.Username + "#" + owner.Discriminator+"\r\n";
-            }
-
-            embed.AddField("Owner(s)", owners, false);
-            // send the data to the end user.
-            await ctx.RespondAsync(embed);
-        }
-
-        [Command("credits")]
-        [Description("Shows all those that have helped with my bot(s) over the years!")]
-        public async Task Credits(CommandContext ctx)
-        {
-            await ctx.TriggerTypingAsync();
-            // just some people that have helped me build the bot.
-            string credits = "```asciidoc\r\n= CREDITS (Outdated) =\r\n" +
-                "• UndeadShadow            :: Flood Protection. Keepign teh bot from killing itself, and others.\r\n" +
-                "• Da_D_Master             :: For giving me my start in my first couple bots, and being a friendly rival.\r\n" +
-                "• ThinkExist & Bored.com  :: Quotes for the Quote Database\r\n" +
-                "• Hanibal, TaMeD, Liquid- :: For awlays proving the points of others.\r\n" +
-                "• Neo                     :: For all their hard work on all the things I've ever asked about.\r\n" +
-                "• Alias                   :: For helping me learn how to make IRC bots back in the day.\r\n" +
-                "• Drake, Eledore          :: Supporting the development of the bot and supplying code for it.\r\n" +
-                "\r\n```";
-            await ctx.RespondAsync(credits);
-        }
-
-        [Command("coin")]
-        [Description("Flips a coin for ya!")]
-        public async Task Coinflip(CommandContext ctx)
-        {
-            // We're going to randomly select heads or tails and then give it to the user.
-            await ctx.TriggerTypingAsync();
-            string[] choices = { "heads", "tails" };
-            await ctx.RespondAsync("The coin landed on... " + choices[rnd.Next(0, choices.Length)]);
-        }
-
         [Command("say")]
         [Description("Make the bot say something, perhaps silly?!")]
         public async Task MsgSay(CommandContext ctx, [RemainingText, Description("The stuff you want the bot to say.")] string msg = "")
@@ -371,10 +369,53 @@ namespace StarsiegeBot
                 return;
             await ctx.TriggerTypingAsync();
             // did the end user supply us something to say? no whine about it.
+            string result;
             if (msg != "")
-                await ctx.RespondAsync(msg);
+                result = msg;
             else
-                await ctx.RespondAsync("I need something to say...");
+                result ="I need something to say...";
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Description = result,
+                Color = Program.colours[rnd.Next(0, Program.colours.Length)]
+            };
+            await ctx.RespondAsync(embed);
+        }
+        [Command("slap")]
+        public async Task Slap(CommandContext ctx, DiscordMember user = null)
+        {
+            await ctx.TriggerTypingAsync();
+            // we're going to find out who we're slapping. Declare their place holders now.
+            string user1;
+            string user2;
+
+            // If we have some one not slapping some one, or they're trying to slap themself, the one getting slapped is the 
+            // author, the one doing the slapping is the bot.
+            if (user == null || user.Mention == ctx.Message.Author.Mention)
+            {
+                user1 = ctx.Client.CurrentUser.Mention;
+                user2 = ctx.Message.Author.Mention;
+            }
+            // We're attempting to slap user that isn't the author... Lets do it!
+            else
+            {
+                user1 = ctx.Message.Author.Mention;
+                user2 = user.Mention;
+            }
+            // pick a random insult, and populate the names correctly.
+            int randInt = rnd.Next(0, InsultCopy.Count);
+
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Description = string.Format(InsultCopy[randInt], user1, user2),
+                Color = Program.colours[rnd.Next(0, Program.colours.Length)]
+            };
+            await ctx.RespondAsync(embed);
+            InsultCopy.RemoveAt(randInt);
+            if (InsultCopy.Count == 0)
+            {
+                InsultCopy = InsultMaster.ToList<string>();
+            }
         }
     }
 }

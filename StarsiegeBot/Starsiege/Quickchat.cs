@@ -186,6 +186,7 @@ namespace StarsiegeBot
         }
 
         [Command("search"), Aliases("s")]
+        [Cooldown(1,5,CooldownBucketType.Global)]
         [Description("Searches all the [T]ext and [S]ound file names for the Search input.")]
         public async Task SearchQuickChats(CommandContext ctx, [RemainingText,Description("What to search for.")] string toSearch)
         {
