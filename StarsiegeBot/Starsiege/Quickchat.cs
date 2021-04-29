@@ -23,7 +23,6 @@ namespace StarsiegeBot
     class Quickchat : BaseCommandModule
     {
         private List<Quickchats> Quickchats;
-        private readonly Random rnd = new Random();
         private bool QuickChatsEnabled;
 
         public Quickchat()
@@ -154,7 +153,7 @@ namespace StarsiegeBot
                 id = Math.Abs(id);
             if (id == -1 || id > Quickchats.Count)
             {
-                int idnum = rnd.Next(Quickchats.Count);
+                int idnum = Program.rnd.Next(Quickchats.Count);
                 chat = Quickchats[idnum];
                 msg.Content = $"[{idnum}] " + chat.text;
             }

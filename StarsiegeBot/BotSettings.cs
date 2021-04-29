@@ -18,8 +18,6 @@ namespace StarsiegeBot
     class BotSettings : BaseCommandModule
     {
         public static Dictionary<string, GuildSettings> GuildSettings;
-
-        
         public BotSettings()
         {
             Console.WriteLine("Bot Setting Commands Loaded");

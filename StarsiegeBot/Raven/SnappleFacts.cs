@@ -8,8 +8,7 @@ namespace StarsiegeBot
 {
     class SnappleFacts : BaseCommandModule
     {
-        private string[] facts;
-        private Random rnd = new Random();
+        private readonly string[] facts;
 
         [Command("snapple"), Description("Get a Snapple \"Real Fact\".")]
         public async Task Snapplefact(CommandContext ctx, [Description("[Optional] A Snapple Fact ID")]int snapId = -1)
@@ -17,7 +16,7 @@ namespace StarsiegeBot
             if (snapId == -1)
             {
                 await ctx.TriggerTypingAsync();
-                await ctx.RespondAsync(facts[rnd.Next(0, facts.Length)]);
+                await ctx.RespondAsync(facts[Program.rnd.Next(0, facts.Length)]);
             }
             else
             {

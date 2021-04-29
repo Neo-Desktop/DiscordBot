@@ -65,9 +65,11 @@ namespace StarsiegeBot
             {
                 return;
             }
-            DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
-            embed.Title = "Master|Game Server Overview";
-            embed.Description = "Number of Master, and Game servers. Along with number of errors.";
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Title = "Master|Game Server Overview",
+                Description = "Number of Master, and Game servers. Along with number of errors."
+            };
             embed.AddField("Masters", gameData.Masters.Length.ToString(),true);
             embed.AddField("Games", gameData.Games.Length.ToString(),true);
             embed.AddField("Errors", gameData.Errors.Length.ToString(),true);
@@ -91,8 +93,10 @@ namespace StarsiegeBot
             {
                 return;
             }
-            DiscordMessageBuilder msg = new DiscordMessageBuilder();
-            msg.Content = "Server Listing Errors:\r\n";
+            DiscordMessageBuilder msg = new DiscordMessageBuilder
+            {
+                Content = "Server Listing Errors:\r\n"
+            };
             foreach (var item in gameData.Errors)
             {
                 msg.Content += $"{item}\r\n";
@@ -117,8 +121,10 @@ namespace StarsiegeBot
             {
                 return;
             }
-            DiscordMessageBuilder msg = new DiscordMessageBuilder();
-            msg.Content = "```csharp\r\n";
+            DiscordMessageBuilder msg = new DiscordMessageBuilder
+            {
+                Content = "```csharp\r\n"
+            };
             int count = 0;
             foreach (var item in gameData.Masters)
             {

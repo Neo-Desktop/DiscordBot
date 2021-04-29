@@ -58,16 +58,11 @@ namespace StarsiegeBot
             // Check if message has valid prefix.
             // json file loaded...
             int cmdStart = msg.GetStringPrefixLength("!");
-
-            // if Guild is null, do nothing for now.
-            if (e.Guild is null)
-            {
-
-            }
-            else
+            List<string> prefixes = BotSettings.GuildSettings["default"].Prefixes;
+            prefixes.Add(d.CurrentUser.Mention);
+            if (!(e.Guild is null))
             {
                 string gId = e.Guild.Id.ToString();
-                List<string> prefixes = BotSettings.GuildSettings["default"].Prefixes;
                 // Check to see if the guild has settings.
                 if (BotSettings.GuildSettings.ContainsKey(gId))
                 {
@@ -83,27 +78,25 @@ namespace StarsiegeBot
                         prefixes = BotSettings.GuildSettings[gId].Prefixes;
                     }
                 }
-
-                // check each prefix. break on the one that is evoked.
-                foreach (string item in prefixes)
-                {
-                    cmdStart = msg.GetStringPrefixLength(item);
-                    if (cmdStart != -1) break;
-                }
-                // we didn't find a command prefix... Break.
-                if (cmdStart == -1) return Task.CompletedTask;
-
-                // Retrieve prefix.
-                var prefix = msg.Content.Substring(0, cmdStart);
-                var cmdString = msg.Content[cmdStart..];
-
-                // Retrieve full command string.
-                var command = cnext.FindCommand(cmdString, out var args);
-                if (command == null) return Task.CompletedTask;
-
-                var ctx = cnext.CreateContext(msg, prefix, command, args);
-                Task.Run(async () => await cnext.ExecuteCommandAsync(ctx));
             }
+            foreach (string item in prefixes)
+            {
+                cmdStart = msg.GetStringPrefixLength(item);
+                if (cmdStart != -1) break;
+            }
+            // we didn't find a command prefix... Break.
+            if (cmdStart == -1) return Task.CompletedTask;
+
+            // Retrieve prefix.
+            var prefix = msg.Content.Substring(0, cmdStart);
+            var cmdString = msg.Content[cmdStart..];
+
+            // Retrieve full command string.
+            var command = cnext.FindCommand(cmdString, out var args);
+            if (command == null) return Task.CompletedTask;
+
+            var ctx = cnext.CreateContext(msg, prefix, command, args);
+            Task.Run(async () => await cnext.ExecuteCommandAsync(ctx));
 
             return Task.CompletedTask;
         }
@@ -231,7 +224,9 @@ namespace StarsiegeBot
         public Task GuildDownloadCompleted(DiscordClient d, GuildDownloadCompletedEventArgs e)
         {
             d.Logger.LogDebug(BotEventId, "GuildDownloadCompleted.");
-            notify = e.Guilds[376937422010974209].Members[139548200099905536];
+            //if(e.Guilds[376937422010974209].Members.ContainsKey(139548200099905536))
+                //notify = e.Guilds[376937422010974209].Members[139548200099905536];
+
             return Task.CompletedTask;
         }
         public Task GuildEmojisUpdated(DiscordClient d, GuildEmojisUpdateEventArgs e)
@@ -253,16 +248,12 @@ namespace StarsiegeBot
             }
 
             string gId = e.Guild.Id.ToString();
-            if (BotSettings.GuildSettings[gId].UseWelcome)
+            if (BotSettings.GuildSettings[gId].UseWelcome &&
+                !(BotSettings.GuildSettings[gId].WelcomeChannel is null) &&
+                !(BotSettings.GuildSettings[gId].WelcomeMessage is null))
             {
-                if (!(BotSettings.GuildSettings[gId].WelcomeChannel is null))
-                {
-                    if (!(BotSettings.GuildSettings[gId].WelcomeMessage is null))
-                    {
-                        string msg = WelcomeMessage.WelcomeMessageProcessing(BotSettings.GuildSettings[gId].WelcomeMessage, e.Member, e.Guild);
-                        BotSettings.GuildSettings[gId].WelcomeChannel.SendMessageAsync(msg);
-                    }
-                }
+                string msg = WelcomeMessage.WelcomeMessageProcessing(BotSettings.GuildSettings[gId].WelcomeMessage, e.Member, e.Guild);
+                BotSettings.GuildSettings[gId].WelcomeChannel.SendMessageAsync(msg);
             }
             
             return Task.CompletedTask;

@@ -69,7 +69,7 @@ namespace StarsiegeBot
             if (args.Length > 0)
                 BotName = args[0].ToLower();
             else
-                BotName = "raven";
+                BotName = "sspdev";
 
             BotEventId = new EventId(276, BotName);
             Events = new Triggers(BotEventId);

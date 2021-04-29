@@ -27,6 +27,40 @@ namespace StarsiegeBot
     [RequireGuild, RequirePermissions(Permissions.ManageChannels)]
     class WelcomeMessage : BotSettings
     {
+        [GroupCommand]
+        public async Task GeneralWelcome (CommandContext ctx)
+        {
+            await ctx.TriggerTypingAsync();
+            string gId = ctx.Guild.Id.ToString();
+
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Description = "Welcome Message Info",
+                Color = Program.colours[0]
+            };
+            if (GuildSettings[gId].WelcomeChannel is null)
+                embed.AddField("Channel", "*None*");
+            else
+                embed.AddField("Channel", GuildSettings[gId].WelcomeChannel.Mention, true);
+            embed.AddField("Enabled?", GuildSettings[gId].UseWelcome.ToString(), true);
+            if (GuildSettings[gId].WelcomeMessage is null || GuildSettings[gId].WelcomeMessage == "")
+                embed.AddField("Message", "*None*");
+            else
+                embed.AddField("Message", GuildSettings[gId].WelcomeMessage);
+            await ctx.RespondAsync(embed);
+        }
+        [GroupCommand]
+        public async Task GeneralWelcome(CommandContext ctx, bool enable, DiscordChannel channel)
+        {
+            await WelcomeChannel(ctx, channel);
+            await WelcomeEnabled(ctx, enable);
+        }
+        [GroupCommand]
+        public async Task GeneralWelcome(CommandContext ctx, DiscordChannel channel, bool enable)
+        {
+            await WelcomeChannel(ctx, channel);
+            await WelcomeEnabled(ctx, enable);
+        }
         [Command("enable")]
         public async Task WelcomeEnabled(CommandContext ctx, bool enable)
         {
@@ -43,7 +77,6 @@ namespace StarsiegeBot
             embed.AddField("New", GuildSettings[gId].UseWelcome.ToString(), true);
             await ctx.RespondAsync(embed);
         }
-
         [Command("Channel")]
         public async Task WelcomeChannel(CommandContext ctx, DiscordChannel channel)
         {
@@ -67,7 +100,6 @@ namespace StarsiegeBot
             embed.AddField("New", GuildSettings[gId].WelcomeChannel.Mention, true);
             await ctx.RespondAsync(embed);
         }
-
         [Command("Channel")]
         public async Task WelcomeChannel(CommandContext ctx, [RemainingText]string here)
         {
@@ -91,8 +123,6 @@ namespace StarsiegeBot
             embed.AddField("New", GuildSettings[gId].WelcomeChannel.Mention, true);
             await ctx.RespondAsync(embed);
         }
-
-
         [Command("Message")]
         [Description("Hello. Run `>welcome help` for more info.")]
         public async Task MessageOfWelcome(CommandContext ctx, [RemainingText]string msg)
@@ -120,7 +150,6 @@ namespace StarsiegeBot
             Console.WriteLine("7");
             await ctx.RespondAsync($"An example:\r\n> {example}", embed);
         }
-
         [Command("Help")]
         public async Task WelcomeHelp(CommandContext ctx)
         {

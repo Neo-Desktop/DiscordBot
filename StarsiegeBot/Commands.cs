@@ -12,9 +12,6 @@ namespace StarsiegeBot
 {
     class Commands : BaseCommandModule
     {
-        // this class depends a lot on the random stuff. so make it class level.
-        private readonly Random rnd = new Random();
-
         // Master insult list.
         private readonly string[] InsultMaster = {
             "{0} slaps {1} around a bit with a large trout.",
@@ -41,8 +38,8 @@ namespace StarsiegeBot
             // give the end user the randomly choosen result.
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder
             {
-                Description = results[rnd.Next(0, results.Length)],
-                Color = Program.colours[rnd.Next(0, Program.colours.Length)]
+                Description = results[Program.rnd.Next(0, results.Length)],
+                Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
             };
             await ctx.RespondAsync(embed);
         }
@@ -65,7 +62,7 @@ namespace StarsiegeBot
             embed.AddField("Ping", ctx.Client.Ping.ToString(), true);
             embed.AddField("Shard Count", ctx.Client.ShardCount.ToString(), true);
             embed.AddField("Shard", ctx.Client.ShardId.ToString(), true);
-            embed.Color = Program.colours[rnd.Next(0, Program.colours.Length)];
+            embed.Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)];
             // list all the owners of the bot.
             string owners = "";
             foreach (DiscordUser owner in ctx.Client.CurrentApplication.Owners)
@@ -86,8 +83,8 @@ namespace StarsiegeBot
             string[] choices = { "heads", "tails" };
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder
             {
-                Description = "The coin landed on... " + choices[rnd.Next(0, choices.Length)],
-                Color = Program.colours[rnd.Next(0, Program.colours.Length)]
+                Description = "The coin landed on... " + choices[Program.rnd.Next(0, choices.Length)],
+                Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
             };
             await ctx.RespondAsync(embed);
         }
@@ -153,7 +150,7 @@ namespace StarsiegeBot
                         // this is the result.
                         // This line looks weird, I know, so here is what is going on. If the number of sides is negative, we adjust for that.
                         // since the rnd.Next is inclusive, exclusive, we have to adjust for that.
-                        int roll = rnd.Next(Math.Min(1, sides), Math.Max(sides + 1, 0));
+                        int roll = Program.rnd.Next(Math.Min(1, sides), Math.Max(sides + 1, 0));
                         // do we have our first result? No, make it! Store the results in a string to show the end user.
                         if (dieResults.Equals(String.Empty))
                             dieResults = roll.ToString();
@@ -177,6 +174,18 @@ namespace StarsiegeBot
             else
                 await ctx.RespondAsync(overallResults);
         }
+        [Command("guilds"),Hidden,RequireOwner]
+        public async Task GimmeServerNames (CommandContext ctx)
+        {
+            string output = "";
+            foreach (KeyValuePair<ulong,DiscordGuild> item in ctx.Client.Guilds)
+            {
+                output += item.Value.Name + "\r\n";
+            }
+            await ctx.RespondAsync(output);
+        }
+
+
         [Command("random")]
         [Description("Random number generator.")]
         public async Task Random(CommandContext ctx, [Description("Lowest number choice. (Inclusive)")] int min, [Description("Highest Number Choice. (Inclusive)")] int max)
@@ -189,8 +198,8 @@ namespace StarsiegeBot
             // output the results
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder
             {
-                Description = $"🎲 Your random number is: {rnd.Next(i, a)}",
-                Color = Program.colours[rnd.Next(0, Program.colours.Length)]
+                Description = $"🎲 Your random number is: {Program.rnd.Next(i, a)}",
+                Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
             };
             await ctx.RespondAsync(embed);
         }
@@ -202,7 +211,7 @@ namespace StarsiegeBot
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder
             {
                 Description = $"Gives you a random number between <Option 1> and <Option 2> Try someething like `random 3 30`!",
-                Color = Program.colours[rnd.Next(0, Program.colours.Length)]
+                Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
             };
             await ctx.RespondAsync(embed);
         }
@@ -216,7 +225,7 @@ namespace StarsiegeBot
             // --- THIS FUNCTION IS A COPY AND PASTE OF RPSLS. AND ALL LOGIC IS IDENTICAL TO IT. PLEASE REFER TO THAT METHOD. --- */
             string[] choices = new string[] { "rock", "paper", "scissors" };
             text = text.ToLower();
-            string botChoice = choices[rnd.Next(0, choices.Length)];
+            string botChoice = choices[Program.rnd.Next(0, choices.Length)];
             string result;
 
             if (text.Equals(""))
@@ -237,7 +246,7 @@ namespace StarsiegeBot
                 DiscordEmbedBuilder embed = new DiscordEmbedBuilder
                 {
                     Description = result,
-                    Color = Program.colours[rnd.Next(0, Program.colours.Length)]
+                    Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
                 };
                 await ctx.RespondAsync(embed);
             }
@@ -267,7 +276,7 @@ namespace StarsiegeBot
                 DiscordEmbedBuilder embed = new DiscordEmbedBuilder
                 {
                     Description = result,
-                    Color = Program.colours[rnd.Next(0, Program.colours.Length)]
+                    Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
                 };
                 await ctx.RespondAsync(embed);
             }
@@ -282,7 +291,7 @@ namespace StarsiegeBot
             // lets work in all lower case letters. makes life easier.
             text = text.ToLower();
             // make a choice for the bot.
-            string botChoice = choices[rnd.Next(0, choices.Length)];
+            string botChoice = choices[Program.rnd.Next(0, choices.Length)];
             // create a result string.
             string result;
 
@@ -312,7 +321,7 @@ namespace StarsiegeBot
                 DiscordEmbedBuilder embed = new DiscordEmbedBuilder
                 {
                     Description = result,
-                    Color = Program.colours[rnd.Next(0, Program.colours.Length)]
+                    Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
                 };
                 await ctx.RespondAsync(embed);
             }
@@ -355,7 +364,7 @@ namespace StarsiegeBot
                 DiscordEmbedBuilder embed = new DiscordEmbedBuilder
                 {
                     Description = result,
-                    Color = Program.colours[rnd.Next(0, Program.colours.Length)]
+                    Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
                 };
                 await ctx.RespondAsync(embed);
             }
@@ -377,7 +386,7 @@ namespace StarsiegeBot
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder
             {
                 Description = result,
-                Color = Program.colours[rnd.Next(0, Program.colours.Length)]
+                Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
             };
             await ctx.RespondAsync(embed);
         }
@@ -403,12 +412,12 @@ namespace StarsiegeBot
                 user2 = user.Mention;
             }
             // pick a random insult, and populate the names correctly.
-            int randInt = rnd.Next(0, InsultCopy.Count);
+            int randInt = Program.rnd.Next(0, InsultCopy.Count);
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder
             {
                 Description = string.Format(InsultCopy[randInt], user1, user2),
-                Color = Program.colours[rnd.Next(0, Program.colours.Length)]
+                Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
             };
             await ctx.RespondAsync(embed);
             InsultCopy.RemoveAt(randInt);
