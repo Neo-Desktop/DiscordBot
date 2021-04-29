@@ -211,6 +211,7 @@ namespace StarsiegeBot
             // We're going to build a message.
             StringBuilder sb = new StringBuilder();
             DiscordMessageBuilder msg = new DiscordMessageBuilder();
+            int count = 0;
             
             // We're going to search each QC for the stuff in toSearch.
             foreach (KeyValuePair<string, Quickchat> qc in quickchats)
@@ -220,30 +221,27 @@ namespace StarsiegeBot
                 {
                     // add it to the list!
                     sb.Append($"[{qc.Key}][T] {quickchats[qc.Key].text}\r\n");
+                    count++;
                 }
                 if (qc.Value.soundFile.ToLower().Contains(toSearch.ToLower()))
                 {
                     // add it to the list!
                     sb.Append($"[{qc.Key}][S] {quickchats[qc.Key].text}\r\n");
+                    count++;
                 }
             }
 
             // If we have a message return it
             if (sb.Length > 0)
             {
-                output = sb.ToString();
-
-                if (sb.Length >= 2000)
-                {
-                    output = "Here are your results.";
-                    MemoryStream mr = new MemoryStream(Encoding.UTF8.GetBytes(sb.ToString()));
-                    msg.WithFile("results.txt", mr, true);
-                }
+                output = $"{ctx.Member.Mention}, there were {count} total matches for `{toSearch}`.";
+                MemoryStream mr = new MemoryStream(Encoding.UTF8.GetBytes(sb.ToString()));
+                msg.WithFile($"{ctx.Member.DisplayName}_results.txt", mr, true);
             }
             else
             {
                 // If message content is still nothing, report we found nothing.
-                output = "No results found.";
+                output = $"Sorry {ctx.Member.Mention}, no results were found for `{toSearch}`.";
             }
 
             msg.Content = output;
