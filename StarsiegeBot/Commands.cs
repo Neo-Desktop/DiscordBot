@@ -344,7 +344,7 @@ namespace StarsiegeBot
                 "• UndeadShadow            :: Flood Protection. Keepign teh bot from killing itself, and others.\r\n" +
                 "• Da_D_Master             :: For giving me my start in my first couple bots, and being a friendly rival.\r\n" +
                 "• ThinkExist & Bored.com  :: Quotes for the Quote Database\r\n" +
-                "• Hanibal, TaMeD, Liquid- :: For awlays proving the points of others.\r\n" +
+                "• Hanibal, TaMeD, Liquid- :: For always proving the points of others.\r\n" +
                 "• Neo                     :: For all their hard work on all the things I've ever asked about.\r\n" +
                 "• Alias                   :: For helping me learn how to make IRC bots back in the day.\r\n" +
                 "• Drake, Eledore          :: Supporting the development of the bot and supplying code for it.\r\n" +

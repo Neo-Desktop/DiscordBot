@@ -129,7 +129,7 @@ namespace StarsiegeBot
             // All these commands are in the STARSIEGE folder.
             //if (BotName.Contains("ssp"))
             //{
-            this.Commands.RegisterCommands<Quickchat>();
+            this.Commands.RegisterCommands<QuickchatHandler>();
             this.Commands.RegisterCommands<Functions>();
             this.Commands.RegisterCommands<DeathMessages>();
             this.Commands.RegisterCommands<GameInfo>();
