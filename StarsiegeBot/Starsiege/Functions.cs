@@ -22,14 +22,6 @@ namespace StarsiegeBot
     [Group("functions"), Aliases("func")]
     class Functions : BaseCommandModule
     {
-        private readonly DiscordColor[] colours = { DiscordColor.Aquamarine, DiscordColor.Azure, DiscordColor.Black, DiscordColor.Blue, DiscordColor.Blurple,
-            DiscordColor.Brown, DiscordColor.Chartreuse, DiscordColor.CornflowerBlue, DiscordColor.Cyan, DiscordColor.DarkBlue, DiscordColor.DarkButNotBlack,
-            DiscordColor.DarkGray, DiscordColor.DarkGreen, DiscordColor.DarkRed, DiscordColor.Gold, DiscordColor.Goldenrod, DiscordColor.Gray, DiscordColor.Grayple,
-            DiscordColor.Green, DiscordColor.HotPink, DiscordColor.IndianRed, DiscordColor.LightGray, DiscordColor.Lilac, DiscordColor.Magenta, DiscordColor.MidnightBlue,
-            DiscordColor.None, DiscordColor.NotQuiteBlack, DiscordColor.Orange, DiscordColor.PhthaloBlue, DiscordColor.PhthaloGreen, DiscordColor.Purple, DiscordColor.Red,
-            DiscordColor.Rose, DiscordColor.SapGreen, DiscordColor.Sienna, DiscordColor.SpringGreen, DiscordColor.Teal, DiscordColor.Turquoise, DiscordColor.VeryDarkGray,
-            DiscordColor.Violet, DiscordColor.Wheat, DiscordColor.White, DiscordColor.Yellow };
-        private readonly Random rnd = new Random();
         private Dictionary<string, SSFunction> ssFunctions;
         private bool FunctionsEnabled;
 
@@ -101,7 +93,7 @@ namespace StarsiegeBot
                 // set the timestamp to now... why, idk, its not really needed actually.
                 embed.WithTimestamp(DateTime.Now);
                 // add a random color to the left side bar of the embed.
-                embed.WithColor(colours[rnd.Next(0, colours.Length)]);
+                embed.WithColor(Program.colours[Program.rnd.Next(0, Program.colours.Length)]);
                 // Message Description, I dont remember what it is any more, sorry!
                 embed.WithDescription(outItem.description);
                 // iterate over each field item, and add them to the embed.

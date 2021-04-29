@@ -23,7 +23,6 @@ namespace StarsiegeBot
     class QuickchatHandler : BaseCommandModule
     {
         private Dictionary<string, Quickchat> quickchats;
-        private readonly Random rnd = new Random();
         private bool IsQuickChatEnabled;
 
         public QuickchatHandler()
@@ -167,7 +166,7 @@ namespace StarsiegeBot
                 {
                     try
                     {
-                        id = rnd.Next(quickchats.Count);
+                        id = Program.rnd.Next(quickchats.Count);
                         chat = quickchats[id.ToString()];
                         output = $"[{id}] " + chat.text;
                     }
@@ -195,6 +194,7 @@ namespace StarsiegeBot
         }
 
         [Command("search"), Aliases("s")]
+        [Cooldown(1,5,CooldownBucketType.Global)]
         [Description("Searches all the [T]ext and [S]ound file names for the Search input.")]
         public async Task SearchQuickChats(CommandContext ctx, [RemainingText,Description("What to search for.")] string toSearch)
         {

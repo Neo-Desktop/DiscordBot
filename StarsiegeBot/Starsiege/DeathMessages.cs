@@ -25,7 +25,6 @@ namespace StarsiegeBot
     [Cooldown(1, 2, CooldownBucketType.Guild)]
     class DeathMessages : BaseCommandModule
     {
-        private readonly Random rnd = new Random();
         private DeathMessageLines dmLines;
         private bool DeathMessagesEnabled;
 
@@ -136,7 +135,7 @@ namespace StarsiegeBot
             // if there is no target, we're going to "kill" the author.
             if (target == null)
             {
-                int choice = rnd.Next(0, dmLines.Generic.Length);
+                int choice = Program.rnd.Next(0, dmLines.Generic.Length);
                 line = dmLines.Generic[choice];
                 await ctx.RespondAsync(string.Format(line, ctx.Message.Author.Mention));
             }
@@ -144,18 +143,18 @@ namespace StarsiegeBot
             else
             {
                 // Pick a death message type at random.
-                int opt = rnd.Next(1, 3);
+                int opt = Program.rnd.Next(1, 3);
                 // If we picked active death messages...
                 if (opt == 1)
                 {
                     // Pick an Active death message at random, and set our output to it.
-                    int choice = rnd.Next(0, dmLines.Active.Length);
+                    int choice = Program.rnd.Next(0, dmLines.Active.Length);
                     line = dmLines.Active[choice];
                 }
                 else if (opt == 2)
                 {
                     // We picked a Passive death message type. Pick the exact line at random. Set it to the output.
-                    int choice = rnd.Next(0, dmLines.Passive.Length);
+                    int choice = Program.rnd.Next(0, dmLines.Passive.Length);
                     line = dmLines.Passive[choice];
                 }
                 // Give the selected death message to the user.

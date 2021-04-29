@@ -20,12 +20,19 @@ namespace StarsiegeBot
     class Program
     {
         public readonly EventId BotEventId;
-        public  static Triggers Events;
-        
+        public static Triggers Events;
+        public static readonly DiscordColor[] colours = { DiscordColor.Aquamarine, DiscordColor.Azure, DiscordColor.Black, DiscordColor.Blue, DiscordColor.Blurple,
+            DiscordColor.Brown, DiscordColor.Chartreuse, DiscordColor.CornflowerBlue, DiscordColor.Cyan, DiscordColor.DarkBlue, DiscordColor.DarkButNotBlack,
+            DiscordColor.DarkGray, DiscordColor.DarkGreen, DiscordColor.DarkRed, DiscordColor.Gold, DiscordColor.Goldenrod, DiscordColor.Gray, DiscordColor.Grayple,
+            DiscordColor.Green, DiscordColor.HotPink, DiscordColor.IndianRed, DiscordColor.LightGray, DiscordColor.Lilac, DiscordColor.Magenta, DiscordColor.MidnightBlue,
+            DiscordColor.None, DiscordColor.NotQuiteBlack, DiscordColor.Orange, DiscordColor.PhthaloBlue, DiscordColor.PhthaloGreen, DiscordColor.Purple, DiscordColor.Red,
+            DiscordColor.Rose, DiscordColor.SapGreen, DiscordColor.Sienna, DiscordColor.SpringGreen, DiscordColor.Teal, DiscordColor.Turquoise, DiscordColor.VeryDarkGray,
+            DiscordColor.Violet, DiscordColor.Wheat, DiscordColor.White, DiscordColor.Yellow };
+        public static readonly Random rnd = new Random();
+
         public DiscordClient Client { get; set; }
         public CommandsNextExtension Commands { get; set; }
         public VoiceNextExtension Voice { get; set; }
-
         protected string BotName { get; set; }
 
         private async Task StartTimer(CancellationToken cancellationToken)
@@ -62,7 +69,7 @@ namespace StarsiegeBot
             if (args.Length > 0)
                 BotName = args[0].ToLower();
             else
-                BotName = "ssp";
+                BotName = "sspdev";
 
             BotEventId = new EventId(276, BotName);
             Events = new Triggers(BotEventId);
@@ -114,17 +121,17 @@ namespace StarsiegeBot
             this.Commands = this.Client.UseCommandsNext(ccfg);
 
             // up next, let's register our commands
-            this.Commands.RegisterCommands<Commands>();
             this.Commands.RegisterCommands<BotSettings>(); // Main Folder. Test Items.
-            this.Commands.RegisterCommands<WelcomeMessage>(); // Main Folder. Test Items.
+            this.Commands.RegisterCommands<Commands>();
+            this.Commands.RegisterCommands<GroupManagement>(); // Main Folder. Test Items.
+            this.Commands.RegisterCommands<GroupRoleManagement>(); // Main Folder. Test Items.
+            this.Commands.RegisterCommands<LevelManagement>(); // Main Folder. Test Items.
+            this.Commands.RegisterCommands<LevelRoleManagement>(); // Main Folder. Test Items.
             this.Commands.RegisterCommands<PrefixManagement>();
-            // this.Commands.RegisterCommands<SnappleFacts>();
-            // this.Commands.RegisterCommands<RoleManagement>(); // Main Folder. Test Items.
-            // this.Commands.RegisterCommands<LevelRoleManagement>(); // Main Folder. Test Items.
-            // this.Commands.RegisterCommands<GroupRoleManagement>(); // Main Folder. Test Items.
-            // this.Commands.RegisterCommands<LevelManagement>(); // Main Folder. Test Items.
-            // this.Commands.RegisterCommands<GroupManagement>(); // Main Folder. Test Items.
-            // this.Commands.RegisterCommands<StarsiegeCommands>();
+            this.Commands.RegisterCommands<RoleManagement>(); // Main Folder. Test Items.
+            this.Commands.RegisterCommands<SnappleFacts>();
+            this.Commands.RegisterCommands<StarsiegeCommands>();
+            this.Commands.RegisterCommands<WelcomeMessage>(); // Main Folder. Test Items.
 
             // All these commands are in the STARSIEGE folder.
             //if (BotName.Contains("ssp"))

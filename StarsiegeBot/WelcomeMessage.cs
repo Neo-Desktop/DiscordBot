@@ -27,33 +27,153 @@ namespace StarsiegeBot
     [RequireGuild, RequirePermissions(Permissions.ManageChannels)]
     class WelcomeMessage : BotSettings
     {
+        [GroupCommand]
+        public async Task GeneralWelcome (CommandContext ctx)
+        {
+            await ctx.TriggerTypingAsync();
+            string gId = ctx.Guild.Id.ToString();
+
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Description = "Welcome Message Info",
+                Color = Program.colours[0]
+            };
+            if (GuildSettings[gId].WelcomeChannel is null)
+                embed.AddField("Channel", "*None*");
+            else
+                embed.AddField("Channel", GuildSettings[gId].WelcomeChannel.Mention, true);
+            embed.AddField("Enabled?", GuildSettings[gId].UseWelcome.ToString(), true);
+            if (GuildSettings[gId].WelcomeMessage is null || GuildSettings[gId].WelcomeMessage == "")
+                embed.AddField("Message", "*None*");
+            else
+                embed.AddField("Message", GuildSettings[gId].WelcomeMessage);
+            await ctx.RespondAsync(embed);
+        }
+        [GroupCommand]
+        public async Task GeneralWelcome(CommandContext ctx, bool enable, DiscordChannel channel)
+        {
+            await WelcomeChannel(ctx, channel);
+            await WelcomeEnabled(ctx, enable);
+        }
+        [GroupCommand]
+        public async Task GeneralWelcome(CommandContext ctx, DiscordChannel channel, bool enable)
+        {
+            await WelcomeChannel(ctx, channel);
+            await WelcomeEnabled(ctx, enable);
+        }
         [Command("enable")]
         public async Task WelcomeEnabled(CommandContext ctx, bool enable)
         {
             await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();
 
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Description = "Welcome Message Usage",
+                Color = Program.colours[0]
+            };
+            embed.AddField("Old", GuildSettings[gId].UseWelcome.ToString(), true);
             GuildSettings[gId].UseWelcome = enable;
-
-            await ctx.RespondAsync($"Use welcome message? {enable}");
+            embed.AddField("New", GuildSettings[gId].UseWelcome.ToString(), true);
+            await ctx.RespondAsync(embed);
         }
+        [Command("Channel")]
+        public async Task WelcomeChannel(CommandContext ctx, DiscordChannel channel)
+        {
+            await ctx.TriggerTypingAsync();
+            string gId = ctx.Guild.Id.ToString();
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Description = "Welcome Message Channel",
+                Color = Program.colours[0]
+            };
+            if (GuildSettings[gId].WelcomeChannel != null)
+            {
+                embed.AddField("Old", GuildSettings[gId].WelcomeChannel.Mention, true);
+            }
+            else
+            {
+                embed.AddField("Old", "*None*");
+            }
 
+            GuildSettings[gId].WelcomeChannel = channel;
+            embed.AddField("New", GuildSettings[gId].WelcomeChannel.Mention, true);
+            await ctx.RespondAsync(embed);
+        }
         [Command("Channel")]
         public async Task WelcomeChannel(CommandContext ctx, [RemainingText]string here)
         {
             await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();
-            GuildSettings[gId].WelcomeChannel = ctx.Channel;
-            await ctx.RespondAsync("This channel is the welcome channel now!");
-        }
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Description = "Welcome Message Channel",
+                Color = Program.colours[0]
+            };
+            if (GuildSettings[gId].WelcomeChannel != null)
+            {
+                embed.AddField("Old", GuildSettings[gId].WelcomeChannel.Mention, true);
+            }
+            else
+            {
+                embed.AddField("Old", "*None*");
+            }
 
+            GuildSettings[gId].WelcomeChannel = ctx.Channel;
+            embed.AddField("New", GuildSettings[gId].WelcomeChannel.Mention, true);
+            await ctx.RespondAsync(embed);
+        }
         [Command("Message")]
+        [Description("Hello. Run `>welcome help` for more info.")]
         public async Task MessageOfWelcome(CommandContext ctx, [RemainingText]string msg)
         {
             await ctx.TriggerTypingAsync();
+            Console.WriteLine("1");
             string gId = ctx.Guild.Id.ToString();
+            Console.WriteLine("2");
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Description = "Welcome Message String",
+                Color = Program.colours[0]
+            };
+            Console.WriteLine("3");
+            if (GuildSettings[gId].WelcomeMessage == "" || GuildSettings[gId].WelcomeMessage is null)
+                embed.AddField("Old", "*None*");
+            else
+                embed.AddField("Old", GuildSettings[gId].WelcomeMessage);
+            Console.WriteLine("4");
             GuildSettings[gId].WelcomeMessage = msg;
-            await ctx.RespondAsync("welcome message set.");
+            Console.WriteLine("5");
+            embed.AddField("New", GuildSettings[gId].WelcomeMessage);
+            Console.WriteLine("6");
+            string example = WelcomeMessageProcessing(GuildSettings[gId].WelcomeMessage, ctx.Member, ctx.Guild);
+            Console.WriteLine("7");
+            await ctx.RespondAsync($"An example:\r\n> {example}", embed);
+        }
+        [Command("Help")]
+        public async Task WelcomeHelp(CommandContext ctx)
+        {
+            await ctx.TriggerTypingAsync();
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Title = "Welcome Message Help",
+                Description = "List of placeholders and their intended replacement. Channel tags can be inserted without a placeholder.",
+                Color = Program.colours[0]
+            };
+            embed.AddField("[Discrim]", "Inserts the username of the member.");
+            embed.AddField("[UName]", "Inserts the username of the member.");
+            embed.AddField("[GName]", "Inserts your Guild/Server Name.");
+            embed.AddField("[Mention]", "Inserts your Guild/Server Name.");
+            await ctx.RespondAsync(embed);
+        }
+        public static string WelcomeMessageProcessing(string msg, DiscordMember member, DiscordGuild guild)
+        {
+            string output = msg
+                .Replace("[discrim]", member.Discriminator, StringComparison.OrdinalIgnoreCase)
+                .Replace("[gname]", guild.Name, StringComparison.OrdinalIgnoreCase)
+                .Replace("[uname]", member.Username, StringComparison.OrdinalIgnoreCase)
+                .Replace("[mention]", member.Mention, StringComparison.OrdinalIgnoreCase);
+            return output;
         }
     }
 }
