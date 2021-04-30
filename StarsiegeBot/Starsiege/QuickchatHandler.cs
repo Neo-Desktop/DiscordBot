@@ -23,12 +23,12 @@ namespace StarsiegeBot
     class QuickchatHandler : BaseCommandModule
     {
         private Dictionary<string, Quickchat> quickchats;
-        private bool IsQuickChatEnabled;
+        private bool IsEnabled;
 
         public QuickchatHandler()
         {
             Console.WriteLine("Quick Chat Handler Loaded");
-            IsQuickChatEnabled = LoadQuickChatsImpl();
+            IsEnabled = LoadQuickChatsImpl();
         }
 
         /**
@@ -44,10 +44,8 @@ namespace StarsiegeBot
                 var json = "";
                 using (var fs = File.OpenRead("quickchats.json"))
                 using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
-
                 json = sr.ReadToEnd();
                 quickchats = JsonConvert.DeserializeObject<Dictionary<string, Quickchat>>(json);
-
                 // enable the commands.
                 return true;
             }
@@ -62,15 +60,22 @@ namespace StarsiegeBot
         public async Task LoadQuickChats(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
-
-            IsQuickChatEnabled = LoadQuickChatsImpl();
-            if (IsQuickChatEnabled)
+            string output;
+            IsEnabled = LoadQuickChatsImpl();
+            if (IsEnabled)
             {
-                await ctx.RespondAsync("Loading Quick Chats successful.");
-                return;
+                output = "Loading Quick Chats successful.";
             }
-
-            await ctx.RespondAsync("Loading Quick Chats failed. File does not exist.");
+            else
+            {
+                output = "Loading Quick Chats failed. File does not exist.";
+            }
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Description = output,
+                Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
+            };
+            await ctx.RespondAsync(embed);
         }
 
         [Command("script")]
@@ -81,7 +86,7 @@ namespace StarsiegeBot
             await ctx.TriggerTypingAsync();
 
             // If we're disabled, let them know. And exit out.
-            if (!IsQuickChatEnabled)
+            if (!IsEnabled)
             {
                 await ctx.RespondAsync("Quick Chat Commands have been disabled. Please contact the bot owners.");
                 return;
@@ -109,7 +114,7 @@ namespace StarsiegeBot
         {
             await ctx.TriggerTypingAsync();
             // If we're disabled, let them know. And exit out.
-            if (!IsQuickChatEnabled)
+            if (!IsEnabled)
             {
                 await ctx.RespondAsync("Quick Chat Commands have been disabled. Please contact the bot owners.");
                 return;
@@ -128,7 +133,13 @@ namespace StarsiegeBot
             }
 
             // Reply to the message and let the user know we're missing X files.
-            await ctx.RespondAsync($"Missing files: {missingFiles}");
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Description = $"Missing files: {missingFiles}",
+                Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
+            };
+
+            await ctx.RespondAsync(embed);
         }
 
         [GroupCommand]
@@ -139,7 +150,7 @@ namespace StarsiegeBot
             string output;
 
             // If we're disabled, let them know. And exit out.
-            if (!IsQuickChatEnabled)
+            if (!IsEnabled)
             {
                 await ctx.RespondAsync("Quick Chat Commands have been disabled. Please contact the bot owners.");
                 return;
@@ -202,7 +213,7 @@ namespace StarsiegeBot
             string output;
 
             // If we're disabled, let them know. And exit out.
-            if (!IsQuickChatEnabled)
+            if (!IsEnabled)
             {
                 await ctx.RespondAsync("Quick Chat Commands have been disabled. Please contact the bot owners.");
                 return;
@@ -263,18 +274,18 @@ namespace StarsiegeBot
             {
                 if (turnOn.Contains(isEnabled))
                 {
-                    IsQuickChatEnabled = true;
+                    IsEnabled = true;
                 }
                 if (turnOff.Contains(isEnabled))
                 {
-                    IsQuickChatEnabled = false;
+                    IsEnabled = false;
                 }
 
-                output = $"Quickchats {(IsQuickChatEnabled ? "Enabled":"Disabled")}";
+                output = $"Quickchats {(IsEnabled ? "Enabled":"Disabled")}";
             }
             else
             {
-                IsQuickChatEnabled = false;
+                IsEnabled = false;
                 output = "QuickChats.json file is missing, and it can not be enabled.";
             }
             await ctx.RespondAsync(output);
