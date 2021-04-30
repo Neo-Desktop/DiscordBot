@@ -130,6 +130,7 @@ namespace StarsiegeBot
             this.Commands.RegisterCommands<PrefixManagement>();
             this.Commands.RegisterCommands<RoleManagement>(); // Main Folder. Test Items.
             this.Commands.RegisterCommands<SnappleFacts>();
+            this.Commands.RegisterCommands<NotFacts>();
             this.Commands.RegisterCommands<StarsiegeCommands>();
             this.Commands.RegisterCommands<WelcomeMessage>(); // Main Folder. Test Items.
 
