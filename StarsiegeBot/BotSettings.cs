@@ -17,6 +17,7 @@ namespace StarsiegeBot
     class BotSettings : BaseCommandModule
     {
         public static Dictionary<string, GuildSettings> GuildSettings;
+        private readonly string fileName = "guildSettings.json";
         public BotSettings()
         {
             Console.WriteLine("Bot Setting Commands Loaded");
@@ -27,7 +28,7 @@ namespace StarsiegeBot
                 return;
             }
             // Check for guild settings file. If it doesnt exist, create it.
-            if (!File.Exists("guildSettings.json"))
+            if (!File.Exists(fileName))
             {
                 // Since we need to creat it, we're going to set some default stuff.
                 Console.Write("Guild Settings Config File Not Found. Creating One...");
@@ -54,7 +55,7 @@ namespace StarsiegeBot
 
                 // Now that we have the initial stuff in memory, write it to file.
                 string output = JsonConvert.SerializeObject(GuildSettings);
-                File.WriteAllTextAsync("guildSettings.json", output);
+                File.WriteAllTextAsync(fileName, output);
                 // in form the console reader that we're done making the initial config.
                 Console.WriteLine(" Done!");
             }
@@ -62,7 +63,7 @@ namespace StarsiegeBot
             {
                 // load the config file to memory.
                 var json = "";
-                using (var fs = File.OpenRead("guildSettings.json"))
+                using (var fs = File.OpenRead(fileName))
                 using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
                     json = sr.ReadToEnd();
                 GuildSettings = JsonConvert.DeserializeObject<Dictionary<string, GuildSettings>>(json);

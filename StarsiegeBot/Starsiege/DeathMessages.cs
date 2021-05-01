@@ -21,17 +21,18 @@ namespace StarsiegeBot
     {
         private DeathMessageLines dmLines;
         private bool DeathMessagesEnabled;
+        private static readonly string fileName = "DeathMessages.json";
 
         public DeathMessages()
         {
             Console.WriteLine("Death Message Commands Loaded.");
             // If the DeathMessages file exists, load it. And enable the commands.
             // Otherwise disable all the commands.
-            if (File.Exists("DeathMessages.json"))
+            if (File.Exists(fileName))
             {
                 // set some JSON text to blank.
                 var json = "";
-                using (var fs = File.OpenRead("DeathMessages.json"))
+                using (var fs = File.OpenRead(fileName))
                 using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
                     json = sr.ReadToEnd();
                 // Decode the JSON and set it to dmLines.
@@ -42,7 +43,7 @@ namespace StarsiegeBot
             else
             {
                 // Echo out that we're missing a file. Disable the commands due to that.
-                Console.WriteLine(" --- --- --- --- DeathMessages.json is missing");
+                Console.WriteLine($" --- --- --- --- {fileName} is missing");
                 DeathMessagesEnabled = false;
             }
         }
@@ -52,11 +53,11 @@ namespace StarsiegeBot
         public async Task LoadDeathMessages(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
-            if (File.Exists("DeathMessages.json"))
+            if (File.Exists(fileName))
             {
                 // set some JSON text to blank.
                 var json = "";
-                using (var fs = File.OpenRead("DeathMessages.json"))
+                using (var fs = File.OpenRead(fileName))
                 using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
                     json = sr.ReadToEnd();
                 // Decode the JSON and set it to dmLines.
@@ -86,7 +87,7 @@ namespace StarsiegeBot
             string[] turnOn = { "on", "true", "1" };
             string[] turnOff = { "off", "false", "0" };
 
-            if (File.Exists("DeathMessages.json"))
+            if (File.Exists(fileName))
             {
                 if (turnOn.Contains(isEnabled))
                 {
@@ -105,7 +106,7 @@ namespace StarsiegeBot
             else
             {
                 DeathMessagesEnabled = false;
-                output = "DeathMessages.json file is missing, and it can not be enabled.";
+                output = $"{fileName} file is missing, and it can not be enabled.";
             }
             await ctx.RespondAsync(output);
         }
@@ -269,7 +270,7 @@ namespace StarsiegeBot
         private async Task StoreDeathMessages()
         {
             string output = JsonConvert.SerializeObject(dmLines);
-            await File.WriteAllTextAsync("DeathMessages.json", output);
+            await File.WriteAllTextAsync(fileName, output);
             return;
         }
     }
