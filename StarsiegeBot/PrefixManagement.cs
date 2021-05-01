@@ -120,35 +120,59 @@ namespace StarsiegeBot
             await ctx.RespondAsync($"Global Prefix usage has been turned **{(isEnabled ? "on" : "off")}**");
         }
         [Command("global")]
-        public async Task UseGlobalPrefixes(CommandContext ctx, [Description("0 is off, 1 is on.")] int isEnabled)
+        public async Task UseGlobalPrefixes(CommandContext ctx, [Description("ON or OFF"),RemainingText] string isEnabled = null)
         {
-            // since we're just allowing the user to use different ways to turn this function on and off... Redirect the work load there.
-            if (isEnabled >= 1)
-            {
-                await UseGlobalPrefixes(ctx, true);
-            }
-            else
-            {
-                await UseGlobalPrefixes(ctx, false);
-            }
-        }
-        [Command("global")]
-        public async Task UseGlobalPrefixes(CommandContext ctx, [Description("ON or OFF")] string isEnabled)
-        {
+            await ctx.TriggerTypingAsync();
+            isEnabled = isEnabled.ToLower();
+            string gId = ctx.Guild.Id.ToString();
+            int prefixCount = GuildSettings[gId].Prefixes.Count;
+            string[] turnOn = { "on", "true", "1" };
+            string[] turnOff = { "off", "false", "0" };
+            DiscordEmbedBuilder embed = StartEmbed("Global Prefix Usage");
+            embed.AddField("Old", Program.YesNo(GuildSettings[gId].UseGlobalPrefix));
             // since we're just trying to make the end user's life easier by different means of turning this on/off. redirect work load that way.
-            if (isEnabled.ToLower() == "on")
+            if (turnOn.Contains(isEnabled))
             {
                 await UseGlobalPrefixes(ctx, true);
+                GuildSettings[gId].UseGlobalPrefix = true;
+                embed.AddField("New", Program.YesNo(GuildSettings[gId].UseGlobalPrefix));
             }
-            else if (isEnabled.ToLower() == "off")
+            else if (turnOff.Contains(isEnabled))
             {
-                await UseGlobalPrefixes(ctx, false);
+                if (prefixCount > 0)
+                {
+                    GuildSettings[gId].UseGlobalPrefix = false;
+                    embed.AddField("New", Program.YesNo(GuildSettings[gId].UseGlobalPrefix));
+                }
+                else
+                {
+                    embed = EmbedError("Could not turn off Global Prefix Usage. (Are you missing a server prefix?)");
+                }
             }
             else
             {
-                // they wanna be smart, and we don't wanna, tell them that.
-                await ctx.RespondAsync("Please specify ON or OFF");
+                
             }
+            await ctx.RespondAsync(embed);
+        }
+
+        private DiscordEmbedBuilder StartEmbed(string desc)
+        {
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Description = desc,
+                Color = Program.colours[1]
+            };
+            return embed;
+        }
+        private DiscordEmbedBuilder EmbedError(string desc)
+        {
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Description = desc,
+                Color = Program.colours[^1]
+            };
+            return embed;
         }
     }
 }

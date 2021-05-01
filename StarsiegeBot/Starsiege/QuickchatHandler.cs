@@ -261,7 +261,7 @@ namespace StarsiegeBot
 
         [Command("toggle"), Aliases("t")]
         [RequireOwner]
-        [Description("[Owner only] Enables or disables, or checks status of QuickChats.")]
+        [Description("[Owner only] Enables or disables, or checks status of QuickChats.\r\nTo turn the feature on, use `TRUE`, `ON`, or `1`\r\nTo turn off, use `FALSE`, `OFF`, or `0`")]
         public async Task ToggleQC (CommandContext ctx, [RemainingText] string isEnabled = null)
         {
             await ctx.TriggerTypingAsync();

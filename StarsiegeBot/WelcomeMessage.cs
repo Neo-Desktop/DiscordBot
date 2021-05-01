@@ -33,11 +33,7 @@ namespace StarsiegeBot
             await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();
 
-            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
-            {
-                Description = "Welcome Message Info",
-                Color = Program.colours[0]
-            };
+            DiscordEmbedBuilder embed = StartEmbed("Welcome Message Info");
             if (GuildSettings[gId].WelcomeChannel is null)
                 embed.AddField("Channel", "*None*");
             else
@@ -67,11 +63,7 @@ namespace StarsiegeBot
             await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();
 
-            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
-            {
-                Description = "Welcome Message Usage",
-                Color = Program.colours[0]
-            };
+            DiscordEmbedBuilder embed = StartEmbed("Welcome Message Status");
             embed.AddField("Old", GuildSettings[gId].UseWelcome.ToString(), true);
             GuildSettings[gId].UseWelcome = enable;
             embed.AddField("New", GuildSettings[gId].UseWelcome.ToString(), true);
@@ -82,11 +74,7 @@ namespace StarsiegeBot
         {
             await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();
-            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
-            {
-                Description = "Welcome Message Channel",
-                Color = Program.colours[0]
-            };
+            DiscordEmbedBuilder embed = StartEmbed("Welcome Message Channel");
             if (GuildSettings[gId].WelcomeChannel != null)
             {
                 embed.AddField("Old", GuildSettings[gId].WelcomeChannel.Mention, true);
@@ -105,11 +93,7 @@ namespace StarsiegeBot
         {
             await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();
-            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
-            {
-                Description = "Welcome Message Channel",
-                Color = Program.colours[0]
-            };
+            DiscordEmbedBuilder embed = StartEmbed("Welcome Message Channel");
             if (GuildSettings[gId].WelcomeChannel != null)
             {
                 embed.AddField("Old", GuildSettings[gId].WelcomeChannel.Mention, true);
@@ -128,38 +112,23 @@ namespace StarsiegeBot
         public async Task MessageOfWelcome(CommandContext ctx, [RemainingText]string msg)
         {
             await ctx.TriggerTypingAsync();
-            Console.WriteLine("1");
             string gId = ctx.Guild.Id.ToString();
-            Console.WriteLine("2");
-            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
-            {
-                Description = "Welcome Message String",
-                Color = Program.colours[0]
-            };
-            Console.WriteLine("3");
+            DiscordEmbedBuilder embed = StartEmbed("Welcome Message String");
             if (GuildSettings[gId].WelcomeMessage == "" || GuildSettings[gId].WelcomeMessage is null)
                 embed.AddField("Old", "*None*");
             else
                 embed.AddField("Old", GuildSettings[gId].WelcomeMessage);
-            Console.WriteLine("4");
             GuildSettings[gId].WelcomeMessage = msg;
-            Console.WriteLine("5");
             embed.AddField("New", GuildSettings[gId].WelcomeMessage);
-            Console.WriteLine("6");
             string example = WelcomeMessageProcessing(GuildSettings[gId].WelcomeMessage, ctx.Member, ctx.Guild);
-            Console.WriteLine("7");
             await ctx.RespondAsync($"An example:\r\n> {example}", embed);
         }
         [Command("Help")]
         public async Task WelcomeHelp(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
-            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
-            {
-                Title = "Welcome Message Help",
-                Description = "List of placeholders and their intended replacement. Channel tags can be inserted without a placeholder.",
-                Color = Program.colours[0]
-            };
+            DiscordEmbedBuilder embed = StartEmbed("List of placeholders and their intended replacement. Channel tags can be inserted without a placeholder.");
+            embed.Title = "Welcome Message Help";
             embed.AddField("[Discrim]", "Inserts the username of the member.");
             embed.AddField("[UName]", "Inserts the username of the member.");
             embed.AddField("[GName]", "Inserts your Guild/Server Name.");
@@ -174,6 +143,16 @@ namespace StarsiegeBot
                 .Replace("[uname]", member.Username, StringComparison.OrdinalIgnoreCase)
                 .Replace("[mention]", member.Mention, StringComparison.OrdinalIgnoreCase);
             return output;
+        }
+
+        private DiscordEmbedBuilder StartEmbed(string desc)
+        {
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Description = desc,
+                Color = Program.colours[0]
+            };
+            return embed;
         }
     }
 }

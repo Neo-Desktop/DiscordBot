@@ -25,9 +25,9 @@ namespace StarsiegeBot
             DiscordColor.Brown, DiscordColor.Chartreuse, DiscordColor.CornflowerBlue, DiscordColor.Cyan, DiscordColor.DarkBlue, DiscordColor.DarkButNotBlack,
             DiscordColor.DarkGray, DiscordColor.DarkGreen, DiscordColor.DarkRed, DiscordColor.Gold, DiscordColor.Goldenrod, DiscordColor.Gray, DiscordColor.Grayple,
             DiscordColor.Green, DiscordColor.HotPink, DiscordColor.IndianRed, DiscordColor.LightGray, DiscordColor.Lilac, DiscordColor.Magenta, DiscordColor.MidnightBlue,
-            DiscordColor.None, DiscordColor.NotQuiteBlack, DiscordColor.Orange, DiscordColor.PhthaloBlue, DiscordColor.PhthaloGreen, DiscordColor.Purple, DiscordColor.Red,
+            DiscordColor.None, DiscordColor.NotQuiteBlack, DiscordColor.Orange, DiscordColor.PhthaloBlue, DiscordColor.PhthaloGreen, DiscordColor.Purple,
             DiscordColor.Rose, DiscordColor.SapGreen, DiscordColor.Sienna, DiscordColor.SpringGreen, DiscordColor.Teal, DiscordColor.Turquoise, DiscordColor.VeryDarkGray,
-            DiscordColor.Violet, DiscordColor.Wheat, DiscordColor.White, DiscordColor.Yellow };
+            DiscordColor.Violet, DiscordColor.Wheat, DiscordColor.White, DiscordColor.Yellow, DiscordColor.Red };
         public static readonly Random rnd = new Random();
 
         public DiscordClient Client { get; set; }
@@ -99,7 +99,7 @@ namespace StarsiegeBot
             this.Client.UseInteractivity(new InteractivityConfiguration()
             {
                 PollBehaviour = PollBehaviour.KeepEmojis,
-                Timeout = TimeSpan.FromSeconds(15) 
+                Timeout = TimeSpan.FromSeconds(15)
             });
 
             // up next, let's set up our commands
@@ -202,7 +202,6 @@ namespace StarsiegeBot
             this.Commands.CommandExecuted += Events.CommandExecuted;
             this.Commands.CommandErrored += Events.CommandErrored;
 
-
             // finally, let's connect and log in
             await this.Client.ConnectAsync();
 
@@ -218,6 +217,11 @@ namespace StarsiegeBot
 
             [JsonProperty("prefix")]
             public string CommandPrefix { get; private set; }
+        }
+
+        public static string YesNo(bool test)
+        {
+            return (test ? "Enabled" : "Disabled");
         }
     }
 }
