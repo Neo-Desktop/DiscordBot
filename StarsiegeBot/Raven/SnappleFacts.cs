@@ -25,7 +25,7 @@ namespace StarsiegeBot
         }
 
         [GroupCommand, Description("Get a Snapple \"Real Fact\".")]
-        public async Task Snapplefact(CommandContext ctx, [Description("[Optional] A Snapple Fact ID")] int snapId = -1)
+        public async Task Snapplefact(CommandContext ctx, [Description("[Optional] A Snapple Fact ID")] int snapId = 0)
         {
             // if we're not enabled, exit out.
             if (!IsEnabled)
