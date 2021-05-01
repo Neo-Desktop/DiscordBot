@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace StarsiegeBot
 {
-    [Group("snapple")]
+    [Group("snapple"), Aliases("snap")]
     class SnappleFacts : BaseCommandModule
     {
         private List<string> facts;
@@ -26,41 +26,61 @@ namespace StarsiegeBot
         [GroupCommand, Description("Get a Snapple \"Real Fact\".")]
         public async Task Snapplefact(CommandContext ctx, [Description("[Optional] A Snapple Fact ID")] int snapId = -1)
         {
+            // if we're not enabled, exit out.
+            if (!IsEnabled)
+                return;
+            // trigger typing.
             await ctx.TriggerTypingAsync();
+            // store our output.
             string output;
+            // @neo, why is this here?
             snapId--;
             try
             {
-                output = facts[snapId]);
+                // attempt to get the desired fact.
+                output = facts[snapId];
                 return;
             }
             catch (Exception)
             {
+                // we couldn't find the exact one, give them a random one.
                 output = facts[Program.rnd.Next(0, facts.Count)];
             }
+            // give them what they want.
             await ctx.RespondAsync(StartEmbed(output));
         }
 
-        [Command("count"), Description("Get a Snapple \"Real Fact\".")]
+        [Command("count"), Description("Get a Snapple \"Real Fact\"."), Aliases("c")]
         public async Task SnappleCount(CommandContext ctx)
         {
+            if (!IsEnabled)
+                return;
             await ctx.TriggerTypingAsync();
-            DiscordEmbedBuilder embed = StartEmbed(facts.Count + " facts in the Snapple \"Real Facts\" Bank");
-            await ctx.RespondAsync(embed);
+            // trigger the typing, and report how many facts are in teh bank.
+            await ctx.RespondAsync(StartEmbed(facts.Count + " facts in the Snapple \"Real Facts\" Bank"));
         }
 
-        [Command("load"), RequireOwner]
+        [Command("load"), RequireOwner, Aliases("l")]
         public async Task Load(CommandContext ctx)
         {
+            // trigger the typing.
             await ctx.TriggerTypingAsync();
+            // start the response.
             DiscordEmbedBuilder embed = StartEmbed("Reloading Snapple Facts");
+            // our old setting...
             embed.AddField("Old", (IsEnabled ? "Enabled" : "Disabled"));
+            // run this, we dont care about its actual results.
             _ = Load();
+            // report our new setting.
             embed.AddField("New", (IsEnabled ? "Enabled" : "Disabled"));
+            // since the only thing that *should* go wrong is a missing file, report it if thats the case.
+            if (!File.Exists("snapple.json"))
+                embed.WithFooter(":warning: snapple.json file is missing.");
+            // send our results.
             await ctx.RespondAsync(embed);
         }
 
-        [Command("toggle")]
+        [Command("toggle"), RequireOwner, Aliases("t")]
         public async Task Enable (CommandContext ctx, [RemainingText]string isEnabled = null)
         {
             // trigger the typing.
@@ -88,19 +108,20 @@ namespace StarsiegeBot
                 }
                 else
                 {
+                    // we dont know what they were trying to do, throw an error in the footer with a :warning: emote.
                     embed.AddField("New", (IsEnabled ? "Enabled" : "Disabled"));
-                    embed.WithFooter(":warning: Invalid command given.");
+                    embed.WithFooter(":warning: Invalid command given?");
                 }
             }
             else
             {
+                // file is missing, disable this, regardless of their desires. Report the file is missing in the footer with a :warning:
                 IsEnabled = false;
                 embed.AddField("New", (IsEnabled ? "Enabled" : "Disabled"));
                 embed.WithFooter(":warning: snapple.json file is missing, and it can not be enabled.");
             }
             await ctx.RespondAsync(embed);
         }
-
 
         private DiscordEmbedBuilder StartEmbed(string desc)
         {
