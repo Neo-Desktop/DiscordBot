@@ -1,16 +1,16 @@
 ﻿#pragma warning disable IDE0060 // Remove unused parameter
-using System;
-using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using System.Text.RegularExpressions;
-using System.Linq;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace StarsiegeBot
 {
-    class Commands : BaseCommandModule
+    class GameCommands : BaseCommandModule
     {
         // Master insult list.
         private readonly string[] InsultMaster = {
@@ -22,7 +22,7 @@ namespace StarsiegeBot
         };
         private List<string> InsultCopy;
 
-        public Commands()
+        public GameCommands()
         {
             // Let the console know we've loaded basic commands.
             Console.WriteLine("Basic Commands Loaded");
@@ -174,11 +174,11 @@ namespace StarsiegeBot
             else
                 await ctx.RespondAsync(overallResults);
         }
-        [Command("guilds"),Hidden,RequireOwner]
-        public async Task GimmeServerNames (CommandContext ctx)
+        [Command("guilds"), Hidden, RequireOwner]
+        public async Task GimmeServerNames(CommandContext ctx)
         {
             string output = "";
-            foreach (KeyValuePair<ulong,DiscordGuild> item in ctx.Client.Guilds)
+            foreach (KeyValuePair<ulong, DiscordGuild> item in ctx.Client.Guilds)
             {
                 output += item.Value.Name + "\r\n";
             }
@@ -382,7 +382,7 @@ namespace StarsiegeBot
             if (msg != "")
                 result = msg;
             else
-                result ="I need something to say...";
+                result = "I need something to say...";
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder
             {
                 Description = result,

@@ -1,24 +1,11 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
+﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.VoiceNext;
-using System.Text.RegularExpressions;
+using System;
 using System.Linq;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using System.Text;
-using DSharpPlus;
-using DSharpPlus.CommandsNext.Exceptions;
-using DSharpPlus.EventArgs;
-using DSharpPlus.VoiceNext.Codec;
-using Microsoft.Extensions.Logging;
-using DSharpPlus.Interactivity;
-using DSharpPlus.Interactivity.Extensions;
-using System.Threading;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace StarsiegeBot
 {
@@ -120,7 +107,7 @@ namespace StarsiegeBot
             await ctx.RespondAsync($"Global Prefix usage has been turned **{(isEnabled ? "on" : "off")}**");
         }
         [Command("global")]
-        public async Task UseGlobalPrefixes(CommandContext ctx, [Description("ON or OFF"),RemainingText] string isEnabled = null)
+        public async Task UseGlobalPrefixes(CommandContext ctx, [Description("ON or OFF"), RemainingText] string isEnabled = null)
         {
             await ctx.TriggerTypingAsync();
             isEnabled = isEnabled.ToLower();
@@ -151,7 +138,7 @@ namespace StarsiegeBot
             }
             else
             {
-                
+
             }
             await ctx.RespondAsync(embed);
         }

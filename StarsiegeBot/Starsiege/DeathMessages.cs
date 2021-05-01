@@ -1,21 +1,15 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
+﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.VoiceNext;
-using System.Text.RegularExpressions;
-using System.Linq;
-using System.Collections.Generic;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
-using DSharpPlus;
-using DSharpPlus.CommandsNext.Exceptions;
-using DSharpPlus.EventArgs;
-using DSharpPlus.VoiceNext.Codec;
-using Microsoft.Extensions.Logging;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace StarsiegeBot
 {
@@ -117,7 +111,7 @@ namespace StarsiegeBot
         }
 
         [GroupCommand]
-        public async Task DeathMessage(CommandContext ctx, [Description("Optional. Person you want to see kill you. If blank, will show generic death message.")]DiscordMember target = null)
+        public async Task DeathMessage(CommandContext ctx, [Description("Optional. Person you want to see kill you. If blank, will show generic death message.")] DiscordMember target = null)
         {
             // We're typing! (In all honesty, this is just used to avoid the 'async task not using await' messages I get.
             await ctx.TriggerTypingAsync();
@@ -129,7 +123,7 @@ namespace StarsiegeBot
                 await ctx.RespondAsync("Death Messages Commands have been disabled. Please contact the bot owners.");
                 return;
             }
-            
+
             // set some basic output incase something goes south.
             string line = "Something went wrong.";
             // if there is no target, we're going to "kill" the author.
@@ -182,7 +176,7 @@ namespace StarsiegeBot
         [Command("Add")]
         [Description("Adds a message to the Pending Death Message Queue. Generic Death Messages require just a [Killed] while any other death message requires both a [Killed] and a [Killer] tags. These will be replaced with the correct information in game, and in the usage of random DM generation.")]
         [Cooldown(1, 2, CooldownBucketType.Guild)]
-        public async Task DeathMessageNew(CommandContext ctx, [RemainingText,Description("The Death Message you want added. See help section.")] string msg)
+        public async Task DeathMessageNew(CommandContext ctx, [RemainingText, Description("The Death Message you want added. See help section.")] string msg)
         {
             // IF we're missing the Death Messages dot JSON file, we're going to get disabled... Check for that.
             // If disabled, let the person know the command set is disabled, and return.
@@ -265,7 +259,7 @@ namespace StarsiegeBot
             // Tell DSharp that we want to upload this file.
             msg.WithFile("deathmessages.cs", sound);
             // Add some content so its not a blank file.
-            msg.Content ="Here is your request for a death message script.";
+            msg.Content = "Here is your request for a death message script.";
             // send that message.
             await ctx.RespondAsync(msg);
             // We're done with the file, so close access to it.

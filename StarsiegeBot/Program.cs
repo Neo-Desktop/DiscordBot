@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using DSharpPlus;
+﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.VoiceNext;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace StarsiegeBot
 {
@@ -122,16 +119,16 @@ namespace StarsiegeBot
 
             // up next, let's register our commands
             this.Commands.RegisterCommands<BotSettings>(); // Main Folder. Test Items.
-            this.Commands.RegisterCommands<Commands>();
+            this.Commands.RegisterCommands<ExperiemntalCommands>(); // Experimental commands file.
+            this.Commands.RegisterCommands<GameCommands>();
             this.Commands.RegisterCommands<GroupManagement>(); // Main Folder. Test Items.
             this.Commands.RegisterCommands<GroupRoleManagement>(); // Main Folder. Test Items.
             this.Commands.RegisterCommands<LevelManagement>(); // Main Folder. Test Items.
             this.Commands.RegisterCommands<LevelRoleManagement>(); // Main Folder. Test Items.
+            this.Commands.RegisterCommands<NotFacts>(); // Raven Folder.
             this.Commands.RegisterCommands<PrefixManagement>();
             this.Commands.RegisterCommands<RoleManagement>(); // Main Folder. Test Items.
-            this.Commands.RegisterCommands<SnappleFacts>();
-            this.Commands.RegisterCommands<NotFacts>();
-            this.Commands.RegisterCommands<StarsiegeCommands>();
+            this.Commands.RegisterCommands<SnappleFacts>(); // Raven folder.
             this.Commands.RegisterCommands<WelcomeMessage>(); // Main Folder. Test Items.
 
             // All these commands are in the STARSIEGE folder.

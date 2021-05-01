@@ -1,14 +1,13 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using DSharpPlus.CommandsNext;
+﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using System.Text.RegularExpressions;
-using System.Collections.Generic;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text;
-using DSharpPlus;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace StarsiegeBot
 {
@@ -86,8 +85,8 @@ namespace StarsiegeBot
         public bool AllowRolesPurchase { get; set; }
         public bool UseAutoRoles { get; set; }
         public List<String> Prefixes { get; set; }
-        public Dictionary<string,Dictionary<string,int>> SelfRoles { get; set; }
-        public Dictionary<int,List<DiscordRole>> LevelRoles { get; set; }
+        public Dictionary<string, Dictionary<string, int>> SelfRoles { get; set; }
+        public Dictionary<int, List<DiscordRole>> LevelRoles { get; set; }
         public List<DiscordRole> HiddenRolesList { get; set; }
         public DiscordChannel WelcomeChannel { get; set; }
         public bool UseWelcome { get; set; }

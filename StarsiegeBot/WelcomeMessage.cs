@@ -1,25 +1,11 @@
 ﻿#pragma warning disable IDE0060 // Remove unused parameter
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.VoiceNext;
+using System;
 using System.Text.RegularExpressions;
-using System.Linq;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using System.Text;
-using DSharpPlus;
-using DSharpPlus.CommandsNext.Exceptions;
-using DSharpPlus.EventArgs;
-using DSharpPlus.VoiceNext.Codec;
-using Microsoft.Extensions.Logging;
-using DSharpPlus.Interactivity;
-using DSharpPlus.Interactivity.Extensions;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace StarsiegeBot
 {
@@ -28,7 +14,7 @@ namespace StarsiegeBot
     class WelcomeMessage : BotSettings
     {
         [GroupCommand]
-        public async Task GeneralWelcome (CommandContext ctx)
+        public async Task GeneralWelcome(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();
@@ -89,7 +75,7 @@ namespace StarsiegeBot
             await ctx.RespondAsync(embed);
         }
         [Command("Channel")]
-        public async Task WelcomeChannel(CommandContext ctx, [RemainingText]string here)
+        public async Task WelcomeChannel(CommandContext ctx, [RemainingText] string here)
         {
             await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();
@@ -109,7 +95,7 @@ namespace StarsiegeBot
         }
         [Command("Message")]
         [Description("Hello. Run `>welcome help` for more info.")]
-        public async Task MessageOfWelcome(CommandContext ctx, [RemainingText]string msg)
+        public async Task MessageOfWelcome(CommandContext ctx, [RemainingText] string msg)
         {
             await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();

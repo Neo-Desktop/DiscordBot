@@ -1,21 +1,15 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
+﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.VoiceNext;
-using System.Text.RegularExpressions;
-using System.Linq;
-using System.Collections.Generic;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
-using DSharpPlus;
-using DSharpPlus.CommandsNext.Exceptions;
-using DSharpPlus.EventArgs;
-using DSharpPlus.VoiceNext.Codec;
-using Microsoft.Extensions.Logging;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace StarsiegeBot
 {
@@ -44,7 +38,7 @@ namespace StarsiegeBot
                 var json = "";
                 using (var fs = File.OpenRead("quickchats.json"))
                 using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
-                json = sr.ReadToEnd();
+                    json = sr.ReadToEnd();
                 quickchats = JsonConvert.DeserializeObject<Dictionary<string, Quickchat>>(json);
                 // enable the commands.
                 return true;
@@ -194,7 +188,7 @@ namespace StarsiegeBot
             {
                 // Open the file.
                 FileStream sound = new FileStream($"./qc/{chat.soundFile}", FileMode.Open, FileAccess.Read);
-                
+
                 // feed it to the Message Builder.
                 msg.WithFile(chat.soundFile, sound);
             }
@@ -205,9 +199,9 @@ namespace StarsiegeBot
         }
 
         [Command("search"), Aliases("s")]
-        [Cooldown(1,5,CooldownBucketType.Global)]
+        [Cooldown(1, 5, CooldownBucketType.Global)]
         [Description("Searches all the [T]ext and [S]ound file names for the Search input.")]
-        public async Task SearchQuickChats(CommandContext ctx, [RemainingText,Description("What to search for.")] string toSearch)
+        public async Task SearchQuickChats(CommandContext ctx, [RemainingText, Description("What to search for.")] string toSearch)
         {
             await ctx.TriggerTypingAsync();
             string output;
@@ -223,7 +217,7 @@ namespace StarsiegeBot
             StringBuilder sb = new StringBuilder();
             DiscordMessageBuilder msg = new DiscordMessageBuilder();
             int count = 0;
-            
+
             // We're going to search each QC for the stuff in toSearch.
             foreach (KeyValuePair<string, Quickchat> qc in quickchats)
             {
@@ -262,7 +256,7 @@ namespace StarsiegeBot
         [Command("toggle"), Aliases("t")]
         [RequireOwner]
         [Description("[Owner only] Enables or disables, or checks status of QuickChats.\r\nTo turn the feature on, use `TRUE`, `ON`, or `1`\r\nTo turn off, use `FALSE`, `OFF`, or `0`")]
-        public async Task ToggleQC (CommandContext ctx, [RemainingText] string isEnabled = null)
+        public async Task ToggleQC(CommandContext ctx, [RemainingText] string isEnabled = null)
         {
             await ctx.TriggerTypingAsync();
             isEnabled = isEnabled.ToLower();
@@ -281,7 +275,7 @@ namespace StarsiegeBot
                     IsEnabled = false;
                 }
 
-                output = $"Quickchats {(IsEnabled ? "Enabled":"Disabled")}";
+                output = $"Quickchats {(IsEnabled ? "Enabled" : "Disabled")}";
             }
             else
             {

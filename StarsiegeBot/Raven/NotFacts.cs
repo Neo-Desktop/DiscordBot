@@ -1,17 +1,17 @@
-﻿using System;
+﻿using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using Newtonsoft.Json;
 
 
 namespace StarsiegeBot
 {
     class NotFacts : BaseCommandModule
     {
-        private List<string> notfacts;
+        private readonly List<string> notfacts;
 
         public NotFacts()
         {
@@ -31,7 +31,7 @@ namespace StarsiegeBot
                 await ctx.RespondAsync(notfacts[notFactID]);
                 return;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 await ctx.RespondAsync(notfacts[Program.rnd.Next(0, notfacts.Count)]);
             }
