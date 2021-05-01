@@ -18,6 +18,8 @@ namespace StarsiegeBot
     {
         private Dictionary<string, Quickchat> quickchats;
         private bool IsEnabled;
+        private readonly string fileName = "quickchats.json";
+
 
         public QuickchatHandler()
         {
@@ -32,11 +34,11 @@ namespace StarsiegeBot
         private bool LoadQuickChatsImpl()
         {
             // Check to see if the file exists...
-            if (File.Exists("quickchats.json"))
+            if (File.Exists(fileName))
             {
                 // Load the JSON file.
                 var json = "";
-                using (var fs = File.OpenRead("quickchats.json"))
+                using (var fs = File.OpenRead(fileName))
                 using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
                     json = sr.ReadToEnd();
                 quickchats = JsonConvert.DeserializeObject<Dictionary<string, Quickchat>>(json);
@@ -76,15 +78,13 @@ namespace StarsiegeBot
         [Description("Gives the `say()` for use in the Quickchat.cs file.")]
         public async Task GetQuickChatScript(CommandContext ctx, [Description("ID of Quick chat to get script for.")] int index)
         {
-            // trigger some typing on discord's side.
-            await ctx.TriggerTypingAsync();
-
             // If we're disabled, let them know. And exit out.
             if (!IsEnabled)
             {
-                await ctx.RespondAsync("Quick Chat Commands have been disabled. Please contact the bot owners.");
                 return;
             }
+            // trigger some typing on discord's side.
+            await ctx.TriggerTypingAsync();
 
             // We're good to go... If we have an index, pull it up.
             index = Math.Abs(index);
@@ -264,7 +264,7 @@ namespace StarsiegeBot
             string[] turnOn = { "on", "true", "1" };
             string[] turnOff = { "off", "false", "0" };
 
-            if (File.Exists("quickchats.json"))
+            if (File.Exists(fileName))
             {
                 if (turnOn.Contains(isEnabled))
                 {
@@ -280,7 +280,7 @@ namespace StarsiegeBot
             else
             {
                 IsEnabled = false;
-                output = "QuickChats.json file is missing, and it can not be enabled.";
+                output = $"{fileName} file is missing, and it can not be enabled.";
             }
             await ctx.RespondAsync(output);
         }

@@ -16,6 +16,7 @@ namespace StarsiegeBot
     {
         private List<string> facts;
         private bool IsEnabled;
+        private readonly string fileName = "snapple.json";
 
         public SnappleFacts()
         {
@@ -74,8 +75,8 @@ namespace StarsiegeBot
             // report our new setting.
             embed.AddField("New", (IsEnabled ? "Enabled" : "Disabled"));
             // since the only thing that *should* go wrong is a missing file, report it if thats the case.
-            if (!File.Exists("snapple.json"))
-                embed.WithFooter(":warning: snapple.json file is missing.");
+            if (!File.Exists(fileName))
+                embed.WithFooter($":warning: {fileName} file is missing.");
             // send our results.
             await ctx.RespondAsync(embed);
         }
@@ -93,7 +94,7 @@ namespace StarsiegeBot
             DiscordEmbedBuilder embed = StartEmbed("Snapple Toggle");
             embed.AddField("Old", (IsEnabled ? "Enabled" : "Disabled"));
             // check for file.
-            if (File.Exists("snapple.json"))
+            if (File.Exists(fileName))
             {
                 // compare desired input against on or off values.
                 if (turnOn.Contains(isEnabled))
@@ -118,7 +119,7 @@ namespace StarsiegeBot
                 // file is missing, disable this, regardless of their desires. Report the file is missing in the footer with a :warning:
                 IsEnabled = false;
                 embed.AddField("New", (IsEnabled ? "Enabled" : "Disabled"));
-                embed.WithFooter(":warning: snapple.json file is missing, and it can not be enabled.");
+                embed.WithFooter($":warning: {fileName} file is missing, and it can not be enabled.");
             }
             await ctx.RespondAsync(embed);
         }
@@ -136,9 +137,9 @@ namespace StarsiegeBot
         private bool Load()
         {
             bool ret;
-            if (File.Exists("snapple.json"))
+            if (File.Exists(fileName))
             {
-                string json = File.ReadAllText("snapple.json");
+                string json = File.ReadAllText(fileName);
                 facts = JsonConvert.DeserializeObject<List<string>>(json);
                 ret = true;
             }
