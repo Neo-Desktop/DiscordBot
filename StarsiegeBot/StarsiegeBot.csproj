@@ -18,4 +18,10 @@
     <Folder Include="Unicorn\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Code Organization.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

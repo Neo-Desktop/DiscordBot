@@ -1,0 +1,97 @@
+{
+  "0": {
+    "question": "Who owns the bot?",
+    "answer": [ "cmd276" ],
+    "points": 3
+  },
+  "1": {
+    "question": "[**`unOrdinary`**] What is John's dad's name?",
+    "answer": [ "william" ],
+    "points": 3
+  },
+  "2": {
+    "question": "[**`unOrdinary`**] What is Sera's mother's power?",
+    "answer": [ "time", "time manipulation" ],
+    "points": 3
+  },
+  "3": {
+    "question": "[**`unOrdinary`**] What did Sera name her teddy bear?",
+    "answer": [ "John" ],
+    "points": 3
+  },
+  "4": {
+    "question": "[**`Tower of God`**]  Name one of the twin jahad princesses from the anima family, Lo Po Bia.",
+    "answer": [ "lilial", "shilial", "lilial jahad", "shilial jahad" ],
+    "points": 3
+  },
+  "5": {
+    "question": "[**`Prodigium`**] is the main character male/female?",
+    "answer": [ "male" ],
+    "points": 3
+  },
+  "6": {
+    "question": "[**`Prodigium`**] What is the name of the first prodigium that appears after the prologue?",
+    "answer": [ "talon" ],
+    "points": 3
+  },
+  "7": {
+    "question": "[**`Prodigium`**] What can the first prodigium’s material form?",
+    "answer": [ "glock", "pistol", "gun" ],
+    "points": 3
+  },
+  "8": {
+    "question": "[**`Prodigium`**] What is one of the two forms can a prodigium take on?",
+    "answer": [ "feral form", "material form", "feral", "material" ],
+    "points": 3
+  },
+  "9": {
+    "question": "[**`Prodigium`**] Who is Hal’s brother?",
+    "answer": [ "ash", "ashton", "ashton hart", "ash hart" ],
+    "points": 3
+  },
+  "10": {
+    "question": "[**`Prodigium`**] What is the MC’s name?",
+    "answer": [ "hal", "halwende", "halwende hart", "hal hart" ],
+    "points": 3
+  },
+  "11": {
+    "question": "[**`Prodigium`**] Tora collab, the creators of Prodigium, are split into “To” and “Ra”.  Which one does the art?",
+    "answer": [ "to" ],
+    "points": 3
+  },
+  "12": {
+    "question": "[**`Prodigium`**] Tora collab, the creators of Prodigium, are split into “To” and “Ra”.  Which one does the story?",
+    "answer": [ "ra" ],
+    "points": 3
+  },
+  "13": {
+    "question": "[**`Prodigium`**] What color is Talon?",
+    "answer": [ "yellow" ],
+    "points": 3
+  },
+  "14": {
+    "question": "[**`Prodigium`**] What does Talon’s feral form look like?",
+    "answer": [ "dragon", "lizard", "yellow dragon", "yellow lizard" ],
+    "points": 3
+  },
+  "15": {
+    "question": "[**`Prodigium`**] What was the war called?",
+    "answer": [ "magna war", "the magna war" ],
+    "points": 3
+  },
+  "16": {
+    "question": "[**`Prodigium`**] In the story, what was the name of the first prodigium ever?",
+    "answer": [ "mother", "mother prodigium" ],
+    "points": 3
+  },
+  "17": {
+    "question": "[**`Prodigium`**] Is Ashton older or younger than Hal?",
+    "answer": [ "older" ],
+    "points": 3
+  },
+  "18": {
+    "question": "Write this word: blank",
+    "answer": [ "blank", "blank" ],
+    "points": 3
+  }
+}
