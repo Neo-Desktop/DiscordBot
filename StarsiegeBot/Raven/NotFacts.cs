@@ -30,17 +30,17 @@ namespace StarsiegeBot
             if (!IsEnabled)
                 return;
             await ctx.TriggerTypingAsync();
-
+            string output;
             notFactID--;
             try
             {
-                await ctx.RespondAsync(notfacts[notFactID]);
-                return;
+                output = notfacts[notFactID];
             }
             catch (Exception)
             {
-                await ctx.RespondAsync(notfacts[Program.rnd.Next(0, notfacts.Count)]);
+                output = notfacts[Program.rnd.Next(0, notfacts.Count)];
             }
+            await ctx.RespondAsync(StartEmbed(output));
         }
 
         [Command("count"), Aliases("c"), Description("Get a count of the NotFacts")]

@@ -40,7 +40,6 @@ namespace StarsiegeBot
             {
                 // attempt to get the desired fact.
                 output = facts[snapId];
-                return;
             }
             catch (Exception)
             {
