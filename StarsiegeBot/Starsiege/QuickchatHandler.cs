@@ -290,7 +290,20 @@ namespace StarsiegeBot
             }
             await ctx.RespondAsync(output);
         }
+
+        private DiscordEmbedBuilder StartEmbed(string description)
+        {
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Description = description,
+                Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
+            };
+            return embed;
+        }
     }
+
+
+
     public class Quickchat
     {
         public string text;
