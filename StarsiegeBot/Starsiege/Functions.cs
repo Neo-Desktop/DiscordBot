@@ -1,21 +1,15 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
+﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.VoiceNext;
-using System.Text.RegularExpressions;
-using System.Linq;
-using System.Collections.Generic;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
-using DSharpPlus;
-using DSharpPlus.CommandsNext.Exceptions;
-using DSharpPlus.EventArgs;
-using DSharpPlus.VoiceNext.Codec;
-using Microsoft.Extensions.Logging;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace StarsiegeBot
 {
@@ -24,17 +18,17 @@ namespace StarsiegeBot
     {
         private Dictionary<string, SSFunction> ssFunctions;
         private bool FunctionsEnabled;
-
+        private static readonly string fileName = "Json/functions.json";
         public Functions()
         {
             Console.WriteLine("Starsiege Function Commands Loaded");
 
             // Check for file, if not there, disable commands.
-            if (File.Exists("functions.json"))
+            if (File.Exists(fileName))
             {
                 // Load the Functions JSON file. Has all information regarding Starsiege in-game Functions.
                 var json = "";
-                using (var fs = File.OpenRead("functions.json"))
+                using (var fs = File.OpenRead(fileName))
                 using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
                     json = sr.ReadToEnd();
                 ssFunctions = JsonConvert.DeserializeObject<Dictionary<string, SSFunction>>(json);
@@ -141,7 +135,7 @@ namespace StarsiegeBot
             string[] turnOn = { "on", "true", "1" };
             string[] turnOff = { "off", "false", "0" };
 
-            if (File.Exists("functions.json"))
+            if (File.Exists(fileName))
             {
                 if (turnOn.Contains(isEnabled))
                 {
@@ -160,7 +154,7 @@ namespace StarsiegeBot
             else
             {
                 FunctionsEnabled = false;
-                output = "Functions.json file is missing, and it can not be enabled.";
+                output = $"{fileName} file is missing, and it can not be enabled.";
             }
             await ctx.RespondAsync(output);
         }
@@ -170,11 +164,11 @@ namespace StarsiegeBot
             await ctx.TriggerTypingAsync();
 
             // Check for file, if not there, disable commands.
-            if (File.Exists("functions.json"))
+            if (File.Exists(fileName))
             {
                 // Load the Functions JSON file. Has all information regarding Starsiege in-game Functions.
                 var json = "";
-                using (var fs = File.OpenRead("functions.json"))
+                using (var fs = File.OpenRead(fileName))
                 using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
                     json = sr.ReadToEnd();
                 ssFunctions = JsonConvert.DeserializeObject<Dictionary<string, SSFunction>>(json);

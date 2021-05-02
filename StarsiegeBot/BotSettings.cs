@@ -1,14 +1,14 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using DSharpPlus.CommandsNext;
+﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using System.Text.RegularExpressions;
-using System.Collections.Generic;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text;
-using DSharpPlus;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace StarsiegeBot
 {
@@ -18,6 +18,8 @@ namespace StarsiegeBot
     class BotSettings : BaseCommandModule
     {
         public static Dictionary<string, GuildSettings> GuildSettings;
+        private readonly string fileName = "guildSettings.json";
+        private CancellationToken cancelToken;
         public BotSettings()
         {
             Console.WriteLine("Bot Setting Commands Loaded");
@@ -28,7 +30,7 @@ namespace StarsiegeBot
                 return;
             }
             // Check for guild settings file. If it doesnt exist, create it.
-            if (!File.Exists("guildSettings.json"))
+            if (!File.Exists(fileName))
             {
                 // Since we need to creat it, we're going to set some default stuff.
                 Console.Write("Guild Settings Config File Not Found. Creating One...");
@@ -55,7 +57,7 @@ namespace StarsiegeBot
 
                 // Now that we have the initial stuff in memory, write it to file.
                 string output = JsonConvert.SerializeObject(GuildSettings);
-                File.WriteAllTextAsync("guildSettings.json", output);
+                File.WriteAllTextAsync(fileName, output);
                 // in form the console reader that we're done making the initial config.
                 Console.WriteLine(" Done!");
             }
@@ -63,11 +65,12 @@ namespace StarsiegeBot
             {
                 // load the config file to memory.
                 var json = "";
-                using (var fs = File.OpenRead("guildSettings.json"))
+                using (var fs = File.OpenRead(fileName))
                 using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
                     json = sr.ReadToEnd();
                 GuildSettings = JsonConvert.DeserializeObject<Dictionary<string, GuildSettings>>(json);
             }
+            _ = StartTimer(cancelToken);
         }
         [GroupCommand]
         [Description("Work in progress. Does nothing yet.")]
@@ -75,6 +78,26 @@ namespace StarsiegeBot
         {
             await ctx.TriggerTypingAsync();
         }
+
+
+        private async Task StartTimer(CancellationToken cancellationToken)
+        {
+            await Task.Run(async () =>
+            {
+                while (true)
+                {
+                    string output = JsonConvert.SerializeObject(BotSettings.GuildSettings);
+                    await File.WriteAllTextAsync("guildsettings.json", output);
+                    await Task.Delay(TimeSpan.FromSeconds(120), cancellationToken);
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        Console.WriteLine("Token Cancelled.");
+                        break;
+                    }
+                }
+            });
+        }
+
     }
 
     public class GuildSettings
@@ -86,8 +109,8 @@ namespace StarsiegeBot
         public bool AllowRolesPurchase { get; set; }
         public bool UseAutoRoles { get; set; }
         public List<String> Prefixes { get; set; }
-        public Dictionary<string,Dictionary<string,int>> SelfRoles { get; set; }
-        public Dictionary<int,List<DiscordRole>> LevelRoles { get; set; }
+        public Dictionary<string, Dictionary<string, int>> SelfRoles { get; set; }
+        public Dictionary<int, List<DiscordRole>> LevelRoles { get; set; }
         public List<DiscordRole> HiddenRolesList { get; set; }
         public DiscordChannel WelcomeChannel { get; set; }
         public bool UseWelcome { get; set; }

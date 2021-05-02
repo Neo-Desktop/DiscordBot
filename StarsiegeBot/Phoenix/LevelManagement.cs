@@ -1,25 +1,10 @@
 ﻿#pragma warning disable IDE0060 // Remove unused parameter
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using DSharpPlus.VoiceNext;
+using System;
 using System.Text.RegularExpressions;
-using System.Linq;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using System.Text;
-using DSharpPlus;
-using DSharpPlus.CommandsNext.Exceptions;
-using DSharpPlus.EventArgs;
-using DSharpPlus.VoiceNext.Codec;
-using Microsoft.Extensions.Logging;
-using DSharpPlus.Interactivity;
-using DSharpPlus.Interactivity.Extensions;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace StarsiegeBot
 {
@@ -57,7 +42,7 @@ namespace StarsiegeBot
 
         [Command("edit")]
         [Description("Work in progress. Does nothing yet.")]
-        public async Task EditLevel (CommandContext ctx, int oldLeve, int newLevel)
+        public async Task EditLevel(CommandContext ctx, int oldLeve, int newLevel)
         {
             await ctx.TriggerTypingAsync();
         }

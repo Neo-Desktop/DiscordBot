@@ -11,53 +11,45 @@ using System.Threading.Tasks;
 
 namespace StarsiegeBot
 {
-    [Group("snapple"), Aliases("snap")]
-    class SnappleFacts : BaseCommandModule
+    [Group("notfact")]
+    class NotFacts : BaseCommandModule
     {
-        private List<string> facts;
+        private List<string> notfacts;
         private bool IsEnabled;
-        private readonly string fileName = "Json/snapple.json";
+        private readonly string fileName = "Json/notfacts.json";
 
-        public SnappleFacts()
+        public NotFacts()
         {
-            Console.WriteLine("Snapple Commands Loaded");
+            Console.WriteLine("NotFacts Command Loaded");
             IsEnabled = Load();
         }
 
-        [GroupCommand, Description("Get a Snapple \"Real Fact\".")]
-        public async Task Snapplefact(CommandContext ctx, [Description("[Optional] A Snapple Fact ID")] int snapId = 0)
+        [GroupCommand, Description("Get a NotFact")]
+        public async Task NotFact(CommandContext ctx, [Description("[Optional] A NotFact ID")] int notFactID = 0)
         {
-            // if we're not enabled, exit out.
             if (!IsEnabled)
                 return;
-            // trigger typing.
             await ctx.TriggerTypingAsync();
-            // store our output.    
             string output;
-            // @neo, why is this here?
-            snapId--;
+            notFactID--;
             try
             {
-                // attempt to get the desired fact.
-                output = facts[snapId];
+                output = notfacts[notFactID];
             }
             catch (Exception)
             {
-                // we couldn't find the exact one, give them a random one.
-                output = facts[Program.rnd.Next(0, facts.Count)];
+                output = notfacts[Program.rnd.Next(0, notfacts.Count)];
             }
-            // give them what they want.
             await ctx.RespondAsync(StartEmbed(output));
         }
 
-        [Command("count"), Description("Get a Snapple \"Real Fact\"."), Aliases("c")]
-        public async Task SnappleCount(CommandContext ctx)
+        [Command("count"), Aliases("c"), Description("Get a count of the NotFacts")]
+        public async Task NotFactCount(CommandContext ctx)
         {
             if (!IsEnabled)
                 return;
             await ctx.TriggerTypingAsync();
-            // trigger the typing, and report how many facts are in teh bank.
-            await ctx.RespondAsync(StartEmbed(facts.Count + " facts in the Snapple \"Real Facts\" Bank"));
+            await ctx.RespondAsync(StartEmbed(notfacts.Count + " NotFacts in the NotFacts Bank"));
         }
 
         [Command("load"), RequireOwner, Aliases("l")]
@@ -66,7 +58,7 @@ namespace StarsiegeBot
             // trigger the typing.
             await ctx.TriggerTypingAsync();
             // start the response.
-            DiscordEmbedBuilder embed = StartEmbed("Reloading Snapple Facts");
+            DiscordEmbedBuilder embed = StartEmbed("Reloading NotFacts");
             // our old setting...
             embed.AddField("Old", (IsEnabled ? "Enabled" : "Disabled"));
             // run this, we dont care about its actual results.
@@ -81,7 +73,7 @@ namespace StarsiegeBot
         }
 
         [Command("toggle"), RequireOwner, Aliases("t")]
-        public async Task Enable (CommandContext ctx, [RemainingText]string isEnabled = null)
+        public async Task Enable(CommandContext ctx, [RemainingText] string isEnabled = null)
         {
             // trigger the typing.
             await ctx.TriggerTypingAsync();
@@ -90,7 +82,7 @@ namespace StarsiegeBot
             string[] turnOn = { "on", "true", "1" };
             string[] turnOff = { "off", "false", "0" };
             //start our response.
-            DiscordEmbedBuilder embed = StartEmbed("Snapple Toggle");
+            DiscordEmbedBuilder embed = StartEmbed("NotFact Toggle");
             embed.AddField("Old", (IsEnabled ? "Enabled" : "Disabled"));
             // check for file.
             if (File.Exists(fileName))
@@ -123,6 +115,7 @@ namespace StarsiegeBot
             await ctx.RespondAsync(embed);
         }
 
+
         private DiscordEmbedBuilder StartEmbed(string desc)
         {
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder
@@ -139,7 +132,7 @@ namespace StarsiegeBot
             if (File.Exists(fileName))
             {
                 string json = File.ReadAllText(fileName);
-                facts = JsonConvert.DeserializeObject<List<string>>(json);
+                notfacts = JsonConvert.DeserializeObject<List<string>>(json);
                 ret = true;
             }
             else

@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using DSharpPlus;
+﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.VoiceNext;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace StarsiegeBot
 {
@@ -25,33 +22,15 @@ namespace StarsiegeBot
             DiscordColor.Brown, DiscordColor.Chartreuse, DiscordColor.CornflowerBlue, DiscordColor.Cyan, DiscordColor.DarkBlue, DiscordColor.DarkButNotBlack,
             DiscordColor.DarkGray, DiscordColor.DarkGreen, DiscordColor.DarkRed, DiscordColor.Gold, DiscordColor.Goldenrod, DiscordColor.Gray, DiscordColor.Grayple,
             DiscordColor.Green, DiscordColor.HotPink, DiscordColor.IndianRed, DiscordColor.LightGray, DiscordColor.Lilac, DiscordColor.Magenta, DiscordColor.MidnightBlue,
-            DiscordColor.None, DiscordColor.NotQuiteBlack, DiscordColor.Orange, DiscordColor.PhthaloBlue, DiscordColor.PhthaloGreen, DiscordColor.Purple, DiscordColor.Red,
+            DiscordColor.None, DiscordColor.NotQuiteBlack, DiscordColor.Orange, DiscordColor.PhthaloBlue, DiscordColor.PhthaloGreen, DiscordColor.Purple,
             DiscordColor.Rose, DiscordColor.SapGreen, DiscordColor.Sienna, DiscordColor.SpringGreen, DiscordColor.Teal, DiscordColor.Turquoise, DiscordColor.VeryDarkGray,
-            DiscordColor.Violet, DiscordColor.Wheat, DiscordColor.White, DiscordColor.Yellow };
+            DiscordColor.Violet, DiscordColor.Wheat, DiscordColor.White, DiscordColor.Yellow, DiscordColor.Red };
         public static readonly Random rnd = new Random();
 
         public DiscordClient Client { get; set; }
         public CommandsNextExtension Commands { get; set; }
         public VoiceNextExtension Voice { get; set; }
-        protected string BotName { get; set; }
-
-        private async Task StartTimer(CancellationToken cancellationToken)
-        {
-            await Task.Run(async () =>
-            {
-                while (true)
-                {
-                    string output = JsonConvert.SerializeObject(BotSettings.GuildSettings);
-                    await File.WriteAllTextAsync("guildSettings.json", output);
-                    await Task.Delay(TimeSpan.FromSeconds(120), cancellationToken);
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        Console.WriteLine("Token Cancelled.");
-                        break;
-                    }
-                }
-            });
-        }
+        public string BotName { get; protected set; }
 
         public static void Main(string[] args)
         {
@@ -99,7 +78,7 @@ namespace StarsiegeBot
             this.Client.UseInteractivity(new InteractivityConfiguration()
             {
                 PollBehaviour = PollBehaviour.KeepEmojis,
-                Timeout = TimeSpan.FromSeconds(15) 
+                Timeout = TimeSpan.FromSeconds(15)
             });
 
             // up next, let's set up our commands
@@ -122,15 +101,16 @@ namespace StarsiegeBot
 
             // up next, let's register our commands
             this.Commands.RegisterCommands<BotSettings>(); // Main Folder. Test Items.
-            this.Commands.RegisterCommands<Commands>();
+            this.Commands.RegisterCommands<ExperiemntalCommands>(); // Experimental commands file.
+            this.Commands.RegisterCommands<GameCommands>();
             this.Commands.RegisterCommands<GroupManagement>(); // Main Folder. Test Items.
             this.Commands.RegisterCommands<GroupRoleManagement>(); // Main Folder. Test Items.
             this.Commands.RegisterCommands<LevelManagement>(); // Main Folder. Test Items.
             this.Commands.RegisterCommands<LevelRoleManagement>(); // Main Folder. Test Items.
+            this.Commands.RegisterCommands<NotFacts>(); // Raven Folder.
             this.Commands.RegisterCommands<PrefixManagement>();
             this.Commands.RegisterCommands<RoleManagement>(); // Main Folder. Test Items.
-            this.Commands.RegisterCommands<SnappleFacts>();
-            this.Commands.RegisterCommands<StarsiegeCommands>();
+            this.Commands.RegisterCommands<SnappleFacts>(); // Raven folder.
             this.Commands.RegisterCommands<WelcomeMessage>(); // Main Folder. Test Items.
 
             // All these commands are in the STARSIEGE folder.
@@ -141,7 +121,6 @@ namespace StarsiegeBot
             this.Commands.RegisterCommands<DeathMessages>();
             this.Commands.RegisterCommands<GameInfo>();
             //}
-            Task thisTimerf = StartTimer(new CancellationToken());
 
             // let's enable voice
             this.Voice = this.Client.UseVoiceNext();
@@ -202,7 +181,6 @@ namespace StarsiegeBot
             this.Commands.CommandExecuted += Events.CommandExecuted;
             this.Commands.CommandErrored += Events.CommandErrored;
 
-
             // finally, let's connect and log in
             await this.Client.ConnectAsync();
 
@@ -218,6 +196,11 @@ namespace StarsiegeBot
 
             [JsonProperty("prefix")]
             public string CommandPrefix { get; private set; }
+        }
+
+        public static string YesNo(bool test)
+        {
+            return (test ? "Enabled" : "Disabled");
         }
     }
 }

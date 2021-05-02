@@ -1,22 +1,12 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
-using DSharpPlus.CommandsNext;
+﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.VoiceNext;
-using System.Text.RegularExpressions;
-using System.Linq;
-using System.Collections.Generic;
 using Newtonsoft.Json;
-using System.Text;
-using DSharpPlus;
-using DSharpPlus.CommandsNext.Exceptions;
-using DSharpPlus.EventArgs;
-using DSharpPlus.VoiceNext.Codec;
-using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace StarsiegeBot
 {
@@ -50,7 +40,7 @@ namespace StarsiegeBot
             }
         }
         [GroupCommand]
-        public async Task Overview (CommandContext ctx)
+        public async Task Overview(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
             Update();
@@ -70,9 +60,9 @@ namespace StarsiegeBot
                 Title = "Master|Game Server Overview",
                 Description = "Number of Master, and Game servers. Along with number of errors."
             };
-            embed.AddField("Masters", gameData.Masters.Length.ToString(),true);
-            embed.AddField("Games", gameData.Games.Length.ToString(),true);
-            embed.AddField("Errors", gameData.Errors.Length.ToString(),true);
+            embed.AddField("Masters", gameData.Masters.Length.ToString(), true);
+            embed.AddField("Games", gameData.Games.Length.ToString(), true);
+            embed.AddField("Errors", gameData.Errors.Length.ToString(), true);
             await ctx.RespondAsync(embed);
         }
 
@@ -106,7 +96,7 @@ namespace StarsiegeBot
 
         [Command("Masters"), Aliases("m")]
         [Description("Gives all the master servers as a script to be improted into `master.cs`.")]
-        public async Task MasterServers (CommandContext ctx)
+        public async Task MasterServers(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
             Update();
@@ -137,7 +127,7 @@ namespace StarsiegeBot
 
         [Command("games"), Aliases("g")]
         [Description("Currently: Lists games that have been started (Player dropped in). End Result: Lists all games that have a player in the server (either dropped in or not)")]
-        public async Task GameServers(CommandContext ctx, [Description("Number of players you want to check for. Game servers will need at least this meaning or more to be listed.")]int playerCount = 1)
+        public async Task GameServers(CommandContext ctx, [Description("Number of players you want to check for. Game servers will need at least this meaning or more to be listed.")] int playerCount = 1)
         {
             await ctx.TriggerTypingAsync();
             Update();
@@ -145,7 +135,7 @@ namespace StarsiegeBot
             // setup an exit point check.
             bool exit = false;
             // if its null, we're going to exit.
-            if(gameData is null || gameData.Games is null)
+            if (gameData is null || gameData.Games is null)
             {
                 exit = true;
             }

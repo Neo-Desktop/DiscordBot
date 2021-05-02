@@ -1,39 +1,27 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
-using DSharpPlus.CommandsNext;
+﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.VoiceNext;
-using System.Text.RegularExpressions;
-using System.Linq;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using System.Text;
-using DSharpPlus;
-using DSharpPlus.CommandsNext.Exceptions;
-using DSharpPlus.EventArgs;
-using DSharpPlus.VoiceNext.Codec;
-using Microsoft.Extensions.Logging;
-using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
-namespace StarsiegeBot
+namespace StarsiegeBot.Raven
 {
-    [Group("ex")]
-    [Hidden]
-    
-    [Description("Experimental commands. May break the bot.")]
-    class StarsiegeCommands : BaseCommandModule
+    class TriviaHandler : BaseCommandModule
     {
         private readonly List<Questions> QuizQuestions;
         private readonly Random rnd = new Random();
-        public StarsiegeCommands()
+        public TriviaHandler()
         {
             // Load all the Quick Chat texts and sound wav file info.
             var json = "";
-            using (var fs = File.OpenRead("questions.json"))
+            using (var fs = File.OpenRead("Json/questions.json"))
             using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
                 json = sr.ReadToEnd();
             Dictionary<string, Questions> tempQC = JsonConvert.DeserializeObject<Dictionary<string, Questions>>(json);
@@ -48,7 +36,7 @@ namespace StarsiegeBot
             await ctx.TriggerTypingAsync();
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
 
-            int[] ids = { rnd.Next(QuizQuestions.Count), rnd.Next(QuizQuestions.Count), rnd.Next(QuizQuestions.Count), rnd.Next(QuizQuestions.Count)};
+            int[] ids = { rnd.Next(QuizQuestions.Count), rnd.Next(QuizQuestions.Count), rnd.Next(QuizQuestions.Count), rnd.Next(QuizQuestions.Count) };
             int selection = rnd.Next(ids.Length);
             int mainId = ids[selection];
             string[] options = { "a", "b", "c", "d" };
@@ -71,7 +59,7 @@ namespace StarsiegeBot
                 var itemEmote = DiscordEmoji.FromName(ctx.Client, $":regional_indicator_{item}:");
                 await message.CreateReactionAsync(itemEmote);
             }
-            var result = message.WaitForReactionAsync(ctx.Message.Author,TimeSpan.FromSeconds(5d));
+            var result = message.WaitForReactionAsync(ctx.Message.Author, TimeSpan.FromSeconds(5d));
             if (!result.Result.TimedOut)
             {
                 if (result.Result.Result.Emoji == correctAnswer) await ctx.RespondAsync("**CORRECT!!**");
@@ -95,7 +83,7 @@ namespace StarsiegeBot
             {
                 foreach (var person in reaction.Users)
                 {
-                    if ( ! correctEmote.Equals(reaction.Emoji))
+                    if (!correctEmote.Equals(reaction.Emoji))
                     {
                         losers.Add(person, true);
                     }

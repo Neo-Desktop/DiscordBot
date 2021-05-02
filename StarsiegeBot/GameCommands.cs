@@ -1,16 +1,16 @@
 ﻿#pragma warning disable IDE0060 // Remove unused parameter
-using System;
-using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using System.Text.RegularExpressions;
-using System.Linq;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace StarsiegeBot
 {
-    class Commands : BaseCommandModule
+    class GameCommands : BaseCommandModule
     {
         // Master insult list.
         private readonly string[] InsultMaster = {
@@ -22,12 +22,13 @@ namespace StarsiegeBot
         };
         private List<string> InsultCopy;
 
-        public Commands()
+        public GameCommands()
         {
             // Let the console know we've loaded basic commands.
             Console.WriteLine("Basic Commands Loaded");
             InsultCopy = InsultMaster.ToList<string>();
         }
+
         [Command("8ball"), Aliases(new String[] { "ball", "8" })]
         [Description("The Magic 8-Ball is a fortune-telling or seeking advice")]
         public async Task Eightball(CommandContext ctx, [RemainingText, Description("Your question to the 8 ball")] String remainingText = "")
@@ -36,12 +37,7 @@ namespace StarsiegeBot
             // Load all the traditional 8-Ball answers into an array.
             string[] results = new string[] { "It is certain.", "It is decidedly so.", "Without a doubt.", "Yes - definitely.", "You may rely on it.", "As I see it, yes.", "Most likely.", "Outlook good.", "Yes.", "Signs point to yes.", "Reply hazy, try again", "Ask again later.", "Better not tell you now.", "Cannot predict now.", "Concentrate and ask again.", "Don't count on it.", "My reply is no.", "My sources say no", "Outlook not so good.", "Very doubtful." };
             // give the end user the randomly choosen result.
-            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
-            {
-                Description = results[Program.rnd.Next(0, results.Length)],
-                Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
-            };
-            await ctx.RespondAsync(embed);
+            await ctx.RespondAsync(StartEmbed(results[Program.rnd.Next(0, results.Length)]));
         }
         [Command("about")]
         [Description("Gives some basic info about the bot")]
@@ -81,12 +77,7 @@ namespace StarsiegeBot
             // We're going to randomly select heads or tails and then give it to the user.
             await ctx.TriggerTypingAsync();
             string[] choices = { "heads", "tails" };
-            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
-            {
-                Description = "The coin landed on... " + choices[Program.rnd.Next(0, choices.Length)],
-                Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
-            };
-            await ctx.RespondAsync(embed);
+            await ctx.RespondAsync(StartEmbed($"The coin landed on... {choices[Program.rnd.Next(0, choices.Length)]}"));
         }
         [Command("credits")]
         [Description("Shows all those that have helped with my bot(s) over the years!")]
@@ -174,11 +165,11 @@ namespace StarsiegeBot
             else
                 await ctx.RespondAsync(overallResults);
         }
-        [Command("guilds"),Hidden,RequireOwner]
-        public async Task GimmeServerNames (CommandContext ctx)
+        [Command("guilds"), Hidden, RequireOwner]
+        public async Task GimmeServerNames(CommandContext ctx)
         {
             string output = "";
-            foreach (KeyValuePair<ulong,DiscordGuild> item in ctx.Client.Guilds)
+            foreach (KeyValuePair<ulong, DiscordGuild> item in ctx.Client.Guilds)
             {
                 output += item.Value.Name + "\r\n";
             }
@@ -196,24 +187,14 @@ namespace StarsiegeBot
             int i = Math.Min(min, max);
             int a = Math.Max(min, max) + 1;
             // output the results
-            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
-            {
-                Description = $"🎲 Your random number is: {Program.rnd.Next(i, a)}",
-                Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
-            };
-            await ctx.RespondAsync(embed);
+            await ctx.RespondAsync(StartEmbed($"🎲 Your random number is: {Program.rnd.Next(i, a)}"));
         }
         [Command("random")]
         public async Task Random(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
             // some one didn't read the HELP file on Random. Explain it to them.
-            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
-            {
-                Description = $"Gives you a random number between <Option 1> and <Option 2> Try someething like `random 3 30`!",
-                Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
-            };
-            await ctx.RespondAsync(embed);
+            await ctx.RespondAsync(StartEmbed($"Gives you a random number between <Option 1> and <Option 2> Try someething like `random 3 30`!"));
         }
         [Command("rps")]
         [Description("Rock Paper Scissors")]
@@ -243,12 +224,7 @@ namespace StarsiegeBot
                         result += " set of child proof scissors.";
                         break;
                 }
-                DiscordEmbedBuilder embed = new DiscordEmbedBuilder
-                {
-                    Description = result,
-                    Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
-                };
-                await ctx.RespondAsync(embed);
+                await ctx.RespondAsync(StartEmbed(result));
             }
             else
             {
@@ -273,12 +249,7 @@ namespace StarsiegeBot
                 {
                     result = "Please pick a valid option! Options: " + String.Join(", ", choices);
                 }
-                DiscordEmbedBuilder embed = new DiscordEmbedBuilder
-                {
-                    Description = result,
-                    Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
-                };
-                await ctx.RespondAsync(embed);
+                await ctx.RespondAsync(StartEmbed(result));
             }
         }
         [Command("rpsls")]
@@ -318,12 +289,7 @@ namespace StarsiegeBot
                         break;
                 }
                 // tell the user we're giving them a thing.
-                DiscordEmbedBuilder embed = new DiscordEmbedBuilder
-                {
-                    Description = result,
-                    Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
-                };
-                await ctx.RespondAsync(embed);
+                await ctx.RespondAsync(StartEmbed(result));
             }
             // the end user actually wants to throw down... Lets go!
             else
@@ -361,12 +327,7 @@ namespace StarsiegeBot
                     result = "Please pick a valid option! Options: " + String.Join(", ", choices);
                 }
                 // Actually send out all our info now.
-                DiscordEmbedBuilder embed = new DiscordEmbedBuilder
-                {
-                    Description = result,
-                    Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
-                };
-                await ctx.RespondAsync(embed);
+                await ctx.RespondAsync(StartEmbed(result));
             }
         }
         [Command("say")]
@@ -382,13 +343,8 @@ namespace StarsiegeBot
             if (msg != "")
                 result = msg;
             else
-                result ="I need something to say...";
-            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
-            {
-                Description = result,
-                Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
-            };
-            await ctx.RespondAsync(embed);
+                result = "I need something to say...";
+            await ctx.RespondAsync(StartEmbed(result));
         }
         [Command("slap")]
         public async Task Slap(CommandContext ctx, DiscordMember user = null)
@@ -414,17 +370,23 @@ namespace StarsiegeBot
             // pick a random insult, and populate the names correctly.
             int randInt = Program.rnd.Next(0, InsultCopy.Count);
 
-            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
-            {
-                Description = string.Format(InsultCopy[randInt], user1, user2),
-                Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
-            };
-            await ctx.RespondAsync(embed);
+            await ctx.RespondAsync(StartEmbed(string.Format(InsultCopy[randInt], user1, user2)));
             InsultCopy.RemoveAt(randInt);
             if (InsultCopy.Count == 0)
             {
                 InsultCopy = InsultMaster.ToList<string>();
             }
         }
+
+        private DiscordEmbedBuilder StartEmbed(string desc)
+        {
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Description = desc,
+                Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
+            };
+            return embed;
+        }
+
     }
 }

@@ -1,20 +1,13 @@
 ﻿#pragma warning disable IDE0060 // Remove unused parameter
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using DSharpPlus.Interactivity;
-using DSharpPlus.Interactivity.Enums;
-using DSharpPlus.Interactivity.Extensions;
-using DSharpPlus.VoiceNext;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace StarsiegeBot
 {
@@ -225,7 +218,7 @@ namespace StarsiegeBot
         {
             d.Logger.LogDebug(BotEventId, "GuildDownloadCompleted.");
             //if(e.Guilds[376937422010974209].Members.ContainsKey(139548200099905536))
-                //notify = e.Guilds[376937422010974209].Members[139548200099905536];
+            //notify = e.Guilds[376937422010974209].Members[139548200099905536];
 
             return Task.CompletedTask;
         }
@@ -255,7 +248,7 @@ namespace StarsiegeBot
                 string msg = WelcomeMessage.WelcomeMessageProcessing(BotSettings.GuildSettings[gId].WelcomeMessage, e.Member, e.Guild);
                 BotSettings.GuildSettings[gId].WelcomeChannel.SendMessageAsync(msg);
             }
-            
+
             return Task.CompletedTask;
         }
         public Task GuildMemberRemoved(DiscordClient d, GuildMemberRemoveEventArgs e)
