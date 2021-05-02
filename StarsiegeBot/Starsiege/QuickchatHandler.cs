@@ -18,7 +18,7 @@ namespace StarsiegeBot
     {
         private Dictionary<string, Quickchat> quickchats;
         private bool IsEnabled;
-        private readonly string fileName = "quickchats.json";
+        private readonly string fileName = "Json/quickchats.json";
 
 
         public QuickchatHandler()

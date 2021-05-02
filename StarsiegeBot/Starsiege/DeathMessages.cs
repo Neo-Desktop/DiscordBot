@@ -21,7 +21,7 @@ namespace StarsiegeBot
     {
         private DeathMessageLines dmLines;
         private bool DeathMessagesEnabled;
-        private static readonly string fileName = "DeathMessages.json";
+        private static readonly string fileName = "Json/deathmessages.json";
 
         public DeathMessages()
         {

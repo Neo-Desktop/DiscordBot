@@ -18,7 +18,7 @@ namespace StarsiegeBot
     {
         private Dictionary<string, SSFunction> ssFunctions;
         private bool FunctionsEnabled;
-        private static readonly string fileName = "functions.json";
+        private static readonly string fileName = "Json/functions.json";
         public Functions()
         {
             Console.WriteLine("Starsiege Function Commands Loaded");

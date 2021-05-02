@@ -16,7 +16,7 @@ namespace StarsiegeBot
     {
         private List<string> facts;
         private bool IsEnabled;
-        private readonly string fileName = "snapple.json";
+        private readonly string fileName = "Json/snapple.json";
 
         public SnappleFacts()
         {
@@ -32,7 +32,7 @@ namespace StarsiegeBot
                 return;
             // trigger typing.
             await ctx.TriggerTypingAsync();
-            // store our output.
+            // store our output.    
             string output;
             // @neo, why is this here?
             snapId--;

@@ -16,7 +16,7 @@ namespace StarsiegeBot
     {
         private List<string> notfacts;
         private bool IsEnabled;
-        private readonly string fileName = "notfacts.json";
+        private readonly string fileName = "Json/notfacts.json";
 
         public NotFacts()
         {

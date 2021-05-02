@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace StarsiegeBot
@@ -18,6 +19,7 @@ namespace StarsiegeBot
     {
         public static Dictionary<string, GuildSettings> GuildSettings;
         private readonly string fileName = "guildSettings.json";
+        private CancellationToken cancelToken;
         public BotSettings()
         {
             Console.WriteLine("Bot Setting Commands Loaded");
@@ -68,6 +70,7 @@ namespace StarsiegeBot
                     json = sr.ReadToEnd();
                 GuildSettings = JsonConvert.DeserializeObject<Dictionary<string, GuildSettings>>(json);
             }
+            _ = StartTimer(cancelToken);
         }
         [GroupCommand]
         [Description("Work in progress. Does nothing yet.")]
@@ -75,6 +78,26 @@ namespace StarsiegeBot
         {
             await ctx.TriggerTypingAsync();
         }
+
+
+        private async Task StartTimer(CancellationToken cancellationToken)
+        {
+            await Task.Run(async () =>
+            {
+                while (true)
+                {
+                    string output = JsonConvert.SerializeObject(BotSettings.GuildSettings);
+                    await File.WriteAllTextAsync("guildsettings.json", output);
+                    await Task.Delay(TimeSpan.FromSeconds(120), cancellationToken);
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        Console.WriteLine("Token Cancelled.");
+                        break;
+                    }
+                }
+            });
+        }
+
     }
 
     public class GuildSettings

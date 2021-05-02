@@ -30,25 +30,7 @@ namespace StarsiegeBot
         public DiscordClient Client { get; set; }
         public CommandsNextExtension Commands { get; set; }
         public VoiceNextExtension Voice { get; set; }
-        protected string BotName { get; set; }
-
-        private async Task StartTimer(CancellationToken cancellationToken)
-        {
-            await Task.Run(async () =>
-            {
-                while (true)
-                {
-                    string output = JsonConvert.SerializeObject(BotSettings.GuildSettings);
-                    await File.WriteAllTextAsync("guildSettings.json", output);
-                    await Task.Delay(TimeSpan.FromSeconds(120), cancellationToken);
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        Console.WriteLine("Token Cancelled.");
-                        break;
-                    }
-                }
-            });
-        }
+        public string BotName { get; protected set; }
 
         public static void Main(string[] args)
         {
@@ -139,7 +121,6 @@ namespace StarsiegeBot
             this.Commands.RegisterCommands<DeathMessages>();
             this.Commands.RegisterCommands<GameInfo>();
             //}
-            Task thisTimerf = StartTimer(new CancellationToken());
 
             // let's enable voice
             this.Voice = this.Client.UseVoiceNext();
