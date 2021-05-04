@@ -19,7 +19,7 @@ namespace StarsiegeBot
             Console.WriteLine("Group Management Loaded.");
         }
 
-        [GroupCommand]
+        [GroupCommand, Aliases("view")]
         public async Task ListGroups(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
@@ -69,13 +69,13 @@ namespace StarsiegeBot
             }
         }
 
-        [Command("edit")]
-        [Description("This is under construction. Does nothing yet.")]
-        public async Task EditGroup(CommandContext ctx, [RemainingText] string groupInfo)
-        {
-            await ctx.TriggerTypingAsync();
-            // string gId = ctx.Guild.Id.ToString();
+        //[Command("edit")]
+        //[Description("This is under construction. Does nothing yet.")]
+        //public async Task EditGroup(CommandContext ctx, [RemainingText] string groupInfo)
+        //{
+        //    await ctx.TriggerTypingAsync();
+        //    // string gId = ctx.Guild.Id.ToString();
 
-        }
+        //}
     }
 }

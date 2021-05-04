@@ -18,8 +18,8 @@ namespace StarsiegeBot
     class BotSettings : BaseCommandModule
     {
         public static Dictionary<string, GuildSettings> GuildSettings;
-        private readonly string fileName = "guildSettings.json";
-        private CancellationToken cancelToken;
+        private readonly string fileName = "guildsettings.json";
+        private readonly CancellationTokenSource cancelToken;
         public BotSettings()
         {
             Console.WriteLine("Bot Setting Commands Loaded");
@@ -44,7 +44,7 @@ namespace StarsiegeBot
                     AllowRolesPurchase = false
                 };
                 item.UseAutoRoles = false;
-                item.LevelRoles = new Dictionary<int, List<DiscordRole>>();
+                item.LevelRoles = new Dictionary<int, List<string>>();
                 item.Prefixes = new List<string>();
                 item.SelfRoles = new Dictionary<string, Dictionary<string, int>>();
                 item.Prefixes.Add(">");
@@ -70,15 +70,56 @@ namespace StarsiegeBot
                     json = sr.ReadToEnd();
                 GuildSettings = JsonConvert.DeserializeObject<Dictionary<string, GuildSettings>>(json);
             }
-            _ = StartTimer(cancelToken);
+            cancelToken = new CancellationTokenSource();
+            _ = StartTimer(cancelToken.Token);
         }
         [GroupCommand]
-        [Description("Work in progress. Does nothing yet.")]
+        [Description("Reports simplified data about the server settings.")]
         public async Task BaseItem(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
+            var guild = GuildSettings[ctx.Guild.Id.ToString()];
+            DiscordEmbedBuilder embed = StartEmbed(ctx.Guild.Name + " Server settings.");
+            embed.AddField("On/Off Items", "_ _");
+            embed.AddField("Global Prefix", (guild.UseGlobalPrefix ? "On" : "Off"), true);
+            embed.AddField("Self Roles", (guild.UseSelfRoles ? "On" : "Off"), true);
+            embed.AddField("Level Roles", (guild.UseLevelRoles ? "On" : "Off"), true);
+            embed.AddField("Auto Roles", (guild.UseAutoRoles ? "On" : "Off"), true);
+            embed.AddField("Levels", (guild.UseLevels ? "On" : "Off"), true);
+            embed.AddField("Welcome Msg", (guild.UseWelcome ? "On" : "Off"), true);
+            embed.AddField("Counts", "_ _");
+            embed.AddField("Prefixes", guild.Prefixes.Count.ToString(), true);
+            embed.AddField("Self Groups", guild.SelfRoles.Count.ToString(), true);
+            embed.AddField("Levels", guild.LevelRoles.Count.ToString(), true);
+            await ctx.RespondAsync(embed);
         }
 
+        [Command("status"), RequireOwner]
+        [Description("Sets the bot's nickname on this server.")]
+        public async Task SetStatus (CommandContext ctx, string type, [RemainingText] string newStatus = null)
+        {
+            await ctx.TriggerTypingAsync();
+            var aType = type.ToLower() switch
+            {
+                "competing" => ActivityType.Competing,
+                "listening" => ActivityType.ListeningTo,
+                "playing" => ActivityType.Playing,
+                "streaming" => ActivityType.Streaming,
+                "watching" => ActivityType.Watching,
+                _ => ActivityType.Custom,
+            };
+            DiscordActivity act = new DiscordActivity(newStatus, aType);
+            await ctx.Client.UpdateStatusAsync(act);
+            await ctx.RespondAsync("Test.");
+        }
+
+        [Command("username"), RequireOwner]
+        public async Task SetUsername (CommandContext ctx, [RemainingText] string newName)
+        {
+            await ctx.TriggerTypingAsync();
+            await ctx.Client.UpdateCurrentUserAsync(newName);
+            await ctx.RespondAsync("How's my name name?");
+        }
 
         private async Task StartTimer(CancellationToken cancellationToken)
         {
@@ -97,7 +138,15 @@ namespace StarsiegeBot
                 }
             });
         }
-
+        private DiscordEmbedBuilder StartEmbed(string desc)
+        {
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Description = desc,
+                Color = Program.colours[^2]
+            };
+            return embed;
+        }
     }
 
     public class GuildSettings
@@ -108,13 +157,16 @@ namespace StarsiegeBot
         public bool UseLevels { get; set; }
         public bool AllowRolesPurchase { get; set; }
         public bool UseAutoRoles { get; set; }
-        public List<String> Prefixes { get; set; }
+        public List<string> Prefixes { get; set; }
+        // List<"Prefix">
+        public List<string> HiddenRolesList { get; set; }
+        // List<"RoleId">
         public Dictionary<string, Dictionary<string, int>> SelfRoles { get; set; }
-        public Dictionary<int, List<DiscordRole>> LevelRoles { get; set; }
-        public List<DiscordRole> HiddenRolesList { get; set; }
+        // Dict < "GroupName", Dict<"RoleID", Price>>
+        public Dictionary<int, List<string>> LevelRoles { get; set; }
+        // Dict< Level, List<"RoleID">>
         public DiscordChannel WelcomeChannel { get; set; }
         public bool UseWelcome { get; set; }
         public string WelcomeMessage { get; set; }
-
     }
 }

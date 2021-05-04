@@ -178,7 +178,6 @@ namespace StarsiegeBot
     class MasterServer
     {
         [JsonProperty("address")]
-
         public string Address { get; private set; }
         [JsonProperty("CommonName")]
         public string CommonName { get; private set; }

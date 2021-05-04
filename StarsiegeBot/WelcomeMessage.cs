@@ -10,7 +10,41 @@ using System.Threading.Tasks;
 namespace StarsiegeBot
 {
     [Group("welcome")]
-    [RequireGuild, RequirePermissions(Permissions.ManageChannels)]
+    [RequireGuild,
+        RequirePermissions(Permissions.ManageChannels),
+        Cooldown(1,10,CooldownBucketType.Global),
+        RequireNsfw,
+        RequireBotPermissions(Permissions.AccessChannels)
+        //RequireBotPermissions(Permissions.AddReactions),
+        //RequireBotPermissions(Permissions.Administrator),
+        //RequireBotPermissions(Permissions.AttachFiles),
+        //RequireBotPermissions(Permissions.BanMembers),
+        //RequireBotPermissions(Permissions.ChangeNickname),
+        //RequireBotPermissions(Permissions.CreateInstantInvite),
+        //RequireBotPermissions(Permissions.DeafenMembers),
+        //RequireBotPermissions(Permissions.EmbedLinks),
+        //RequireBotPermissions(Permissions.KickMembers),
+        //RequireBotPermissions(Permissions.ManageChannels),
+        //RequireBotPermissions(Permissions.ManageEmojis),
+        //RequireBotPermissions(Permissions.ManageGuild),
+        //RequireBotPermissions(Permissions.ManageMessages),
+        //RequireBotPermissions(Permissions.ManageNicknames),
+        //RequireBotPermissions(Permissions.ManageRoles),
+        //RequireBotPermissions(Permissions.ManageWebhooks),
+        //RequireBotPermissions(Permissions.MentionEveryone),
+        //RequireBotPermissions(Permissions.MoveMembers),
+        //RequireBotPermissions(Permissions.MuteMembers),
+        //RequireBotPermissions(Permissions.PrioritySpeaker),
+        //RequireBotPermissions(Permissions.ReadMessageHistory),
+        //RequireBotPermissions(Permissions.SendMessages),
+        //RequireBotPermissions(Permissions.SendTtsMessages),
+        //RequireBotPermissions(Permissions.Speak),
+        //RequireBotPermissions(Permissions.Stream),
+        //RequireBotPermissions(Permissions.UseExternalEmojis),
+        //RequireBotPermissions(Permissions.UseVoice),
+        //RequireBotPermissions(Permissions.UseVoiceDetection),
+        //RequireBotPermissions(Permissions.ViewAuditLog)
+        ]
     class WelcomeMessage : BotSettings
     {
         [GroupCommand]

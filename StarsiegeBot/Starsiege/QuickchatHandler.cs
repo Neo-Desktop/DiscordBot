@@ -66,12 +66,7 @@ namespace StarsiegeBot
             {
                 output = "Loading Quick Chats failed. File does not exist.";
             }
-            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
-            {
-                Description = output,
-                Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
-            };
-            await ctx.RespondAsync(embed);
+            await ctx.RespondAsync(StartEmbed(output));
         }
 
         [Command("script")]
@@ -106,13 +101,12 @@ namespace StarsiegeBot
         [Description("Runs a check to see how many WAV files are missing from all QC's.")]
         public async Task QuickChatCheck(CommandContext ctx)
         {
-            await ctx.TriggerTypingAsync();
             // If we're disabled, let them know. And exit out.
             if (!IsEnabled)
             {
-                await ctx.RespondAsync("Quick Chat Commands have been disabled. Please contact the bot owners.");
                 return;
             }
+            await ctx.TriggerTypingAsync();
 
             // Start a count 
             int missingFiles = 0;
@@ -127,28 +121,21 @@ namespace StarsiegeBot
             }
 
             // Reply to the message and let the user know we're missing X files.
-            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
-            {
-                Description = $"Missing files: {missingFiles}",
-                Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
-            };
-
-            await ctx.RespondAsync(embed);
+            await ctx.RespondAsync(StartEmbed($"Missing files: {missingFiles}"));
         }
 
         [GroupCommand]
         [Description("Gives a specific or random Quickchat. If that QC has a sound file that the bot knows, uploads the sound file too.")]
         public async Task QuickChat(CommandContext ctx, [Description("The ID of the quick Chat.")] int id = -1)
         {
-            await ctx.TriggerTypingAsync();
-            string output;
-
             // If we're disabled, let them know. And exit out.
             if (!IsEnabled)
             {
-                await ctx.RespondAsync("Quick Chat Commands have been disabled. Please contact the bot owners.");
                 return;
             }
+            await ctx.TriggerTypingAsync();
+            string output;
+
 
             // Start a new Message Build.
             DiscordMessageBuilder msg = new DiscordMessageBuilder();
@@ -184,6 +171,7 @@ namespace StarsiegeBot
             }
 
             // If the sound file to the select QC exists, upload it as well.
+            msg.Embed = StartEmbed(output);
             if (File.Exists($"./qc/{chat.soundFile}"))
             {
                 // Open the file.
@@ -194,7 +182,7 @@ namespace StarsiegeBot
             }
 
             // Send either the text QC or sound file if we have it
-            msg.Content = output;
+            // msg.Content = output;
             await ctx.RespondAsync(msg);
         }
 
@@ -282,7 +270,7 @@ namespace StarsiegeBot
                 IsEnabled = false;
                 output = $"{fileName} file is missing, and it can not be enabled.";
             }
-            await ctx.RespondAsync(output);
+            await ctx.RespondAsync(StartEmbed(output));
         }
 
         private DiscordEmbedBuilder StartEmbed(string description)
@@ -295,8 +283,6 @@ namespace StarsiegeBot
             return embed;
         }
     }
-
-
 
     public class Quickchat
     {
