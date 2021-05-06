@@ -14,7 +14,7 @@ namespace StarsiegeBot
     [Description("Gives various reports on the game or master servers.")]
     class GameInfo : BaseCommandModule
     {
-        private WebServerItems gameData;
+        private WebServerItems _gameData;
         public GameInfo()
         {
             Update();
@@ -22,20 +22,20 @@ namespace StarsiegeBot
         }
         private void Update()
         {
-            if (gameData is null)
+            if (_gameData is null)
             {
                 using WebClient wc = new WebClient();
-                var json = wc.DownloadString("https://alpha.starsiegeplayers.com/api/v1/multiplayer/servers");
-                gameData = JsonConvert.DeserializeObject<WebServerItems>(json);
+                string json = wc.DownloadString("https://alpha.starsiegeplayers.com/api/v1/multiplayer/servers");
+                _gameData = JsonConvert.DeserializeObject<WebServerItems>(json);
             }
             else
             {
                 using WebClient wc = new WebClient();
-                var json = wc.DownloadString("https://alpha.starsiegeplayers.com/api/v1/multiplayer/servers");
+                string json = wc.DownloadString("https://alpha.starsiegeplayers.com/api/v1/multiplayer/servers");
                 WebServerItems temp = JsonConvert.DeserializeObject<WebServerItems>(json);
-                if (temp.RequestTime != gameData.RequestTime)
+                if (temp.RequestTime != _gameData.RequestTime)
                 {
-                    gameData = temp;
+                    _gameData = temp;
                 }
             }
         }
@@ -47,7 +47,7 @@ namespace StarsiegeBot
             // setup an exit point check.
             bool exit = false;
             // if its null, we're going to exit.
-            if (gameData is null || gameData.Errors is null)
+            if (_gameData is null || _gameData.Errors is null)
             {
                 exit = true;
             }
@@ -60,9 +60,9 @@ namespace StarsiegeBot
                 Title = "Master|Game Server Overview",
                 Description = "Number of Master, and Game servers. Along with number of errors."
             };
-            embed.AddField("Masters", gameData.Masters.Length.ToString(), true);
-            embed.AddField("Games", gameData.Games.Length.ToString(), true);
-            embed.AddField("Errors", gameData.Errors.Length.ToString(), true);
+            embed.AddField("Masters", _gameData.Masters.Length.ToString(), true);
+            embed.AddField("Games", _gameData.Games.Length.ToString(), true);
+            embed.AddField("Errors", _gameData.Errors.Length.ToString(), true);
             await ctx.RespondAsync(embed);
         }
 
@@ -75,7 +75,7 @@ namespace StarsiegeBot
             // setup an exit point check.
             bool exit = false;
             // if its null, we're going to exit.
-            if (gameData is null || gameData.Errors is null)
+            if (_gameData is null || _gameData.Errors is null)
             {
                 exit = true;
             }
@@ -87,7 +87,7 @@ namespace StarsiegeBot
             {
                 Content = "Server Listing Errors:\r\n"
             };
-            foreach (var item in gameData.Errors)
+            foreach (string item in _gameData.Errors)
             {
                 msg.Content += $"{item}\r\n";
             }
@@ -103,7 +103,7 @@ namespace StarsiegeBot
             // setup an exit point check.
             bool exit = false;
             // if its null, we're going to exit.
-            if (gameData is null || gameData.Masters is null)
+            if (_gameData is null || _gameData.Masters is null)
             {
                 exit = true;
             }
@@ -116,7 +116,7 @@ namespace StarsiegeBot
                 Content = "```csharp\r\n"
             };
             int count = 0;
-            foreach (var item in gameData.Masters)
+            foreach (MasterServer item in _gameData.Masters)
             {
                 count++;
                 msg.Content += $"$Inet::Master{count} = \"IP:{item.Address}\";\r\n";
@@ -135,7 +135,7 @@ namespace StarsiegeBot
             // setup an exit point check.
             bool exit = false;
             // if its null, we're going to exit.
-            if (gameData is null || gameData.Games is null)
+            if (_gameData is null || _gameData.Games is null)
             {
                 exit = true;
             }
@@ -147,7 +147,7 @@ namespace StarsiegeBot
             DiscordMessageBuilder msg = new DiscordMessageBuilder();
             // we're on our way to greatness!
             int count = 0;
-            foreach (var item in gameData.Games)
+            foreach (GameServer item in _gameData.Games)
             {
                 // if (item.PlayerCount > playerCount)
                 if (item.GameStatus["Started"])

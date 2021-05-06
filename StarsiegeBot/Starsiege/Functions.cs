@@ -16,27 +16,27 @@ namespace StarsiegeBot
     [Group("functions"), Aliases("func")]
     class Functions : BaseCommandModule
     {
-        private Dictionary<string, SSFunction> ssFunctions;
-        private bool FunctionsEnabled;
-        private static readonly string fileName = "Json/functions.json";
+        private Dictionary<string, SSFunction> _ssFunctions;
+        private bool _functionsEnabled;
+        private static readonly string s_fileName = "Json/functions.json";
         public Functions()
         {
             Console.WriteLine("Starsiege Function Commands Loaded");
 
             // Check for file, if not there, disable commands.
-            if (File.Exists(fileName))
+            if (File.Exists(s_fileName))
             {
                 // Load the Functions JSON file. Has all information regarding Starsiege in-game Functions.
-                var json = "";
-                using (var fs = File.OpenRead(fileName))
-                using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
+                string json = "";
+                using (FileStream fs = File.OpenRead(s_fileName))
+                using (StreamReader sr = new StreamReader(fs, new UTF8Encoding(false)))
                     json = sr.ReadToEnd();
-                ssFunctions = JsonConvert.DeserializeObject<Dictionary<string, SSFunction>>(json);
-                FunctionsEnabled = true;
+                _ssFunctions = JsonConvert.DeserializeObject<Dictionary<string, SSFunction>>(json);
+                _functionsEnabled = true;
             }
             else
             {
-                FunctionsEnabled = false;
+                _functionsEnabled = false;
                 Console.WriteLine(" --- --- --- Functions JSON not found.");
             }
         }
@@ -46,7 +46,7 @@ namespace StarsiegeBot
         public async Task StarsiegeFunctions(CommandContext ctx, [RemainingText, Description("The function to attempt to look up.")] string command = "")
         {
             await ctx.TriggerTypingAsync();
-            if (!FunctionsEnabled)
+            if (!_functionsEnabled)
             {
                 await ctx.RespondAsync("Function Commands have been disabled. Please contact the bot owners.");
                 return;
@@ -56,7 +56,7 @@ namespace StarsiegeBot
             if (command.Equals(string.Empty))
             {
                 // Get a list of the Keys.
-                List<string> keys = new List<string>(ssFunctions.Keys);
+                List<string> keys = new List<string>(_ssFunctions.Keys);
                 // get a new output.
                 string output = string.Empty;
                 // loop over the keys.
@@ -78,7 +78,7 @@ namespace StarsiegeBot
             }
 
             // we have a command the want to try to find.
-            else if (ssFunctions.TryGetValue(command.ToLower(), out SSFunction outItem))
+            else if (_ssFunctions.TryGetValue(command.ToLower(), out SSFunction outItem))
             {
                 // New Message Embed!
                 DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
@@ -113,13 +113,13 @@ namespace StarsiegeBot
             await ctx.TriggerTypingAsync();
 
             // check ot make sure these commands are enabled. if disabled, report it.
-            if (!FunctionsEnabled)
+            if (!_functionsEnabled)
             {
                 await ctx.RespondAsync("Function Commands have been disabled. Please contact the bot owners.");
                 return;
             }
             // they wanted to know how many functions were documented... so tell them!
-            await ctx.RespondAsync($"There are {ssFunctions.Count} functions in the known list.");
+            await ctx.RespondAsync($"There are {_ssFunctions.Count} functions in the known list.");
         }
 
         [Command("toggle"), Aliases("t")]
@@ -135,26 +135,26 @@ namespace StarsiegeBot
             string[] turnOn = { "on", "true", "1" };
             string[] turnOff = { "off", "false", "0" };
 
-            if (File.Exists(fileName))
+            if (File.Exists(s_fileName))
             {
                 if (turnOn.Contains(isEnabled))
                 {
-                    FunctionsEnabled = true;
+                    _functionsEnabled = true;
                 }
                 else if (turnOff.Contains(isEnabled))
                 {
-                    FunctionsEnabled = false;
+                    _functionsEnabled = false;
                 }
                 else
                 {
 
                 }
-                output = $"Functions Enabled: {FunctionsEnabled}";
+                output = $"Functions Enabled: {_functionsEnabled}";
             }
             else
             {
-                FunctionsEnabled = false;
-                output = $"{fileName} file is missing, and it can not be enabled.";
+                _functionsEnabled = false;
+                output = $"{s_fileName} file is missing, and it can not be enabled.";
             }
             await ctx.RespondAsync(output);
         }
@@ -164,20 +164,20 @@ namespace StarsiegeBot
             await ctx.TriggerTypingAsync();
 
             // Check for file, if not there, disable commands.
-            if (File.Exists(fileName))
+            if (File.Exists(s_fileName))
             {
                 // Load the Functions JSON file. Has all information regarding Starsiege in-game Functions.
-                var json = "";
-                using (var fs = File.OpenRead(fileName))
-                using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
+                string json = "";
+                using (FileStream fs = File.OpenRead(s_fileName))
+                using (StreamReader sr = new StreamReader(fs, new UTF8Encoding(false)))
                     json = sr.ReadToEnd();
-                ssFunctions = JsonConvert.DeserializeObject<Dictionary<string, SSFunction>>(json);
-                FunctionsEnabled = true;
+                _ssFunctions = JsonConvert.DeserializeObject<Dictionary<string, SSFunction>>(json);
+                _functionsEnabled = true;
                 await ctx.RespondAsync("Loading Quick Chats successul.");
             }
             else
             {
-                FunctionsEnabled = false;
+                _functionsEnabled = false;
                 await ctx.RespondAsync("Loading Functions failed. File does not exist.");
             }
         }

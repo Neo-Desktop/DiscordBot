@@ -14,21 +14,21 @@ namespace StarsiegeBot
     [Group("snapple"), Aliases("snap")]
     class SnappleFacts : BaseCommandModule
     {
-        private List<string> facts;
-        private bool IsEnabled;
-        private readonly string fileName = "Json/snapple.json";
+        private List<string> _facts;
+        private bool _isEnabled;
+        private static readonly string s_fileName = "Json/snapple.json";
 
         public SnappleFacts()
         {
             Console.WriteLine("Snapple Commands Loaded");
-            IsEnabled = Load();
+            _isEnabled = Load();
         }
 
         [GroupCommand, Description("Get a Snapple \"Real Fact\".")]
         public async Task Snapplefact(CommandContext ctx, [Description("[Optional] A Snapple Fact ID")] int snapId = 0)
         {
             // if we're not enabled, exit out.
-            if (!IsEnabled)
+            if (!_isEnabled)
                 return;
             // trigger typing.
             await ctx.TriggerTypingAsync();
@@ -39,12 +39,12 @@ namespace StarsiegeBot
             try
             {
                 // attempt to get the desired fact.
-                output = facts[snapId];
+                output = _facts[snapId];
             }
             catch (Exception)
             {
                 // we couldn't find the exact one, give them a random one.
-                output = facts[Program.rnd.Next(0, facts.Count)];
+                output = _facts[Program.rnd.Next(0, _facts.Count)];
             }
             // give them what they want.
             await ctx.RespondAsync(StartEmbed(output));
@@ -53,11 +53,11 @@ namespace StarsiegeBot
         [Command("count"), Description("Get a Snapple \"Real Fact\"."), Aliases("c")]
         public async Task SnappleCount(CommandContext ctx)
         {
-            if (!IsEnabled)
+            if (!_isEnabled)
                 return;
             await ctx.TriggerTypingAsync();
             // trigger the typing, and report how many facts are in teh bank.
-            await ctx.RespondAsync(StartEmbed(facts.Count + " facts in the Snapple \"Real Facts\" Bank"));
+            await ctx.RespondAsync(StartEmbed(_facts.Count + " facts in the Snapple \"Real Facts\" Bank"));
         }
 
         [Command("load"), RequireOwner, Aliases("l")]
@@ -68,20 +68,20 @@ namespace StarsiegeBot
             // start the response.
             DiscordEmbedBuilder embed = StartEmbed("Reloading Snapple Facts");
             // our old setting...
-            embed.AddField("Old", (IsEnabled ? "Enabled" : "Disabled"));
+            embed.AddField("Old", (_isEnabled ? "Enabled" : "Disabled"));
             // run this, we dont care about its actual results.
             _ = Load();
             // report our new setting.
-            embed.AddField("New", (IsEnabled ? "Enabled" : "Disabled"));
+            embed.AddField("New", (_isEnabled ? "Enabled" : "Disabled"));
             // since the only thing that *should* go wrong is a missing file, report it if thats the case.
-            if (!File.Exists(fileName))
-                embed.WithFooter($":warning: {fileName} file is missing.");
+            if (!File.Exists(s_fileName))
+                embed.WithFooter($":warning: {s_fileName} file is missing.");
             // send our results.
             await ctx.RespondAsync(embed);
         }
 
         [Command("toggle"), RequireOwner, Aliases("t")]
-        public async Task Enable (CommandContext ctx, [RemainingText]string isEnabled = null)
+        public async Task Enable(CommandContext ctx, [RemainingText] string isEnabled = null)
         {
             // trigger the typing.
             await ctx.TriggerTypingAsync();
@@ -91,34 +91,34 @@ namespace StarsiegeBot
             string[] turnOff = { "off", "false", "0" };
             //start our response.
             DiscordEmbedBuilder embed = StartEmbed("Snapple Toggle");
-            embed.AddField("Old", (IsEnabled ? "Enabled" : "Disabled"));
+            embed.AddField("Old", (_isEnabled ? "Enabled" : "Disabled"));
             // check for file.
-            if (File.Exists(fileName))
+            if (File.Exists(s_fileName))
             {
                 // compare desired input against on or off values.
                 if (turnOn.Contains(isEnabled))
                 {
-                    IsEnabled = true;
-                    embed.AddField("New", (IsEnabled ? "Enabled" : "Disabled"));
+                    _isEnabled = true;
+                    embed.AddField("New", (_isEnabled ? "Enabled" : "Disabled"));
                 }
                 else if (turnOff.Contains(isEnabled))
                 {
-                    IsEnabled = false;
-                    embed.AddField("New", (IsEnabled ? "Enabled" : "Disabled"));
+                    _isEnabled = false;
+                    embed.AddField("New", (_isEnabled ? "Enabled" : "Disabled"));
                 }
                 else
                 {
                     // we dont know what they were trying to do, throw an error in the footer with a :warning: emote.
-                    embed.AddField("New", (IsEnabled ? "Enabled" : "Disabled"));
+                    embed.AddField("New", (_isEnabled ? "Enabled" : "Disabled"));
                     embed.WithFooter(":warning: Invalid command given?");
                 }
             }
             else
             {
                 // file is missing, disable this, regardless of their desires. Report the file is missing in the footer with a :warning:
-                IsEnabled = false;
-                embed.AddField("New", (IsEnabled ? "Enabled" : "Disabled"));
-                embed.WithFooter($":warning: {fileName} file is missing, and it can not be enabled.");
+                _isEnabled = false;
+                embed.AddField("New", (_isEnabled ? "Enabled" : "Disabled"));
+                embed.WithFooter($":warning: {s_fileName} file is missing, and it can not be enabled.");
             }
             await ctx.RespondAsync(embed);
         }
@@ -136,17 +136,17 @@ namespace StarsiegeBot
         private bool Load()
         {
             bool ret;
-            if (File.Exists(fileName))
+            if (File.Exists(s_fileName))
             {
-                string json = File.ReadAllText(fileName);
-                facts = JsonConvert.DeserializeObject<List<string>>(json);
+                string json = File.ReadAllText(s_fileName);
+                _facts = JsonConvert.DeserializeObject<List<string>>(json);
                 ret = true;
             }
             else
             {
                 ret = false;
             }
-            IsEnabled = ret;
+            _isEnabled = ret;
             return ret;
         }
     }

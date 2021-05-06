@@ -18,8 +18,8 @@ namespace StarsiegeBot
     class BotSettings : BaseCommandModule
     {
         public static Dictionary<string, GuildSettings> GuildSettings;
-        private readonly string fileName = "Json/guildsettings.json";
-        private readonly CancellationTokenSource cancelToken;
+        private readonly string _fileName = "Json/guildsettings.json";
+        private readonly CancellationTokenSource _cancelToken;
         public BotSettings()
         {
             Console.WriteLine("Bot Setting Commands Loaded");
@@ -30,7 +30,7 @@ namespace StarsiegeBot
                 return;
             }
             // Check for guild settings file. If it doesnt exist, create it.
-            if (!File.Exists(fileName))
+            if (!File.Exists(_fileName))
             {
                 // Since we need to creat it, we're going to set some default stuff.
                 Console.Write("Guild Settings Config File Not Found. Creating One...");
@@ -57,28 +57,28 @@ namespace StarsiegeBot
 
                 // Now that we have the initial stuff in memory, write it to file.
                 string output = JsonConvert.SerializeObject(GuildSettings);
-                File.WriteAllTextAsync(fileName, output);
+                File.WriteAllTextAsync(_fileName, output);
                 // in form the console reader that we're done making the initial config.
                 Console.WriteLine(" Done!");
             }
             else
             {
                 // load the config file to memory.
-                var json = "";
-                using (var fs = File.OpenRead(fileName))
-                using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
+                string json = "";
+                using (FileStream fs = File.OpenRead(_fileName))
+                using (StreamReader sr = new StreamReader(fs, new UTF8Encoding(false)))
                     json = sr.ReadToEnd();
                 GuildSettings = JsonConvert.DeserializeObject<Dictionary<string, GuildSettings>>(json);
             }
-            cancelToken = new CancellationTokenSource();
-            _ = StartTimer(cancelToken.Token);
+            _cancelToken = new CancellationTokenSource();
+            _ = StartTimer(_cancelToken.Token);
         }
         [GroupCommand]
         [Description("Reports simplified data about the server settings.")]
         public async Task BaseItem(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
-            var guild = GuildSettings[ctx.Guild.Id.ToString()];
+            GuildSettings guild = GuildSettings[ctx.Guild.Id.ToString()];
             DiscordEmbedBuilder embed = StartEmbed(ctx.Guild.Name + " Server settings.");
             embed.AddField("On/Off Items", "_ _");
             embed.AddField("Global Prefix", (guild.UseGlobalPrefix ? "On" : "Off"), true);
@@ -96,10 +96,10 @@ namespace StarsiegeBot
 
         [Command("status"), RequireOwner]
         [Description("Sets the bot's nickname on this server.")]
-        public async Task SetStatus (CommandContext ctx, string type, [RemainingText] string newStatus = null)
+        public async Task SetStatus(CommandContext ctx, string type, [RemainingText] string newStatus = null)
         {
             await ctx.TriggerTypingAsync();
-            var aType = type.ToLower() switch
+            ActivityType aType = type.ToLower() switch
             {
                 "competing" => ActivityType.Competing,
                 "listening" => ActivityType.ListeningTo,
@@ -114,7 +114,7 @@ namespace StarsiegeBot
         }
 
         [Command("username"), RequireOwner]
-        public async Task SetUsername (CommandContext ctx, [RemainingText] string newName)
+        public async Task SetUsername(CommandContext ctx, [RemainingText] string newName)
         {
             await ctx.TriggerTypingAsync();
             await ctx.Client.UpdateCurrentUserAsync(newName);
@@ -128,7 +128,7 @@ namespace StarsiegeBot
                 while (true)
                 {
                     string output = JsonConvert.SerializeObject(GuildSettings);
-                    await File.WriteAllTextAsync(fileName, output);
+                    await File.WriteAllTextAsync(_fileName, output);
                     await Task.Delay(TimeSpan.FromSeconds(120), cancellationToken);
                     if (cancellationToken.IsCancellationRequested)
                     {

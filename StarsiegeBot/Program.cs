@@ -70,12 +70,12 @@ namespace StarsiegeBot
             };
 
             // then we want to instantiate our client
-            this.Client = new DiscordClient(cfg);
+            Client = new DiscordClient(cfg);
 
             // next, let's hook some events, so we know
             // what's going on
 
-            this.Client.UseInteractivity(new InteractivityConfiguration()
+            Client.UseInteractivity(new InteractivityConfiguration()
             {
                 PollBehaviour = PollBehaviour.KeepEmojis,
                 Timeout = TimeSpan.FromSeconds(15)
@@ -97,92 +97,92 @@ namespace StarsiegeBot
             };
 
             // and hook them up
-            this.Commands = this.Client.UseCommandsNext(ccfg);
+            Commands = Client.UseCommandsNext(ccfg);
 
             // up next, let's register our commands
-            this.Commands.RegisterCommands<BotSettings>(); // Main Folder. Test Items.
-            this.Commands.RegisterCommands<ExperiemntalCommands>(); // Experimental commands file.
-            this.Commands.RegisterCommands<GameCommands>();
-            this.Commands.RegisterCommands<GroupManagement>(); // Main Folder. Test Items.
-            this.Commands.RegisterCommands<GroupRoleManagement>(); // Main Folder. Test Items.
-            this.Commands.RegisterCommands<LevelManagement>(); // Main Folder. Test Items.
-            this.Commands.RegisterCommands<LevelRoleManagement>(); // Main Folder. Test Items.
-            this.Commands.RegisterCommands<NotFacts>(); // Raven Folder.
-            this.Commands.RegisterCommands<PrefixManagement>();
-            this.Commands.RegisterCommands<RoleManagement>(); // Main Folder. Test Items.
-            this.Commands.RegisterCommands<SnappleFacts>(); // Raven folder.
-            this.Commands.RegisterCommands<WelcomeMessage>(); // Main Folder. Test Items.
+            Commands.RegisterCommands<BotSettings>(); // Main Folder. Test Items.
+            Commands.RegisterCommands<ExperiemntalCommands>(); // Experimental commands file.
+            Commands.RegisterCommands<GameCommands>();
+            Commands.RegisterCommands<GroupManagement>(); // Main Folder. Test Items.
+            Commands.RegisterCommands<GroupRoleManagement>(); // Main Folder. Test Items.
+            Commands.RegisterCommands<LevelManagement>(); // Main Folder. Test Items.
+            Commands.RegisterCommands<LevelRoleManagement>(); // Main Folder. Test Items.
+            Commands.RegisterCommands<NotFacts>(); // Raven Folder.
+            Commands.RegisterCommands<PrefixManagement>();
+            Commands.RegisterCommands<RoleManagement>(); // Main Folder. Test Items.
+            Commands.RegisterCommands<SnappleFacts>(); // Raven folder.
+            Commands.RegisterCommands<WelcomeMessage>(); // Main Folder. Test Items.
 
             // All these commands are in the STARSIEGE folder.
             //if (BotName.Contains("ssp"))
             //{
-            this.Commands.RegisterCommands<QuickchatHandler>();
-            this.Commands.RegisterCommands<Functions>();
-            this.Commands.RegisterCommands<DeathMessages>();
-            this.Commands.RegisterCommands<GameInfo>();
+            Commands.RegisterCommands<QuickchatHandler>();
+            Commands.RegisterCommands<Functions>();
+            Commands.RegisterCommands<DeathMessages>();
+            Commands.RegisterCommands<GameInfo>();
             //}
 
             // let's enable voice
-            this.Voice = this.Client.UseVoiceNext();
+            Voice = Client.UseVoiceNext();
 
             // Hook all possible Event Handlers in the system.
-            this.Client.ChannelCreated += Events.ChannelCreated;
-            this.Client.ChannelDeleted += Events.ChannelDeleted;
-            this.Client.ChannelPinsUpdated += Events.ChannelPinsUpdated;
-            this.Client.ChannelUpdated += Events.ChannelUpdated;
-            this.Client.ClientErrored += Events.ClientErrored;
-            this.Client.DmChannelDeleted += Events.DmChannelDeleted;
-            this.Client.GuildAvailable += Events.GuildAvailable;
-            this.Client.GuildBanAdded += Events.GuildBanAdded;
-            this.Client.GuildBanRemoved += Events.GuildBanRemoved;
-            this.Client.GuildCreated += Events.GuildCreated;
-            this.Client.GuildDeleted += Events.GuildDeleted;
-            this.Client.GuildDownloadCompleted += Events.GuildDownloadCompleted;
-            this.Client.GuildEmojisUpdated += Events.GuildEmojisUpdated;
-            this.Client.GuildIntegrationsUpdated += Events.GuildIntegrationsUpdated;
-            this.Client.GuildMemberAdded += Events.GuildMemberAdded;
-            this.Client.GuildMemberRemoved += Events.GuildMemberRemoved;
-            this.Client.GuildMembersChunked += Events.GuildMembersChunked;
-            this.Client.GuildMemberUpdated += Events.GuildMemberUpdated;
-            this.Client.GuildRoleCreated += Events.GuildRoleCreated;
-            this.Client.GuildRoleDeleted += Events.GuildRoleDeleted;
-            this.Client.GuildRoleUpdated += Events.GuildRoleUpdated;
-            this.Client.GuildUnavailable += Events.GuildUnavailable;
-            this.Client.GuildUpdated += Events.GuildUpdated;
-            this.Client.Heartbeated += Events.Heartbeated;
-            this.Client.InviteCreated += Events.InviteCreated;
-            this.Client.InviteDeleted += Events.InviteDeleted;
-            this.Client.MessageAcknowledged += Events.MessageAcknowledged;
-            this.Client.MessageCreated += Events.MessageCreated;
-            this.Client.MessageDeleted += Events.MessageDeleted;
-            this.Client.MessageReactionAdded += Events.MessageReactionAdded;
-            this.Client.MessageReactionRemoved += Events.MessageReactionRemoved;
-            this.Client.MessageReactionRemovedEmoji += Events.MessageReactionRemovedEmoji;
-            this.Client.MessageReactionsCleared += Events.MessageReactionsCleared;
-            this.Client.MessagesBulkDeleted += Events.MessagesBulkDeleted;
-            this.Client.MessageUpdated += Events.MessageUpdated;
-            this.Client.PresenceUpdated += Events.PresenceUpdated;
-            this.Client.Ready += Events.Ready;
-            this.Client.Resumed += Events.Resumed;
-            this.Client.SocketClosed += Events.SocketClosed;
-            this.Client.SocketErrored += Events.SocketErrored;
-            this.Client.SocketOpened += Events.SocketOpened;
-            this.Client.TypingStarted += Events.TypingStarted;
-            this.Client.UnknownEvent += Events.UnknownEvent;
-            this.Client.UserSettingsUpdated += Events.UserSettingsUpdated;
-            this.Client.UserUpdated += Events.UserUpdated;
-            this.Client.VoiceServerUpdated += Events.VoiceServerUpdated;
-            this.Client.VoiceStateUpdated += Events.VoiceStateUpdated;
-            this.Client.WebhooksUpdated += Events.WebhooksUpdated;
-            this.Client.ApplicationCommandCreated += Events.ApplicationCommandCreated;
-            this.Client.ApplicationCommandDeleted += Events.ApplicationCommandDeleted;
-            this.Client.ApplicationCommandUpdated += Events.ApplicationCommandUpdated;
-            this.Client.InteractionCreated += Events.InteractionCreated;
-            this.Commands.CommandExecuted += Events.CommandExecuted;
-            this.Commands.CommandErrored += Events.CommandErrored;
+            Client.ChannelCreated += Events.ChannelCreated;
+            Client.ChannelDeleted += Events.ChannelDeleted;
+            Client.ChannelPinsUpdated += Events.ChannelPinsUpdated;
+            Client.ChannelUpdated += Events.ChannelUpdated;
+            Client.ClientErrored += Events.ClientErrored;
+            Client.DmChannelDeleted += Events.DmChannelDeleted;
+            Client.GuildAvailable += Events.GuildAvailable;
+            Client.GuildBanAdded += Events.GuildBanAdded;
+            Client.GuildBanRemoved += Events.GuildBanRemoved;
+            Client.GuildCreated += Events.GuildCreated;
+            Client.GuildDeleted += Events.GuildDeleted;
+            Client.GuildDownloadCompleted += Events.GuildDownloadCompleted;
+            Client.GuildEmojisUpdated += Events.GuildEmojisUpdated;
+            Client.GuildIntegrationsUpdated += Events.GuildIntegrationsUpdated;
+            Client.GuildMemberAdded += Events.GuildMemberAdded;
+            Client.GuildMemberRemoved += Events.GuildMemberRemoved;
+            Client.GuildMembersChunked += Events.GuildMembersChunked;
+            Client.GuildMemberUpdated += Events.GuildMemberUpdated;
+            Client.GuildRoleCreated += Events.GuildRoleCreated;
+            Client.GuildRoleDeleted += Events.GuildRoleDeleted;
+            Client.GuildRoleUpdated += Events.GuildRoleUpdated;
+            Client.GuildUnavailable += Events.GuildUnavailable;
+            Client.GuildUpdated += Events.GuildUpdated;
+            Client.Heartbeated += Events.Heartbeated;
+            Client.InviteCreated += Events.InviteCreated;
+            Client.InviteDeleted += Events.InviteDeleted;
+            Client.MessageAcknowledged += Events.MessageAcknowledged;
+            Client.MessageCreated += Events.MessageCreated;
+            Client.MessageDeleted += Events.MessageDeleted;
+            Client.MessageReactionAdded += Events.MessageReactionAdded;
+            Client.MessageReactionRemoved += Events.MessageReactionRemoved;
+            Client.MessageReactionRemovedEmoji += Events.MessageReactionRemovedEmoji;
+            Client.MessageReactionsCleared += Events.MessageReactionsCleared;
+            Client.MessagesBulkDeleted += Events.MessagesBulkDeleted;
+            Client.MessageUpdated += Events.MessageUpdated;
+            Client.PresenceUpdated += Events.PresenceUpdated;
+            Client.Ready += Events.Ready;
+            Client.Resumed += Events.Resumed;
+            Client.SocketClosed += Events.SocketClosed;
+            Client.SocketErrored += Events.SocketErrored;
+            Client.SocketOpened += Events.SocketOpened;
+            Client.TypingStarted += Events.TypingStarted;
+            Client.UnknownEvent += Events.UnknownEvent;
+            Client.UserSettingsUpdated += Events.UserSettingsUpdated;
+            Client.UserUpdated += Events.UserUpdated;
+            Client.VoiceServerUpdated += Events.VoiceServerUpdated;
+            Client.VoiceStateUpdated += Events.VoiceStateUpdated;
+            Client.WebhooksUpdated += Events.WebhooksUpdated;
+            Client.ApplicationCommandCreated += Events.ApplicationCommandCreated;
+            Client.ApplicationCommandDeleted += Events.ApplicationCommandDeleted;
+            Client.ApplicationCommandUpdated += Events.ApplicationCommandUpdated;
+            Client.InteractionCreated += Events.InteractionCreated;
+            Commands.CommandExecuted += Events.CommandExecuted;
+            Commands.CommandErrored += Events.CommandErrored;
 
             // finally, let's connect and log in
-            await this.Client.ConnectAsync();
+            await Client.ConnectAsync();
 
             // and this is to prevent premature quitting
             await Task.Delay(-1);

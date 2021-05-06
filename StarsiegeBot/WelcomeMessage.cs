@@ -12,7 +12,7 @@ namespace StarsiegeBot
     [Group("welcome")]
     [RequireGuild,
         RequirePermissions(Permissions.ManageChannels),
-        Cooldown(1,10,CooldownBucketType.Global),
+        Cooldown(1, 10, CooldownBucketType.Global),
         RequireNsfw,
         RequireBotPermissions(Permissions.AccessChannels)
         //RequireBotPermissions(Permissions.AddReactions),

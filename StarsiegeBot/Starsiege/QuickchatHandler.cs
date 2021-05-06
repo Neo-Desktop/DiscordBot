@@ -16,15 +16,15 @@ namespace StarsiegeBot
     [Aliases("qc"), Group("quickchat")]
     class QuickchatHandler : BaseCommandModule
     {
-        private Dictionary<string, Quickchat> quickchats;
-        private bool IsEnabled;
-        private readonly string fileName = "Json/quickchats.json";
+        private Dictionary<string, Quickchat> _quickchats;
+        private bool _isEnabled;
+        private readonly string _fileName = "Json/quickchats.json";
 
 
         public QuickchatHandler()
         {
             Console.WriteLine("Quick Chat Handler Loaded");
-            IsEnabled = LoadQuickChatsImpl();
+            _isEnabled = LoadQuickChatsImpl();
         }
 
         /**
@@ -34,14 +34,14 @@ namespace StarsiegeBot
         private bool LoadQuickChatsImpl()
         {
             // Check to see if the file exists...
-            if (File.Exists(fileName))
+            if (File.Exists(_fileName))
             {
                 // Load the JSON file.
-                var json = "";
-                using (var fs = File.OpenRead(fileName))
-                using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
+                string json = "";
+                using (FileStream fs = File.OpenRead(_fileName))
+                using (StreamReader sr = new StreamReader(fs, new UTF8Encoding(false)))
                     json = sr.ReadToEnd();
-                quickchats = JsonConvert.DeserializeObject<Dictionary<string, Quickchat>>(json);
+                _quickchats = JsonConvert.DeserializeObject<Dictionary<string, Quickchat>>(json);
                 // enable the commands.
                 return true;
             }
@@ -57,8 +57,8 @@ namespace StarsiegeBot
         {
             await ctx.TriggerTypingAsync();
             string output;
-            IsEnabled = LoadQuickChatsImpl();
-            if (IsEnabled)
+            _isEnabled = LoadQuickChatsImpl();
+            if (_isEnabled)
             {
                 output = "Loading Quick Chats successful.";
             }
@@ -74,7 +74,7 @@ namespace StarsiegeBot
         public async Task GetQuickChatScript(CommandContext ctx, [Description("ID of Quick chat to get script for.")] int index)
         {
             // If we're disabled, let them know. And exit out.
-            if (!IsEnabled)
+            if (!_isEnabled)
             {
                 return;
             }
@@ -85,16 +85,16 @@ namespace StarsiegeBot
             index = Math.Abs(index);
 
             // is our index within bounds?
-            if (index < quickchats.Count)
+            if (index < _quickchats.Count)
             {
                 // yes it is, give the script to them.
-                Quickchat chat = quickchats[index.ToString()];
+                Quickchat chat = _quickchats[index.ToString()];
                 await ctx.RespondAsync("```" + chat.ToString() + "```");
                 return;
             }
 
             // we couldn't find it... Oh well, let the end user know.
-            await ctx.RespondAsync("The ID specified is out of bounds. 0-" + (quickchats.Count - 1));
+            await ctx.RespondAsync("The ID specified is out of bounds. 0-" + (_quickchats.Count - 1));
         }
 
         [Command("check")]
@@ -102,7 +102,7 @@ namespace StarsiegeBot
         public async Task QuickChatCheck(CommandContext ctx)
         {
             // If we're disabled, let them know. And exit out.
-            if (!IsEnabled)
+            if (!_isEnabled)
             {
                 return;
             }
@@ -110,10 +110,10 @@ namespace StarsiegeBot
 
             // Start a count 
             int missingFiles = 0;
-            for (int i = 0; i < quickchats.Count; i++)
+            for (int i = 0; i < _quickchats.Count; i++)
             {
                 // If this file doesnt exist, log the ID in the console, and add to the count.
-                if (!File.Exists($"./qc/{quickchats[i.ToString()].SoundFile}"))
+                if (!File.Exists($"./qc/{_quickchats[i.ToString()].SoundFile}"))
                 {
                     missingFiles++;
                     Console.Write($"{i}, ");
@@ -129,7 +129,7 @@ namespace StarsiegeBot
         public async Task QuickChat(CommandContext ctx, [Description("The ID of the quick Chat.")] int id = -1)
         {
             // If we're disabled, let them know. And exit out.
-            if (!IsEnabled)
+            if (!_isEnabled)
             {
                 return;
             }
@@ -148,7 +148,7 @@ namespace StarsiegeBot
                 {
                     id = Math.Abs(id);
                 }
-                chat = quickchats[id.ToString()];
+                chat = _quickchats[id.ToString()];
                 output = id + ": " + chat.Text;
             }
             catch (Exception)
@@ -158,8 +158,8 @@ namespace StarsiegeBot
                 {
                     try
                     {
-                        id = Program.rnd.Next(quickchats.Count);
-                        chat = quickchats[id.ToString()];
+                        id = Program.rnd.Next(_quickchats.Count);
+                        chat = _quickchats[id.ToString()];
                         output = $"[{id}] " + chat.Text;
                     }
                     catch (Exception)
@@ -195,7 +195,7 @@ namespace StarsiegeBot
             string output;
 
             // If we're disabled, let them know. And exit out.
-            if (!IsEnabled)
+            if (!_isEnabled)
             {
                 await ctx.RespondAsync("Quick Chat Commands have been disabled. Please contact the bot owners.");
                 return;
@@ -207,19 +207,19 @@ namespace StarsiegeBot
             int count = 0;
 
             // We're going to search each QC for the stuff in toSearch.
-            foreach (KeyValuePair<string, Quickchat> qc in quickchats)
+            foreach (KeyValuePair<string, Quickchat> qc in _quickchats)
             {
                 // do we have a match?
                 if (qc.Value.Text.ToLower().Contains(toSearch.ToLower()))
                 {
                     // add it to the list!
-                    sb.Append($"[{qc.Key}][T] {quickchats[qc.Key].Text}\r\n");
+                    sb.Append($"[{qc.Key}][T] {_quickchats[qc.Key].Text}\r\n");
                     count++;
                 }
                 if (qc.Value.SoundFile.ToLower().Contains(toSearch.ToLower()))
                 {
                     // add it to the list!
-                    sb.Append($"[{qc.Key}][S] {quickchats[qc.Key].Text}\r\n");
+                    sb.Append($"[{qc.Key}][S] {_quickchats[qc.Key].Text}\r\n");
                     count++;
                 }
             }
@@ -243,16 +243,37 @@ namespace StarsiegeBot
 
         [Command("flag")]
         [Description("Flags a Quick Chat for moderator checking.")]
-        public async Task FlagQC(CommandContext ctx, [Description("ID of QC to flag.")] int id, [RemainingText, Description("The reason you believe it needs flagged.")] string flagRerason = "")
+        public async Task FlagQC(CommandContext ctx, [Description("ID of QC to flag.")] int id, [RemainingText, Description("The reason you believe it needs flagged.")] string flagReason = "")
         {
             await ctx.TriggerTypingAsync();
-            Quickchat chat = quickchats[id.ToString()];
+            Quickchat chat = _quickchats[id.ToString()];
             DiscordEmbedBuilder embed;
-            chat.FlagCount++;
-            embed = StartEmbed($"Flagging QC ID `{id}` with reason of `{flagRerason}`. (F{chat.FlagCount})");
+
+
+            foreach (FlagEvent item in chat.Flags)
+            {
+                if (item.UserId == ctx.Member.Id)
+                {
+                    item.Reason = flagReason;
+                    embed = StartEmbed($"Each user can only flag an item once. Updating your reason to `{flagReason}`");
+                    string dateReason = DateTime.UtcNow.ToString();
+                    embed.WithFooter(dateReason);
+                    await ctx.RespondAsync(embed);
+                    //return;
+                }
+            }
+            //if (chat.Flags.ContainsKey(ctx.Member.Id))
+            //{
+            //    chat.Flags[ctx.Member.Id] = flagReason;
+            //    await ctx.RespondAsync(StartEmbed($"Each user can only flag an item once. Updating your reason to `{flagReason}`"));
+            //}
+            // chat.Flags.Add(ctx.Member.Id, flagReason);
+            //FlagEvent event = new FlagEvent();
+            embed = StartEmbed($"Flagging QC ID `{id}` with reason of `{flagReason}`. (F{chat.Flags.Count})");
             chat.IsFlagged = true;
-            string output = JsonConvert.SerializeObject(quickchats);
-            await File.WriteAllTextAsync(fileName, output);
+            string output = JsonConvert.SerializeObject(_quickchats);
+            await File.WriteAllTextAsync(_fileName, output);
+
             await ctx.RespondAsync(embed);
         }
 
@@ -261,7 +282,7 @@ namespace StarsiegeBot
         {
             await ctx.TriggerTypingAsync();
             int count = 0;
-            foreach (var chat in quickchats)
+            foreach (KeyValuePair<string, Quickchat> chat in _quickchats)
             {
                 if (chat.Value.IsFlagged)
                 {
@@ -270,7 +291,6 @@ namespace StarsiegeBot
             }
             await ctx.RespondAsync(StartEmbed($"There are {count} flagged Quick Chats."));
         }
-
 
         [Command("toggle"), Aliases("t")]
         [RequireOwner]
@@ -283,23 +303,23 @@ namespace StarsiegeBot
             string[] turnOn = { "on", "true", "1" };
             string[] turnOff = { "off", "false", "0" };
 
-            if (File.Exists(fileName))
+            if (File.Exists(_fileName))
             {
                 if (turnOn.Contains(isEnabled))
                 {
-                    IsEnabled = true;
+                    _isEnabled = true;
                 }
                 if (turnOff.Contains(isEnabled))
                 {
-                    IsEnabled = false;
+                    _isEnabled = false;
                 }
 
-                output = $"Quickchats {(IsEnabled ? "Enabled" : "Disabled")}";
+                output = $"Quickchats {(_isEnabled ? "Enabled" : "Disabled")}";
             }
             else
             {
-                IsEnabled = false;
-                output = $"{fileName} file is missing, and it can not be enabled.";
+                _isEnabled = false;
+                output = $"{_fileName} file is missing, and it can not be enabled.";
             }
             await ctx.RespondAsync(StartEmbed(output));
         }
@@ -322,11 +342,40 @@ namespace StarsiegeBot
         [JsonProperty("soundFile")]
         public string SoundFile { get; protected set; }
         public bool IsFlagged { get; set; }
-        public int FlagCount { get; set; }
+        [JsonProperty("flags")]
+        public List<FlagEvent> Flags { get; set; }
         public override string ToString()
         {
             return $"say(0,0, \"{Text}\", \"{SoundFile}\");";
         }
     }
+    public class FlagEvent : IEquatable<FlagEvent>
+    {
+        public ulong UserId { get; set; }
+        public string Reason { get; set; }
+        public string Timestamp { get; set; }
 
+        public FlagEvent(ulong UserId, string Reason, string Timestamp)
+        {
+            this.UserId = UserId;
+            this.Reason = Reason;
+            this.Timestamp = Timestamp;
+        }
+        public bool Equals(FlagEvent e)
+        {
+            return UserId == e.UserId;
+        }
+        public bool Equals(ulong s)
+        {
+            return UserId == s;
+        }
+        public override bool Equals(object o)
+        {
+            return false;
+        }
+        public override int GetHashCode()
+        {
+            return UserId.GetHashCode();
+        }
+    }
 }

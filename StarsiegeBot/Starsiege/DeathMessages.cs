@@ -19,32 +19,32 @@ namespace StarsiegeBot
     [Cooldown(1, 2, CooldownBucketType.Guild)]
     class DeathMessages : BaseCommandModule
     {
-        private DeathMessageLines dmLines;
-        private bool DeathMessagesEnabled;
-        private static readonly string fileName = "Json/deathmessages.json";
+        private DeathMessageLines _dmLines;
+        private bool _deathMessagesEnabled;
+        private static readonly string s_fileName = "Json/deathmessages.json";
 
         public DeathMessages()
         {
             Console.WriteLine("Death Message Commands Loaded.");
             // If the DeathMessages file exists, load it. And enable the commands.
             // Otherwise disable all the commands.
-            if (File.Exists(fileName))
+            if (File.Exists(s_fileName))
             {
                 // set some JSON text to blank.
-                var json = "";
-                using (var fs = File.OpenRead(fileName))
-                using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
+                string json = "";
+                using (FileStream fs = File.OpenRead(s_fileName))
+                using (StreamReader sr = new StreamReader(fs, new UTF8Encoding(false)))
                     json = sr.ReadToEnd();
                 // Decode the JSON and set it to dmLines.
-                dmLines = JsonConvert.DeserializeObject<DeathMessageLines>(json);
+                _dmLines = JsonConvert.DeserializeObject<DeathMessageLines>(json);
                 // Enable all the commands.
-                DeathMessagesEnabled = true;
+                _deathMessagesEnabled = true;
             }
             else
             {
                 // Echo out that we're missing a file. Disable the commands due to that.
-                Console.WriteLine($" --- --- --- --- {fileName} is missing");
-                DeathMessagesEnabled = false;
+                Console.WriteLine($" --- --- --- --- {s_fileName} is missing");
+                _deathMessagesEnabled = false;
             }
         }
 
@@ -53,24 +53,24 @@ namespace StarsiegeBot
         public async Task LoadDeathMessages(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
-            if (File.Exists(fileName))
+            if (File.Exists(s_fileName))
             {
                 // set some JSON text to blank.
-                var json = "";
-                using (var fs = File.OpenRead(fileName))
-                using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
+                string json = "";
+                using (FileStream fs = File.OpenRead(s_fileName))
+                using (StreamReader sr = new StreamReader(fs, new UTF8Encoding(false)))
                     json = sr.ReadToEnd();
                 // Decode the JSON and set it to dmLines.
-                dmLines = JsonConvert.DeserializeObject<DeathMessageLines>(json);
+                _dmLines = JsonConvert.DeserializeObject<DeathMessageLines>(json);
                 // Enable all the commands.
-                DeathMessagesEnabled = true;
+                _deathMessagesEnabled = true;
                 await ctx.RespondAsync("Loading Death Messages successul.");
             }
             else
             {
                 // Echo out that we're missing a file. Disable the commands due to that.
                 await ctx.RespondAsync("Can't load Death Messages. File missing.");
-                DeathMessagesEnabled = false;
+                _deathMessagesEnabled = false;
             }
         }
 
@@ -87,26 +87,26 @@ namespace StarsiegeBot
             string[] turnOn = { "on", "true", "1" };
             string[] turnOff = { "off", "false", "0" };
 
-            if (File.Exists(fileName))
+            if (File.Exists(s_fileName))
             {
                 if (turnOn.Contains(isEnabled))
                 {
-                    DeathMessagesEnabled = true;
+                    _deathMessagesEnabled = true;
                 }
                 else if (turnOff.Contains(isEnabled))
                 {
-                    DeathMessagesEnabled = false;
+                    _deathMessagesEnabled = false;
                 }
                 else
                 {
 
                 }
-                output = $"DeathMessages Enabled: {DeathMessagesEnabled}";
+                output = $"DeathMessages Enabled: {_deathMessagesEnabled}";
             }
             else
             {
-                DeathMessagesEnabled = false;
-                output = $"{fileName} file is missing, and it can not be enabled.";
+                _deathMessagesEnabled = false;
+                output = $"{s_fileName} file is missing, and it can not be enabled.";
             }
             await ctx.RespondAsync(output);
         }
@@ -119,7 +119,7 @@ namespace StarsiegeBot
 
             // IF we're missing the Death Messages dot JSON file, we're going to get disabled... Check for that.
             // If disabled, let the person know the command set is disabled, and return.
-            if (!DeathMessagesEnabled)
+            if (!_deathMessagesEnabled)
             {
                 await ctx.RespondAsync("Death Messages Commands have been disabled. Please contact the bot owners.");
                 return;
@@ -130,8 +130,8 @@ namespace StarsiegeBot
             // if there is no target, we're going to "kill" the author.
             if (target == null)
             {
-                int choice = Program.rnd.Next(0, dmLines.Generic.Length);
-                line = dmLines.Generic[choice];
+                int choice = Program.rnd.Next(0, _dmLines.Generic.Length);
+                line = _dmLines.Generic[choice];
                 await ctx.RespondAsync(string.Format(line, ctx.Message.Author.Mention));
             }
             // we have a valid target... Have the bot kill them.
@@ -143,14 +143,14 @@ namespace StarsiegeBot
                 if (opt == 1)
                 {
                     // Pick an Active death message at random, and set our output to it.
-                    int choice = Program.rnd.Next(0, dmLines.Active.Length);
-                    line = dmLines.Active[choice];
+                    int choice = Program.rnd.Next(0, _dmLines.Active.Length);
+                    line = _dmLines.Active[choice];
                 }
                 else if (opt == 2)
                 {
                     // We picked a Passive death message type. Pick the exact line at random. Set it to the output.
-                    int choice = Program.rnd.Next(0, dmLines.Passive.Length);
-                    line = dmLines.Passive[choice];
+                    int choice = Program.rnd.Next(0, _dmLines.Passive.Length);
+                    line = _dmLines.Passive[choice];
                 }
                 // Give the selected death message to the user.
                 await ctx.RespondAsync(string.Format(line, ctx.Message.Author.Mention, target.Mention));
@@ -163,7 +163,7 @@ namespace StarsiegeBot
         {
             // IF we're missing the Death Messages dot JSON file, we're going to get disabled... Check for that.
             // If disabled, let the person know the command set is disabled, and return.
-            if (!DeathMessagesEnabled)
+            if (!_deathMessagesEnabled)
             {
                 await ctx.RespondAsync("Death Messages Commands have been disabled. Please contact the bot owners.");
                 return;
@@ -171,7 +171,7 @@ namespace StarsiegeBot
             // We're typing here!
             await ctx.TriggerTypingAsync();
             // List all the types of Death Message types, and how many we have of each one.
-            await ctx.RespondAsync($"\r\nActive: {dmLines.Active.Length}\r\nPassive: {dmLines.Passive.Length}\r\nGeneric: {dmLines.Generic.Length}");
+            await ctx.RespondAsync($"\r\nActive: {_dmLines.Active.Length}\r\nPassive: {_dmLines.Passive.Length}\r\nGeneric: {_dmLines.Generic.Length}");
         }
 
         [Command("Add")]
@@ -181,7 +181,7 @@ namespace StarsiegeBot
         {
             // IF we're missing the Death Messages dot JSON file, we're going to get disabled... Check for that.
             // If disabled, let the person know the command set is disabled, and return.
-            if (!DeathMessagesEnabled)
+            if (!_deathMessagesEnabled)
             {
                 await ctx.RespondAsync("Death Messages Commands have been disabled. Please contact the bot owners.");
                 return;
@@ -191,10 +191,10 @@ namespace StarsiegeBot
             // Message the owner know some one wants to add a new death message, along with a code block to that message.
 
             // if the Queue is null, make it exist.
-            if (dmLines.Queue is null)
-                dmLines.Queue = new List<string>();
+            if (_dmLines.Queue is null)
+                _dmLines.Queue = new List<string>();
             // add the message to the queue list.
-            dmLines.Queue.Add(msg);
+            _dmLines.Queue.Add(msg);
             // Store the new stuff to file...
             await StoreDeathMessages();
             // Tell the person that the message has been added to a 'queue'.
@@ -208,7 +208,7 @@ namespace StarsiegeBot
             await ctx.TriggerTypingAsync();
             // IF we're missing the Death Messages dot JSON file, we're going to get disabled... Check for that.
             // If disabled, let the person know the command set is disabled, and return.
-            if (!DeathMessagesEnabled)
+            if (!_deathMessagesEnabled)
             {
                 await ctx.RespondAsync("Death Messages Commands have been disabled. Please contact the bot owners.");
                 return;
@@ -224,27 +224,27 @@ namespace StarsiegeBot
             using StreamWriter file = new StreamWriter("deathmessages.cs");
 
             // Write out the total lines for each. Requirement for Starsiege.
-            await file.WriteLineAsync($"$deathMessage::genericCount   = {dmLines.Generic.Length};");
-            await file.WriteLineAsync($"$deathMessage::activeCount    = {dmLines.Active.Length};");
-            await file.WriteLineAsync($"$deathMessage::passiveCount   = {dmLines.Passive.Length};\r\n");
+            await file.WriteLineAsync($"$deathMessage::genericCount   = {_dmLines.Generic.Length};");
+            await file.WriteLineAsync($"$deathMessage::activeCount    = {_dmLines.Active.Length};");
+            await file.WriteLineAsync($"$deathMessage::passiveCount   = {_dmLines.Passive.Length};\r\n");
 
             // Set count to 0. Iterate over each type of Death Message, and put it into the file.
             int count = 0;
-            foreach (string death in dmLines.Generic)
+            foreach (string death in _dmLines.Generic)
             {
                 await file.WriteLineAsync(string.Format($"$deathMessage::generic{count}   = \"{death}\";", "%s", "%s"));
                 count++;
             }
             // Reset the count...
             count = 0;
-            foreach (string death in dmLines.Active)
+            foreach (string death in _dmLines.Active)
             {
                 await file.WriteLineAsync(string.Format($"$deathMessage::active{count}   = \"{death}\";", "%s", "%s"));
                 count++;
             }
             // Reset the count one last time...
             count = 0;
-            foreach (string death in dmLines.Passive)
+            foreach (string death in _dmLines.Passive)
             {
                 await file.WriteLineAsync(string.Format($"$deathMessage::passive{count}   = \"{death}\";", "%s", "%s"));
                 count++;
@@ -269,8 +269,8 @@ namespace StarsiegeBot
 
         private async Task StoreDeathMessages()
         {
-            string output = JsonConvert.SerializeObject(dmLines);
-            await File.WriteAllTextAsync(fileName, output);
+            string output = JsonConvert.SerializeObject(_dmLines);
+            await File.WriteAllTextAsync(s_fileName, output);
             return;
         }
     }
@@ -283,8 +283,8 @@ namespace StarsiegeBot
         [JsonProperty("generic")]
         public string[] Generic { get; set; }
         [JsonProperty("flagged")]
-        public List<String> Flagged { get; set; }
+        public List<string> Flagged { get; set; }
         [JsonProperty("queue")]
-        public List<String> Queue { get; set; }
+        public List<string> Queue { get; set; }
     }
 }

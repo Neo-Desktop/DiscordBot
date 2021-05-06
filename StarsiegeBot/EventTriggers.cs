@@ -1,6 +1,7 @@
 ﻿#pragma warning disable IDE0060 // Remove unused parameter
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
@@ -17,7 +18,7 @@ namespace StarsiegeBot
         public readonly EventId BotEventId;
         public static DiscordMember notify;
         // protected string BotName { get; set; }
-        private readonly BotSettings Guilds = new BotSettings();
+        private readonly BotSettings _guilds = new BotSettings();
 
         public Triggers(EventId botEventId) => BotEventId = botEventId;
         public Task CommandExecuted(CommandsNextExtension ext, CommandExecutionEventArgs e)
@@ -77,14 +78,14 @@ namespace StarsiegeBot
             if (cmdStart == -1) return Task.CompletedTask;
 
             // Retrieve prefix.
-            var prefix = msg.Content.Substring(0, cmdStart);
-            var cmdString = msg.Content[cmdStart..];
+            string prefix = msg.Content.Substring(0, cmdStart);
+            string cmdString = msg.Content[cmdStart..];
 
             // Retrieve full command string.
-            var command = cnext.FindCommand(cmdString, out var args);
+            Command command = cnext.FindCommand(cmdString, out string args);
             if (command == null) return Task.CompletedTask;
 
-            var ctx = cnext.CreateContext(msg, prefix, command, args);
+            CommandContext ctx = cnext.CreateContext(msg, prefix, command, args);
             Task.Run(async () => await cnext.ExecuteCommandAsync(ctx));
 
             return Task.CompletedTask;
@@ -96,7 +97,7 @@ namespace StarsiegeBot
             if (e.Exception is ChecksFailedException ex)
             {
                 string output = "---\r\n";
-                foreach (var item in ex.FailedChecks)
+                foreach (CheckBaseAttribute item in ex.FailedChecks)
                 {
                     output += item.ToString() + "\r\n";
                 }
@@ -232,10 +233,10 @@ namespace StarsiegeBot
             //if(e.Guilds[376937422010974209].Members.ContainsKey(139548200099905536))
             //notify = e.Guilds[376937422010974209].Members[139548200099905536];
             ulong desiredKey = 139548200099905536;
-            foreach (KeyValuePair<ulong,DiscordGuild> item in e.Guilds)
+            foreach (KeyValuePair<ulong, DiscordGuild> item in e.Guilds)
             {
                 DiscordGuild curr = item.Value;
-                if(curr.Members.ContainsKey(desiredKey))
+                if (curr.Members.ContainsKey(desiredKey))
                 {
                     notify = curr.Members[desiredKey];
                     break;
@@ -245,7 +246,7 @@ namespace StarsiegeBot
             // notify the *primary bot owner if the Guild count is above 75. So we can start bot verification process.
             if (e.Guilds.Count > 75)
                 notify.SendMessageAsync("**__WARNING__: BOT IS IN OVER 75 SERVERS.");
-            
+
             return Task.CompletedTask;
         }
         public Task GuildEmojisUpdated(DiscordClient d, GuildEmojisUpdateEventArgs e)

@@ -31,7 +31,7 @@ namespace StarsiegeBot
             else
             {
                 // we have server settings... why does this give so much info? it should only show only prefix(es)
-                var server = GuildSettings[guild];
+                GuildSettings server = GuildSettings[guild];
                 DiscordEmbedBuilder embed = new DiscordEmbedBuilder
                 {
                     Description = $"{ctx.Guild.Name} Prefixes."

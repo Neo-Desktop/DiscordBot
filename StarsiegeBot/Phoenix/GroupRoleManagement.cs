@@ -27,9 +27,9 @@ namespace StarsiegeBot
 
         [Command("add")]
         [Description("Work in progress. Does nothing yet.")]
-        public async Task AddSelfRole(CommandContext ctx, 
-            [Description("The role to add.")] DiscordRole role, 
-            [Description("The price of the role for buyable roles. 0 for no cost. Free free to leave blank if not using Buyable roles.")] int price = 0, 
+        public async Task AddSelfRole(CommandContext ctx,
+            [Description("The role to add.")] DiscordRole role,
+            [Description("The price of the role for buyable roles. 0 for no cost. Free free to leave blank if not using Buyable roles.")] int price = 0,
             [Description("What group to put the role in. If not using groups, you can leave blank."), RemainingText] string groupName = null)
         {
             await ctx.TriggerTypingAsync();
@@ -56,8 +56,8 @@ namespace StarsiegeBot
 
         [Command("delete")]
         [Description("Work in progress. Does nothing yet.")]
-        public async Task DeleteSelfRole(CommandContext ctx, 
-            [Description("The role to delete.")] DiscordRole role, 
+        public async Task DeleteSelfRole(CommandContext ctx,
+            [Description("The role to delete.")] DiscordRole role,
             [Description("The group to remove the role from. If left blank, will remove from all groups."), RemainingText] string group = null)
         {
             await ctx.TriggerTypingAsync();

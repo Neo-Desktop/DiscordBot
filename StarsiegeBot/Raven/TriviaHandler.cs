@@ -15,17 +15,17 @@ namespace StarsiegeBot.Raven
 {
     class TriviaHandler : BaseCommandModule
     {
-        private readonly List<Questions> QuizQuestions;
-        private readonly Random rnd = new Random();
+        private readonly List<Questions> _quizQuestions;
+        private static readonly string s_fileName = "Json/trivia.json";
         public TriviaHandler()
         {
             // Load all the Quick Chat texts and sound wav file info.
-            var json = "";
-            using (var fs = File.OpenRead("Json/questions.json"))
-            using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
+            string json = "";
+            using (FileStream fs = File.OpenRead(s_fileName))
+            using (StreamReader sr = new StreamReader(fs, new UTF8Encoding(false)))
                 json = sr.ReadToEnd();
             Dictionary<string, Questions> tempQC = JsonConvert.DeserializeObject<Dictionary<string, Questions>>(json);
-            QuizQuestions = Enumerable.ToList(tempQC.Values);
+            _quizQuestions = Enumerable.ToList(tempQC.Values);
 
         }
         [Command("quiz")]
@@ -36,25 +36,25 @@ namespace StarsiegeBot.Raven
             await ctx.TriggerTypingAsync();
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
 
-            int[] ids = { rnd.Next(QuizQuestions.Count), rnd.Next(QuizQuestions.Count), rnd.Next(QuizQuestions.Count), rnd.Next(QuizQuestions.Count) };
-            int selection = rnd.Next(ids.Length);
+            int[] ids = { Program.rnd.Next(_quizQuestions.Count), Program.rnd.Next(_quizQuestions.Count), Program.rnd.Next(_quizQuestions.Count), Program.rnd.Next(_quizQuestions.Count) };
+            int selection = Program.rnd.Next(ids.Length);
             int mainId = ids[selection];
             string[] options = { "a", "b", "c", "d" };
 
             var correctAnswer = DiscordEmoji.FromName(ctx.Client, $":regional_indicator_{options[selection]}:");
 
-            Questions myQuestion = QuizQuestions[mainId];
+            Questions myQuestion = _quizQuestions[mainId];
 
             embed.Description = myQuestion.Question;
 
-            embed.AddField($":regional_indicator_{options[0]}:", QuizQuestions[ids[0]].Answers[rnd.Next(QuizQuestions[ids[0]].Answers.Length)], true);
-            embed.AddField($":regional_indicator_{options[1]}:", QuizQuestions[ids[1]].Answers[rnd.Next(QuizQuestions[ids[1]].Answers.Length)], true);
+            embed.AddField($":regional_indicator_{options[0]}:", _quizQuestions[ids[0]].Answers[Program.rnd.Next(_quizQuestions[ids[0]].Answers.Length)], true);
+            embed.AddField($":regional_indicator_{options[1]}:", _quizQuestions[ids[1]].Answers[Program.rnd.Next(_quizQuestions[ids[1]].Answers.Length)], true);
             embed.AddField("_ _", "_ _", false);
-            embed.AddField($":regional_indicator_{options[2]}:", QuizQuestions[ids[2]].Answers[rnd.Next(QuizQuestions[ids[2]].Answers.Length)], true);
-            embed.AddField($":regional_indicator_{options[3]}:", QuizQuestions[ids[3]].Answers[rnd.Next(QuizQuestions[ids[3]].Answers.Length)], true);
+            embed.AddField($":regional_indicator_{options[2]}:", _quizQuestions[ids[2]].Answers[Program.rnd.Next(_quizQuestions[ids[2]].Answers.Length)], true);
+            embed.AddField($":regional_indicator_{options[3]}:", _quizQuestions[ids[3]].Answers[Program.rnd.Next(_quizQuestions[ids[3]].Answers.Length)], true);
 
-            var message = await ctx.RespondAsync(embed);
-            foreach (var item in options)
+            DiscordMessage message = await ctx.RespondAsync(embed);
+            foreach (string item in options)
             {
                 var itemEmote = DiscordEmoji.FromName(ctx.Client, $":regional_indicator_{item}:");
                 await message.CreateReactionAsync(itemEmote);
@@ -72,16 +72,16 @@ namespace StarsiegeBot.Raven
         [Hidden]
         public async Task CollectionCommand(CommandContext ctx)
         {
-            var message = await ctx.RespondAsync("React here!");
+            DiscordMessage message = await ctx.RespondAsync("React here!");
             var reactions = await message.CollectReactionsAsync();
 
             var strBuilder = new StringBuilder();
             Dictionary<DiscordUser, bool> winners = new Dictionary<DiscordUser, bool>();
             Dictionary<DiscordUser, bool> losers = new Dictionary<DiscordUser, bool>();
-            var correctEmote = reactions[0].Emoji;
+            DiscordEmoji correctEmote = reactions[0].Emoji;
             foreach (var reaction in reactions)
             {
-                foreach (var person in reaction.Users)
+                foreach (DiscordUser person in reaction.Users)
                 {
                     if (!correctEmote.Equals(reaction.Emoji))
                     {

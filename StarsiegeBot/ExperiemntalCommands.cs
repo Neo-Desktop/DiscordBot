@@ -20,14 +20,14 @@ namespace StarsiegeBot
     class ExperiemntalCommands : BaseCommandModule
     {
         [Command("exit"), RequireOwner]
-        public async Task ExitProgram (CommandContext ctx)
+        public async Task ExitProgram(CommandContext ctx)
         {
             await ctx.RespondAsync("Attempting a shutdown...");
             System.Environment.Exit(0);
         }
 
         [Command("Report")]
-        public async Task Report (CommandContext ctx)
+        public async Task Report(CommandContext ctx)
         {
             await ctx.RespondAsync("Report not generated");
         }

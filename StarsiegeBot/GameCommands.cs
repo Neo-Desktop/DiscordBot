@@ -13,25 +13,25 @@ namespace StarsiegeBot
     class GameCommands : BaseCommandModule
     {
         // Master insult list.
-        private readonly string[] InsultMaster = {
+        private readonly string[] _insultMaster = {
             "{0} slaps {1} around a bit with a large trout.",
             "{0} puts a jellyfish on {1}'s head.",
             "{0} slaps {1} around a bit with the mustache of Caanon.",
             "{0} slaps {1} around a bit with a questionable rubber object.",
             "{0} slaps {1} around a bit with a rubber chicken."
         };
-        private List<string> InsultCopy;
+        private List<string> _insultCopy;
 
         public GameCommands()
         {
             // Let the console know we've loaded basic commands.
             Console.WriteLine("Basic Commands Loaded");
-            InsultCopy = InsultMaster.ToList<string>();
+            _insultCopy = _insultMaster.ToList<string>();
         }
 
-        [Command("8ball"), Aliases(new String[] { "ball", "8" })]
+        [Command("8ball"), Aliases(new string[] { "ball", "8" })]
         [Description("The Magic 8-Ball is a fortune-telling or seeking advice")]
-        public async Task Eightball(CommandContext ctx, [RemainingText, Description("Your question to the 8 ball")] String remainingText = "")
+        public async Task Eightball(CommandContext ctx, [RemainingText, Description("Your question to the 8 ball")] string remainingText = "")
         {
             await ctx.TriggerTypingAsync();
             // Load all the traditional 8-Ball answers into an array.
@@ -99,7 +99,7 @@ namespace StarsiegeBot
         [Command("dice"), Aliases("r", "d", "roll")]
         [Description("A classic dice throwing command. Limited to 1 use per 2 seconds. Format: <NumberOfDice>d<SidesOnDie> ")]
         [Cooldown(1, 2, CooldownBucketType.Guild)]
-        public async Task Dice(CommandContext ctx, [RemainingText, Description("XdY")] String throwing = "d")
+        public async Task Dice(CommandContext ctx, [RemainingText, Description("XdY")] string throwing = "d")
         {
             // let the end user know the bot is doing something...
             await ctx.TriggerTypingAsync();
@@ -109,7 +109,7 @@ namespace StarsiegeBot
             int totalResult = 0;
             int totalDie = 0;
             // set the results to an empty string.
-            string overallResults = String.Empty;
+            string overallResults = string.Empty;
             // Prep the regex statement.
             Regex regex = new Regex("(\\d{0,})(d)(-{0,1}\\d{0,})");
             // Get a collection of regex matches from the dice we're through.
@@ -121,7 +121,7 @@ namespace StarsiegeBot
                 if (m.Success)
                 {
                     // set an empty string, set a counter. 
-                    string dieResults = String.Empty;
+                    string dieResults = string.Empty;
                     int dieResult = 0;
                     // attempt to get the number of dice being "thrown" and the number of sides those die have.
                     bool volTest = int.TryParse(m.Groups[1].ToString(), out int volume);
@@ -143,7 +143,7 @@ namespace StarsiegeBot
                         // since the rnd.Next is inclusive, exclusive, we have to adjust for that.
                         int roll = Program.rnd.Next(Math.Min(1, sides), Math.Max(sides + 1, 0));
                         // do we have our first result? No, make it! Store the results in a string to show the end user.
-                        if (dieResults.Equals(String.Empty))
+                        if (dieResults.Equals(string.Empty))
                             dieResults = roll.ToString();
                         else
                             dieResults += $", {roll}";
@@ -247,7 +247,7 @@ namespace StarsiegeBot
                 }
                 else
                 {
-                    result = "Please pick a valid option! Options: " + String.Join(", ", choices);
+                    result = "Please pick a valid option! Options: " + string.Join(", ", choices);
                 }
                 await ctx.RespondAsync(StartEmbed(result));
             }
@@ -324,7 +324,7 @@ namespace StarsiegeBot
                 else
                 {
                     // the end user didn't pick something that is within the choice set... Tell them they need to play better.
-                    result = "Please pick a valid option! Options: " + String.Join(", ", choices);
+                    result = "Please pick a valid option! Options: " + string.Join(", ", choices);
                 }
                 // Actually send out all our info now.
                 await ctx.RespondAsync(StartEmbed(result));
@@ -368,13 +368,13 @@ namespace StarsiegeBot
                 user2 = user.Mention;
             }
             // pick a random insult, and populate the names correctly.
-            int randInt = Program.rnd.Next(0, InsultCopy.Count);
+            int randInt = Program.rnd.Next(0, _insultCopy.Count);
 
-            await ctx.RespondAsync(StartEmbed(string.Format(InsultCopy[randInt], user1, user2)));
-            InsultCopy.RemoveAt(randInt);
-            if (InsultCopy.Count == 0)
+            await ctx.RespondAsync(StartEmbed(string.Format(_insultCopy[randInt], user1, user2)));
+            _insultCopy.RemoveAt(randInt);
+            if (_insultCopy.Count == 0)
             {
-                InsultCopy = InsultMaster.ToList<string>();
+                _insultCopy = _insultMaster.ToList<string>();
             }
         }
 
