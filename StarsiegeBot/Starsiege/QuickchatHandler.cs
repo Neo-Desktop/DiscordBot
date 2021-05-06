@@ -113,7 +113,7 @@ namespace StarsiegeBot
             for (int i = 0; i < quickchats.Count; i++)
             {
                 // If this file doesnt exist, log the ID in the console, and add to the count.
-                if (!File.Exists($"./qc/{quickchats[i.ToString()].soundFile}"))
+                if (!File.Exists($"./qc/{quickchats[i.ToString()].SoundFile}"))
                 {
                     missingFiles++;
                     Console.Write($"{i}, ");
@@ -149,7 +149,7 @@ namespace StarsiegeBot
                     id = Math.Abs(id);
                 }
                 chat = quickchats[id.ToString()];
-                output = id + ": " + chat.text;
+                output = id + ": " + chat.Text;
             }
             catch (Exception)
             {
@@ -160,7 +160,7 @@ namespace StarsiegeBot
                     {
                         id = Program.rnd.Next(quickchats.Count);
                         chat = quickchats[id.ToString()];
-                        output = $"[{id}] " + chat.text;
+                        output = $"[{id}] " + chat.Text;
                     }
                     catch (Exception)
                     {
@@ -172,13 +172,13 @@ namespace StarsiegeBot
 
             // If the sound file to the select QC exists, upload it as well.
             msg.Embed = StartEmbed(output);
-            if (File.Exists($"./qc/{chat.soundFile}"))
+            if (File.Exists($"./qc/{chat.SoundFile}"))
             {
                 // Open the file.
-                FileStream sound = new FileStream($"./qc/{chat.soundFile}", FileMode.Open, FileAccess.Read);
+                FileStream sound = new FileStream($"./qc/{chat.SoundFile}", FileMode.Open, FileAccess.Read);
 
                 // feed it to the Message Builder.
-                msg.WithFile(chat.soundFile, sound);
+                msg.WithFile(chat.SoundFile, sound);
             }
 
             // Send either the text QC or sound file if we have it
@@ -210,16 +210,16 @@ namespace StarsiegeBot
             foreach (KeyValuePair<string, Quickchat> qc in quickchats)
             {
                 // do we have a match?
-                if (qc.Value.text.ToLower().Contains(toSearch.ToLower()))
+                if (qc.Value.Text.ToLower().Contains(toSearch.ToLower()))
                 {
                     // add it to the list!
-                    sb.Append($"[{qc.Key}][T] {quickchats[qc.Key].text}\r\n");
+                    sb.Append($"[{qc.Key}][T] {quickchats[qc.Key].Text}\r\n");
                     count++;
                 }
-                if (qc.Value.soundFile.ToLower().Contains(toSearch.ToLower()))
+                if (qc.Value.SoundFile.ToLower().Contains(toSearch.ToLower()))
                 {
                     // add it to the list!
-                    sb.Append($"[{qc.Key}][S] {quickchats[qc.Key].text}\r\n");
+                    sb.Append($"[{qc.Key}][S] {quickchats[qc.Key].Text}\r\n");
                     count++;
                 }
             }
@@ -240,6 +240,37 @@ namespace StarsiegeBot
             msg.Content = output;
             await ctx.RespondAsync(msg);
         }
+
+        [Command("flag")]
+        [Description("Flags a Quick Chat for moderator checking.")]
+        public async Task FlagQC(CommandContext ctx, [Description("ID of QC to flag.")] int id, [RemainingText, Description("The reason you believe it needs flagged.")] string flagRerason = "")
+        {
+            await ctx.TriggerTypingAsync();
+            Quickchat chat = quickchats[id.ToString()];
+            DiscordEmbedBuilder embed;
+            chat.FlagCount++;
+            embed = StartEmbed($"Flagging QC ID `{id}` with reason of `{flagRerason}`. (F{chat.FlagCount})");
+            chat.IsFlagged = true;
+            string output = JsonConvert.SerializeObject(quickchats);
+            await File.WriteAllTextAsync(fileName, output);
+            await ctx.RespondAsync(embed);
+        }
+
+        [Command("flag-count")]
+        public async Task FlagCount(CommandContext ctx)
+        {
+            await ctx.TriggerTypingAsync();
+            int count = 0;
+            foreach (var chat in quickchats)
+            {
+                if (chat.Value.IsFlagged)
+                {
+                    count++;
+                }
+            }
+            await ctx.RespondAsync(StartEmbed($"There are {count} flagged Quick Chats."));
+        }
+
 
         [Command("toggle"), Aliases("t")]
         [RequireOwner]
@@ -286,11 +317,15 @@ namespace StarsiegeBot
 
     public class Quickchat
     {
-        public string text;
-        public string soundFile;
+        [JsonProperty("text")]
+        public string Text { get; protected set; }
+        [JsonProperty("soundFile")]
+        public string SoundFile { get; protected set; }
+        public bool IsFlagged { get; set; }
+        public int FlagCount { get; set; }
         public override string ToString()
         {
-            return $"say(0,0, \"{text}\", \"{soundFile}\");";
+            return $"say(0,0, \"{Text}\", \"{SoundFile}\");";
         }
     }
 

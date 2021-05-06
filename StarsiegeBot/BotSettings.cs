@@ -18,7 +18,7 @@ namespace StarsiegeBot
     class BotSettings : BaseCommandModule
     {
         public static Dictionary<string, GuildSettings> GuildSettings;
-        private readonly string fileName = "guildsettings.json";
+        private readonly string fileName = "Json/guildsettings.json";
         private readonly CancellationTokenSource cancelToken;
         public BotSettings()
         {
@@ -127,8 +127,8 @@ namespace StarsiegeBot
             {
                 while (true)
                 {
-                    string output = JsonConvert.SerializeObject(BotSettings.GuildSettings);
-                    await File.WriteAllTextAsync("guildsettings.json", output);
+                    string output = JsonConvert.SerializeObject(GuildSettings);
+                    await File.WriteAllTextAsync(fileName, output);
                     await Task.Delay(TimeSpan.FromSeconds(120), cancellationToken);
                     if (cancellationToken.IsCancellationRequested)
                     {
