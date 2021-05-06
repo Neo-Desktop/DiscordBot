@@ -18,7 +18,7 @@ namespace StarsiegeBot
     {
         private Dictionary<string, Quickchat> _quickchats;
         private bool _isEnabled;
-        private readonly string _fileName = "Json/quickchats.json";
+        private static readonly string s_fileName = "Json/quickchats.json";
 
 
         public QuickchatHandler()
@@ -34,11 +34,11 @@ namespace StarsiegeBot
         private bool LoadQuickChatsImpl()
         {
             // Check to see if the file exists...
-            if (File.Exists(_fileName))
+            if (File.Exists(s_fileName))
             {
                 // Load the JSON file.
                 string json = "";
-                using (FileStream fs = File.OpenRead(_fileName))
+                using (FileStream fs = File.OpenRead(s_fileName))
                 using (StreamReader sr = new StreamReader(fs, new UTF8Encoding(false)))
                     json = sr.ReadToEnd();
                 _quickchats = JsonConvert.DeserializeObject<Dictionary<string, Quickchat>>(json);
@@ -272,7 +272,7 @@ namespace StarsiegeBot
             embed = StartEmbed($"Flagging QC ID `{id}` with reason of `{flagReason}`. (F{chat.Flags.Count})");
             chat.IsFlagged = true;
             string output = JsonConvert.SerializeObject(_quickchats);
-            await File.WriteAllTextAsync(_fileName, output);
+            await File.WriteAllTextAsync(s_fileName, output);
 
             await ctx.RespondAsync(embed);
         }
@@ -303,7 +303,7 @@ namespace StarsiegeBot
             string[] turnOn = { "on", "true", "1" };
             string[] turnOff = { "off", "false", "0" };
 
-            if (File.Exists(_fileName))
+            if (File.Exists(s_fileName))
             {
                 if (turnOn.Contains(isEnabled))
                 {
@@ -319,7 +319,7 @@ namespace StarsiegeBot
             else
             {
                 _isEnabled = false;
-                output = $"{_fileName} file is missing, and it can not be enabled.";
+                output = $"{s_fileName} file is missing, and it can not be enabled.";
             }
             await ctx.RespondAsync(StartEmbed(output));
         }

@@ -18,7 +18,7 @@ namespace StarsiegeBot
     class BotSettings : BaseCommandModule
     {
         public static Dictionary<string, GuildSettings> GuildSettings;
-        private readonly string _fileName = "Json/guildsettings.json";
+        private static readonly string s_fileName = "Json/guildsettings.json";
         private readonly CancellationTokenSource _cancelToken;
         public BotSettings()
         {
@@ -30,7 +30,7 @@ namespace StarsiegeBot
                 return;
             }
             // Check for guild settings file. If it doesnt exist, create it.
-            if (!File.Exists(_fileName))
+            if (!File.Exists(s_fileName))
             {
                 // Since we need to creat it, we're going to set some default stuff.
                 Console.Write("Guild Settings Config File Not Found. Creating One...");
@@ -57,7 +57,7 @@ namespace StarsiegeBot
 
                 // Now that we have the initial stuff in memory, write it to file.
                 string output = JsonConvert.SerializeObject(GuildSettings);
-                File.WriteAllTextAsync(_fileName, output);
+                File.WriteAllTextAsync(s_fileName, output);
                 // in form the console reader that we're done making the initial config.
                 Console.WriteLine(" Done!");
             }
@@ -65,7 +65,7 @@ namespace StarsiegeBot
             {
                 // load the config file to memory.
                 string json = "";
-                using (FileStream fs = File.OpenRead(_fileName))
+                using (FileStream fs = File.OpenRead(s_fileName))
                 using (StreamReader sr = new StreamReader(fs, new UTF8Encoding(false)))
                     json = sr.ReadToEnd();
                 GuildSettings = JsonConvert.DeserializeObject<Dictionary<string, GuildSettings>>(json);
@@ -128,7 +128,7 @@ namespace StarsiegeBot
                 while (true)
                 {
                     string output = JsonConvert.SerializeObject(GuildSettings);
-                    await File.WriteAllTextAsync(_fileName, output);
+                    await File.WriteAllTextAsync(s_fileName, output);
                     await Task.Delay(TimeSpan.FromSeconds(120), cancellationToken);
                     if (cancellationToken.IsCancellationRequested)
                     {
