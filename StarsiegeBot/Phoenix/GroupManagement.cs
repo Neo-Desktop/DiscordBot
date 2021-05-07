@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
 namespace StarsiegeBot
 {
     [Group("Group")]
@@ -18,14 +17,11 @@ namespace StarsiegeBot
         {
             Console.WriteLine("Group Management Loaded.");
         }
-
         [GroupCommand, Aliases("view")]
         public async Task ListGroups(CommandContext ctx)
         {
-            await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
-
             embed.WithTitle($"{ctx.Guild.Name} Groups");
             embed.WithDescription("An overview of all role groups.");
             foreach (KeyValuePair<string, Dictionary<string, int>> item in GuildSettings[gId].SelfRoles)
@@ -34,11 +30,9 @@ namespace StarsiegeBot
             }
             await ctx.RespondAsync(embed);
         }
-
         [Command("add")]
         public async Task AddGroup(CommandContext ctx, [RemainingText, Description("Group to create.")] string groupName)
         {
-            await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();
             if (GuildSettings[gId].SelfRoles.ContainsKey(groupName))
             {
@@ -51,12 +45,10 @@ namespace StarsiegeBot
                 await ctx.RespondAsync($"The group `{groupName}` was added.");
             }
         }
-
         // TODO: Delete all roles or assign new group?
         [Command("delete")]
         public async Task RemoveGroup(CommandContext ctx, [RemainingText, Description("Group to delete")] string groupName)
         {
-            await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();
             if (GuildSettings[gId].SelfRoles.ContainsKey(groupName))
             {
@@ -68,14 +60,12 @@ namespace StarsiegeBot
                 await ctx.RespondAsync($"The group `{groupName}` doesn't exist.");
             }
         }
-
         //[Command("edit")]
         //[Description("This is under construction. Does nothing yet.")]
         //public async Task EditGroup(CommandContext ctx, [RemainingText] string groupInfo)
         //{
-        //    await ctx.TriggerTypingAsync();
+        //
         //    // string gId = ctx.Guild.Id.ToString();
-
         //}
     }
 }

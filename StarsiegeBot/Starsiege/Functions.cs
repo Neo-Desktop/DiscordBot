@@ -10,7 +10,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
 namespace StarsiegeBot
 {
     [Group("functions"), Aliases("func")]
@@ -22,7 +21,6 @@ namespace StarsiegeBot
         public Functions()
         {
             Console.WriteLine("Starsiege Function Commands Loaded");
-
             // Check for file, if not there, disable commands.
             if (File.Exists(s_fileName))
             {
@@ -40,19 +38,16 @@ namespace StarsiegeBot
                 Console.WriteLine(" --- --- --- Functions JSON not found.");
             }
         }
-
         [GroupCommand]
         [Description("Gives information on desired function.")]
         public async Task StarsiegeFunctions(CommandContext ctx, [RemainingText, Description("The function to attempt to look up.")] string command = "")
         {
-            await ctx.TriggerTypingAsync();
             if (!_functionsEnabled)
             {
                 await ctx.RespondAsync("Function Commands have been disabled. Please contact the bot owners.");
                 return;
             }
-
-            // If the function command is empty make a list of commands in Starsiege. 
+            // If the function command is empty make a list of commands in Starsiege.
             if (command.Equals(string.Empty))
             {
                 // Get a list of the Keys.
@@ -76,7 +71,6 @@ namespace StarsiegeBot
                 // send the output.
                 await ctx.RespondAsync("List of known Functions in Starsiege: " + output);
             }
-
             // we have a command the want to try to find.
             else if (_ssFunctions.TryGetValue(command.ToLower(), out SSFunction outItem))
             {
@@ -106,12 +100,9 @@ namespace StarsiegeBot
                 await ctx.RespondAsync("That command wasn't food, pot-head.");
             }
         }
-
         [Command("count")]
         public async Task FunctionCount(CommandContext ctx)
         {
-            await ctx.TriggerTypingAsync();
-
             // check ot make sure these commands are enabled. if disabled, report it.
             if (!_functionsEnabled)
             {
@@ -121,20 +112,14 @@ namespace StarsiegeBot
             // they wanted to know how many functions were documented... so tell them!
             await ctx.RespondAsync($"There are {_ssFunctions.Count} functions in the known list.");
         }
-
         [Command("toggle"), Aliases("t")]
         [RequireOwner]
         public async Task ToggleFunctions(CommandContext ctx, [RemainingText] string isEnabled = null)
         {
-            await ctx.TriggerTypingAsync();
-
             isEnabled = isEnabled.ToLower();
-
             string output;
-
             string[] turnOn = { "on", "true", "1" };
             string[] turnOff = { "off", "false", "0" };
-
             if (File.Exists(s_fileName))
             {
                 if (turnOn.Contains(isEnabled))
@@ -147,7 +132,6 @@ namespace StarsiegeBot
                 }
                 else
                 {
-
                 }
                 output = $"Functions Enabled: {_functionsEnabled}";
             }
@@ -161,8 +145,6 @@ namespace StarsiegeBot
         [Command("load"), RequireOwner]
         public async Task LoadFunctions(CommandContext ctx)
         {
-            await ctx.TriggerTypingAsync();
-
             // Check for file, if not there, disable commands.
             if (File.Exists(s_fileName))
             {
@@ -182,14 +164,12 @@ namespace StarsiegeBot
             }
         }
     }
-
     public class SSFunction
     {
         public string name;
         public string title;
         public string description;
         public Fields[] fields;
-
         public override string ToString()
         {
             string fs = "";
@@ -197,8 +177,6 @@ namespace StarsiegeBot
             {
                 fs += $"[{field}] ";
             }
-
-
             return $"Name: {name} || Title: {title} || Desc: {description} || Fields: {{{fs}}}";
         }
     }

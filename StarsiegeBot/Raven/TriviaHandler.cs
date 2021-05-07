@@ -10,7 +10,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
 namespace StarsiegeBot.Raven
 {
     class TriviaHandler : BaseCommandModule
@@ -26,33 +25,25 @@ namespace StarsiegeBot.Raven
                 json = sr.ReadToEnd();
             Dictionary<string, Questions> tempQC = JsonConvert.DeserializeObject<Dictionary<string, Questions>>(json);
             _quizQuestions = Enumerable.ToList(tempQC.Values);
-
         }
         [Command("quiz")]
         [Hidden]
         [Description("")]
         public async Task Quiz(CommandContext ctx)
         {
-            await ctx.TriggerTypingAsync();
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
-
             int[] ids = { Program.rnd.Next(_quizQuestions.Count), Program.rnd.Next(_quizQuestions.Count), Program.rnd.Next(_quizQuestions.Count), Program.rnd.Next(_quizQuestions.Count) };
             int selection = Program.rnd.Next(ids.Length);
             int mainId = ids[selection];
             string[] options = { "a", "b", "c", "d" };
-
             var correctAnswer = DiscordEmoji.FromName(ctx.Client, $":regional_indicator_{options[selection]}:");
-
             Questions myQuestion = _quizQuestions[mainId];
-
             embed.Description = myQuestion.Question;
-
             embed.AddField($":regional_indicator_{options[0]}:", _quizQuestions[ids[0]].Answers[Program.rnd.Next(_quizQuestions[ids[0]].Answers.Length)], true);
             embed.AddField($":regional_indicator_{options[1]}:", _quizQuestions[ids[1]].Answers[Program.rnd.Next(_quizQuestions[ids[1]].Answers.Length)], true);
             embed.AddField("_ _", "_ _", false);
             embed.AddField($":regional_indicator_{options[2]}:", _quizQuestions[ids[2]].Answers[Program.rnd.Next(_quizQuestions[ids[2]].Answers.Length)], true);
             embed.AddField($":regional_indicator_{options[3]}:", _quizQuestions[ids[3]].Answers[Program.rnd.Next(_quizQuestions[ids[3]].Answers.Length)], true);
-
             DiscordMessage message = await ctx.RespondAsync(embed);
             foreach (string item in options)
             {
@@ -67,14 +58,12 @@ namespace StarsiegeBot.Raven
             }
             else await ctx.RespondAsync("Sorry, time ran out!");
         }
-
         [Command("test")]
         [Hidden]
         public async Task CollectionCommand(CommandContext ctx)
         {
             DiscordMessage message = await ctx.RespondAsync("React here!");
             var reactions = await message.CollectReactionsAsync();
-
             var strBuilder = new StringBuilder();
             Dictionary<DiscordUser, bool> winners = new Dictionary<DiscordUser, bool>();
             Dictionary<DiscordUser, bool> losers = new Dictionary<DiscordUser, bool>();
@@ -100,17 +89,14 @@ namespace StarsiegeBot.Raven
                     winners.Remove(pair.Key);
                 }
             }
-
             strBuilder.AppendLine("Winners are:");
             foreach (KeyValuePair<DiscordUser, bool> item in winners)
             {
                 strBuilder.AppendLine(item.Key.Mention);
             }
-
             await ctx.RespondAsync(strBuilder.ToString());
         }
     }
-
     public class Questions
     {
         [JsonProperty("question")]

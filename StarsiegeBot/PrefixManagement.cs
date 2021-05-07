@@ -6,7 +6,6 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
 namespace StarsiegeBot
 {
     [Group("prefix")]
@@ -20,7 +19,6 @@ namespace StarsiegeBot
         [GroupCommand]
         public async Task GetPrefixes(CommandContext ctx)
         {
-            await ctx.TriggerTypingAsync();
             // store the Guild ID as a string.
             string guild = ctx.Guild.Id.ToString();
             // if this server doesnt have a settings for whatever reason, let them know... why am i not creating it?
@@ -36,7 +34,6 @@ namespace StarsiegeBot
                 {
                     Description = $"{ctx.Guild.Name} Prefixes."
                 };
-
                 int count = 1;
                 // for each prefix, list it in the embed as a field. Show a count.
                 foreach (string item in server.Prefixes)
@@ -44,7 +41,6 @@ namespace StarsiegeBot
                     embed.AddField($"Prefix {count}", item, true);
                     count++;
                 }
-
                 await ctx.RespondAsync(embed);
             }
         }
@@ -52,7 +48,6 @@ namespace StarsiegeBot
         [Description("Adds a new prefix to the Server's list of prefixes.")]
         public async Task AddNewPrefix(CommandContext ctx, string prefix)
         {
-            await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();
             // add the prefix to the server specific settings.
             if (GuildSettings[gId].Prefixes.Count < 25)
@@ -65,12 +60,10 @@ namespace StarsiegeBot
                 await ctx.RespondAsync("There is a maximum of 25 prefixes allowed.");
             }
         }
-
         [Command("delete"), Aliases("del")]
         [Description("Removes the specified prefix from accepted prefixes.")]
         public async Task RemovePrefix(CommandContext ctx, string prefix)
         {
-            await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();
             // they have only one prefix and disallow global prefixes, dont let them delete the prefix.
             if (GuildSettings[gId].Prefixes.Count == 1 && !GuildSettings[gId].UseGlobalPrefix)
@@ -82,19 +75,16 @@ namespace StarsiegeBot
             GuildSettings[ctx.Guild.Id.ToString()].Prefixes.Remove(prefix);
             await ctx.RespondAsync($"Removed `{prefix}` as a command prefix.");
         }
-
         [Command("global")]
         [Description("View or edit the status of allowing Global Prefix(es).")]
         public async Task UseGlobalPrefixes(CommandContext ctx)
         {
-            await ctx.TriggerTypingAsync();
             await ctx.RespondAsync($"Global Prefix usage has been turned **{(GuildSettings[ctx.Guild.Id.ToString()].UseGlobalPrefix ? "on" : "off")}**");
         }
         [Command("global"), Aliases("g")]
         [Description("View or edit the status of allowing Global Prefix(es).")]
         public async Task UseGlobalPrefixes(CommandContext ctx, [Description("True or False")] bool isEnabled)
         {
-            await ctx.TriggerTypingAsync();
             // check to make sure that they aren't trying to turn off global prefixes with out first adding a server sepcific prefix.
             int prefixCount = GuildSettings[ctx.Guild.Id.ToString()].Prefixes.Count;
             if (prefixCount <= 0 && !isEnabled)
@@ -109,7 +99,6 @@ namespace StarsiegeBot
         [Command("global")]
         public async Task UseGlobalPrefixes(CommandContext ctx, [Description("ON or OFF"), RemainingText] string isEnabled = null)
         {
-            await ctx.TriggerTypingAsync();
             isEnabled = isEnabled.ToLower();
             string gId = ctx.Guild.Id.ToString();
             int prefixCount = GuildSettings[gId].Prefixes.Count;
@@ -138,11 +127,9 @@ namespace StarsiegeBot
             }
             else
             {
-
             }
             await ctx.RespondAsync(embed);
         }
-
         private DiscordEmbedBuilder StartEmbed(string desc)
         {
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder

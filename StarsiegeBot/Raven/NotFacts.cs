@@ -7,8 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-
-
 namespace StarsiegeBot
 {
     [Group("notfact")]
@@ -17,19 +15,16 @@ namespace StarsiegeBot
         private List<string> _notfacts;
         private bool _isEnabled;
         private static readonly string s_fileName = "Json/notfacts.json";
-
         public NotFacts()
         {
             Console.WriteLine("NotFacts Command Loaded");
             _isEnabled = Load();
         }
-
         [GroupCommand, Description("Get a NotFact")]
         public async Task NotFact(CommandContext ctx, [Description("[Optional] A NotFact ID")] int notFactID = 0)
         {
             if (!_isEnabled)
                 return;
-            await ctx.TriggerTypingAsync();
             string output;
             notFactID--;
             try
@@ -42,21 +37,17 @@ namespace StarsiegeBot
             }
             await ctx.RespondAsync(StartEmbed(output));
         }
-
         [Command("count"), Aliases("c"), Description("Get a count of the NotFacts")]
         public async Task NotFactCount(CommandContext ctx)
         {
             if (!_isEnabled)
                 return;
-            await ctx.TriggerTypingAsync();
             await ctx.RespondAsync(StartEmbed(_notfacts.Count + " NotFacts in the NotFacts Bank"));
         }
-
         [Command("load"), RequireOwner, Aliases("l")]
         public async Task Load(CommandContext ctx)
         {
             // trigger the typing.
-            await ctx.TriggerTypingAsync();
             // start the response.
             DiscordEmbedBuilder embed = StartEmbed("Reloading NotFacts");
             // our old setting...
@@ -71,12 +62,10 @@ namespace StarsiegeBot
             // send our results.
             await ctx.RespondAsync(embed);
         }
-
         [Command("toggle"), RequireOwner, Aliases("t")]
         public async Task Enable(CommandContext ctx, [RemainingText] string isEnabled = null)
         {
             // trigger the typing.
-            await ctx.TriggerTypingAsync();
             // lower case teh input.
             isEnabled = isEnabled.ToLower();
             string[] turnOn = { "on", "true", "1" };
@@ -114,8 +103,6 @@ namespace StarsiegeBot
             }
             await ctx.RespondAsync(embed);
         }
-
-
         private DiscordEmbedBuilder StartEmbed(string desc)
         {
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder
@@ -125,7 +112,6 @@ namespace StarsiegeBot
             };
             return embed;
         }
-
         private bool Load()
         {
             bool ret;

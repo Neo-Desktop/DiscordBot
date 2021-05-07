@@ -9,7 +9,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-
 namespace StarsiegeBot
 {
     [Group("bot")]
@@ -23,7 +22,6 @@ namespace StarsiegeBot
         public BotSettings()
         {
             Console.WriteLine("Bot Setting Commands Loaded");
-
             if (!(GuildSettings is null))
             {
                 // guild settings have already been set... stop resetting it.
@@ -49,12 +47,10 @@ namespace StarsiegeBot
                 item.SelfRoles = new Dictionary<string, Dictionary<string, int>>();
                 item.Prefixes.Add(">");
                 // this line... is a test line.
-
                 GuildSettings = new Dictionary<string, GuildSettings>
                 {
                     { "default", item }
                 };
-
                 // Now that we have the initial stuff in memory, write it to file.
                 string output = JsonConvert.SerializeObject(GuildSettings);
                 File.WriteAllTextAsync(s_fileName, output);
@@ -77,7 +73,6 @@ namespace StarsiegeBot
         [Description("Reports simplified data about the server settings.")]
         public async Task BaseItem(CommandContext ctx)
         {
-            await ctx.TriggerTypingAsync();
             GuildSettings guild = GuildSettings[ctx.Guild.Id.ToString()];
             DiscordEmbedBuilder embed = StartEmbed(ctx.Guild.Name + " Server settings.");
             embed.AddField("On/Off Items", "_ _");
@@ -93,12 +88,10 @@ namespace StarsiegeBot
             embed.AddField("Levels", guild.LevelRoles.Count.ToString(), true);
             await ctx.RespondAsync(embed);
         }
-
         [Command("status"), RequireOwner]
         [Description("Sets the bot's nickname on this server.")]
         public async Task SetStatus(CommandContext ctx, string type, [RemainingText] string newStatus = null)
         {
-            await ctx.TriggerTypingAsync();
             ActivityType aType = type.ToLower() switch
             {
                 "competing" => ActivityType.Competing,
@@ -112,15 +105,12 @@ namespace StarsiegeBot
             await ctx.Client.UpdateStatusAsync(act);
             await ctx.RespondAsync("Test.");
         }
-
         [Command("username"), RequireOwner]
         public async Task SetUsername(CommandContext ctx, [RemainingText] string newName)
         {
-            await ctx.TriggerTypingAsync();
             await ctx.Client.UpdateCurrentUserAsync(newName);
             await ctx.RespondAsync("How's my name name?");
         }
-
         private async Task StartTimer(CancellationToken cancellationToken)
         {
             await Task.Run(async () =>
@@ -148,7 +138,6 @@ namespace StarsiegeBot
             return embed;
         }
     }
-
     public class GuildSettings
     {
         public bool UseGlobalPrefix { get; set; }

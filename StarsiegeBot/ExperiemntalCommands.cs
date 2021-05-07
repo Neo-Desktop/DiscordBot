@@ -10,12 +10,10 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
 namespace StarsiegeBot
 {
     [Group("ex")]
     [Hidden]
-
     [Description("Experimental commands. May break the bot.")]
     class ExperiemntalCommands : BaseCommandModule
     {
@@ -25,7 +23,6 @@ namespace StarsiegeBot
             await ctx.RespondAsync("Attempting a shutdown...");
             System.Environment.Exit(0);
         }
-
         [Command("Report")]
         public async Task Report(CommandContext ctx)
         {

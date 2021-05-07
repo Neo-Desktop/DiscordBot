@@ -6,53 +6,22 @@ using DSharpPlus.Entities;
 using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
 namespace StarsiegeBot
 {
     [Group("welcome")]
     [RequireGuild,
         RequirePermissions(Permissions.ManageChannels),
-        Cooldown(1, 10, CooldownBucketType.Global),
-        RequireNsfw,
-        RequireBotPermissions(Permissions.AccessChannels)
-        //RequireBotPermissions(Permissions.AddReactions),
-        //RequireBotPermissions(Permissions.Administrator),
-        //RequireBotPermissions(Permissions.AttachFiles),
-        //RequireBotPermissions(Permissions.BanMembers),
-        //RequireBotPermissions(Permissions.ChangeNickname),
-        //RequireBotPermissions(Permissions.CreateInstantInvite),
-        //RequireBotPermissions(Permissions.DeafenMembers),
-        //RequireBotPermissions(Permissions.EmbedLinks),
-        //RequireBotPermissions(Permissions.KickMembers),
-        //RequireBotPermissions(Permissions.ManageChannels),
-        //RequireBotPermissions(Permissions.ManageEmojis),
-        //RequireBotPermissions(Permissions.ManageGuild),
-        //RequireBotPermissions(Permissions.ManageMessages),
-        //RequireBotPermissions(Permissions.ManageNicknames),
-        //RequireBotPermissions(Permissions.ManageRoles),
-        //RequireBotPermissions(Permissions.ManageWebhooks),
-        //RequireBotPermissions(Permissions.MentionEveryone),
-        //RequireBotPermissions(Permissions.MoveMembers),
-        //RequireBotPermissions(Permissions.MuteMembers),
-        //RequireBotPermissions(Permissions.PrioritySpeaker),
-        //RequireBotPermissions(Permissions.ReadMessageHistory),
-        //RequireBotPermissions(Permissions.SendMessages),
-        //RequireBotPermissions(Permissions.SendTtsMessages),
-        //RequireBotPermissions(Permissions.Speak),
-        //RequireBotPermissions(Permissions.Stream),
-        //RequireBotPermissions(Permissions.UseExternalEmojis),
-        //RequireBotPermissions(Permissions.UseVoice),
-        //RequireBotPermissions(Permissions.UseVoiceDetection),
-        //RequireBotPermissions(Permissions.ViewAuditLog)
         ]
     class WelcomeMessage : BotSettings
     {
+        public WelcomeMessage()
+        {
+            Console.WriteLine("Welcome Message Handler Loaded.");
+        }
         [GroupCommand]
         public async Task GeneralWelcome(CommandContext ctx)
         {
-            await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();
-
             DiscordEmbedBuilder embed = StartEmbed("Welcome Message Info");
             if (GuildSettings[gId].WelcomeChannel is null)
                 embed.AddField("Channel", "*None*");
@@ -80,9 +49,7 @@ namespace StarsiegeBot
         [Command("enable")]
         public async Task WelcomeEnabled(CommandContext ctx, bool enable)
         {
-            await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();
-
             DiscordEmbedBuilder embed = StartEmbed("Welcome Message Status");
             embed.AddField("Old", GuildSettings[gId].UseWelcome.ToString(), true);
             GuildSettings[gId].UseWelcome = enable;
@@ -92,7 +59,6 @@ namespace StarsiegeBot
         [Command("Channel")]
         public async Task WelcomeChannel(CommandContext ctx, DiscordChannel channel)
         {
-            await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();
             DiscordEmbedBuilder embed = StartEmbed("Welcome Message Channel");
             if (GuildSettings[gId].WelcomeChannel != null)
@@ -103,7 +69,6 @@ namespace StarsiegeBot
             {
                 embed.AddField("Old", "*None*");
             }
-
             GuildSettings[gId].WelcomeChannel = channel;
             embed.AddField("New", GuildSettings[gId].WelcomeChannel.Mention, true);
             await ctx.RespondAsync(embed);
@@ -111,7 +76,6 @@ namespace StarsiegeBot
         [Command("Channel")]
         public async Task WelcomeChannel(CommandContext ctx, [RemainingText] string here)
         {
-            await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();
             DiscordEmbedBuilder embed = StartEmbed("Welcome Message Channel");
             if (GuildSettings[gId].WelcomeChannel != null)
@@ -122,7 +86,6 @@ namespace StarsiegeBot
             {
                 embed.AddField("Old", "*None*");
             }
-
             GuildSettings[gId].WelcomeChannel = ctx.Channel;
             embed.AddField("New", GuildSettings[gId].WelcomeChannel.Mention, true);
             await ctx.RespondAsync(embed);
@@ -131,7 +94,6 @@ namespace StarsiegeBot
         [Description("Hello. Run `>welcome help` for more info.")]
         public async Task MessageOfWelcome(CommandContext ctx, [RemainingText] string msg)
         {
-            await ctx.TriggerTypingAsync();
             string gId = ctx.Guild.Id.ToString();
             DiscordEmbedBuilder embed = StartEmbed("Welcome Message String");
             if (GuildSettings[gId].WelcomeMessage == "" || GuildSettings[gId].WelcomeMessage is null)
@@ -146,7 +108,6 @@ namespace StarsiegeBot
         [Command("Help")]
         public async Task WelcomeHelp(CommandContext ctx)
         {
-            await ctx.TriggerTypingAsync();
             DiscordEmbedBuilder embed = StartEmbed("List of placeholders and their intended replacement. Channel tags can be inserted without a placeholder.");
             embed.Title = "Welcome Message Help";
             embed.AddField("[Discrim]", "Inserts the username of the member.");
@@ -164,7 +125,6 @@ namespace StarsiegeBot
                 .Replace("[mention]", member.Mention, StringComparison.OrdinalIgnoreCase);
             return output;
         }
-
         private DiscordEmbedBuilder StartEmbed(string desc)
         {
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder

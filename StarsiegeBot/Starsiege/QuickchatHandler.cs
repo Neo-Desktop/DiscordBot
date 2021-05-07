@@ -10,7 +10,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
 namespace StarsiegeBot
 {
     [Aliases("qc"), Group("quickchat")]
@@ -19,14 +18,11 @@ namespace StarsiegeBot
         private Dictionary<string, Quickchat> _quickchats;
         private bool _isEnabled;
         private static readonly string s_fileName = "Json/quickchats.json";
-
-
         public QuickchatHandler()
         {
             Console.WriteLine("Quick Chat Handler Loaded");
             _isEnabled = LoadQuickChatsImpl();
         }
-
         /**
          * LoadQuickChatsImpl loads the quickchats.json file from the current path,
          * parses the file, and populates the private quickchats dictionary.
@@ -45,17 +41,14 @@ namespace StarsiegeBot
                 // enable the commands.
                 return true;
             }
-
             // else, file not found. disable commands, leave a comment in console.
             Console.WriteLine(" -- --- --- Quick Chat JSON file not found.");
             return false;
         }
-
         [Command("load"), RequireOwner]
         [Description("[Owner Only] Reloads the QuickChat files, if they exist. Also enables QC's if the file is found.")]
         public async Task LoadQuickChats(CommandContext ctx)
         {
-            await ctx.TriggerTypingAsync();
             string output;
             _isEnabled = LoadQuickChatsImpl();
             if (_isEnabled)
@@ -68,7 +61,6 @@ namespace StarsiegeBot
             }
             await ctx.RespondAsync(StartEmbed(output));
         }
-
         [Command("script")]
         [Description("Gives the `say()` for use in the Quickchat.cs file.")]
         public async Task GetQuickChatScript(CommandContext ctx, [Description("ID of Quick chat to get script for.")] int index)
@@ -79,11 +71,8 @@ namespace StarsiegeBot
                 return;
             }
             // trigger some typing on discord's side.
-            await ctx.TriggerTypingAsync();
-
             // We're good to go... If we have an index, pull it up.
             index = Math.Abs(index);
-
             // is our index within bounds?
             if (index < _quickchats.Count)
             {
@@ -92,11 +81,9 @@ namespace StarsiegeBot
                 await ctx.RespondAsync("```" + chat.ToString() + "```");
                 return;
             }
-
             // we couldn't find it... Oh well, let the end user know.
             await ctx.RespondAsync("The ID specified is out of bounds. 0-" + (_quickchats.Count - 1));
         }
-
         [Command("check")]
         [Description("Runs a check to see how many WAV files are missing from all QC's.")]
         public async Task QuickChatCheck(CommandContext ctx)
@@ -106,9 +93,7 @@ namespace StarsiegeBot
             {
                 return;
             }
-            await ctx.TriggerTypingAsync();
-
-            // Start a count 
+            // Start a count
             int missingFiles = 0;
             for (int i = 0; i < _quickchats.Count; i++)
             {
@@ -119,11 +104,9 @@ namespace StarsiegeBot
                     Console.Write($"{i}, ");
                 }
             }
-
             // Reply to the message and let the user know we're missing X files.
             await ctx.RespondAsync(StartEmbed($"Missing files: {missingFiles}"));
         }
-
         [GroupCommand]
         [Description("Gives a specific or random Quickchat. If that QC has a sound file that the bot knows, uploads the sound file too.")]
         public async Task QuickChat(CommandContext ctx, [Description("The ID of the quick Chat.")] int id = -1)
@@ -133,14 +116,10 @@ namespace StarsiegeBot
             {
                 return;
             }
-            await ctx.TriggerTypingAsync();
             string output;
-
-
             // Start a new Message Build.
             DiscordMessageBuilder msg = new DiscordMessageBuilder();
             Quickchat chat;
-
             // try to get the quick chat, if it doesn't exist, return a random one
             try
             {
@@ -169,43 +148,35 @@ namespace StarsiegeBot
                     break;
                 }
             }
-
             // If the sound file to the select QC exists, upload it as well.
             msg.Embed = StartEmbed(output);
             if (File.Exists($"./qc/{chat.SoundFile}"))
             {
                 // Open the file.
                 FileStream sound = new FileStream($"./qc/{chat.SoundFile}", FileMode.Open, FileAccess.Read);
-
                 // feed it to the Message Builder.
                 msg.WithFile(chat.SoundFile, sound);
             }
-
             // Send either the text QC or sound file if we have it
             // msg.Content = output;
             await ctx.RespondAsync(msg);
         }
-
         [Command("search"), Aliases("s")]
         [Cooldown(1, 5, CooldownBucketType.Global)]
         [Description("Searches all the [T]ext and [S]ound file names for the Search input.")]
         public async Task SearchQuickChats(CommandContext ctx, [RemainingText, Description("What to search for.")] string toSearch)
         {
-            await ctx.TriggerTypingAsync();
             string output;
-
             // If we're disabled, let them know. And exit out.
             if (!_isEnabled)
             {
                 await ctx.RespondAsync("Quick Chat Commands have been disabled. Please contact the bot owners.");
                 return;
             }
-
             // We're going to build a message.
             StringBuilder sb = new StringBuilder();
             DiscordMessageBuilder msg = new DiscordMessageBuilder();
             int count = 0;
-
             // We're going to search each QC for the stuff in toSearch.
             foreach (KeyValuePair<string, Quickchat> qc in _quickchats)
             {
@@ -223,7 +194,6 @@ namespace StarsiegeBot
                     count++;
                 }
             }
-
             // If we have a message return it
             if (sb.Length > 0)
             {
@@ -236,20 +206,15 @@ namespace StarsiegeBot
                 // If message content is still nothing, report we found nothing.
                 output = $"Sorry {ctx.Member.Mention}, no results were found for `{toSearch}`.";
             }
-
             msg.Content = output;
             await ctx.RespondAsync(msg);
         }
-
         [Command("flag")]
         [Description("Flags a Quick Chat for moderator checking.")]
         public async Task FlagQC(CommandContext ctx, [Description("ID of QC to flag.")] int id, [RemainingText, Description("The reason you believe it needs flagged.")] string flagReason = "")
         {
-            await ctx.TriggerTypingAsync();
             Quickchat chat = _quickchats[id.ToString()];
             DiscordEmbedBuilder embed;
-
-
             foreach (FlagEvent item in chat.Flags)
             {
                 if (item.UserId == ctx.Member.Id)
@@ -273,14 +238,11 @@ namespace StarsiegeBot
             chat.IsFlagged = true;
             string output = JsonConvert.SerializeObject(_quickchats);
             await File.WriteAllTextAsync(s_fileName, output);
-
             await ctx.RespondAsync(embed);
         }
-
         [Command("flag-count")]
         public async Task FlagCount(CommandContext ctx)
         {
-            await ctx.TriggerTypingAsync();
             int count = 0;
             foreach (KeyValuePair<string, Quickchat> chat in _quickchats)
             {
@@ -291,18 +253,15 @@ namespace StarsiegeBot
             }
             await ctx.RespondAsync(StartEmbed($"There are {count} flagged Quick Chats."));
         }
-
         [Command("toggle"), Aliases("t")]
         [RequireOwner]
         [Description("[Owner only] Enables or disables, or checks status of QuickChats.\r\nTo turn the feature on, use `TRUE`, `ON`, or `1`\r\nTo turn off, use `FALSE`, `OFF`, or `0`")]
         public async Task ToggleQC(CommandContext ctx, [RemainingText] string isEnabled = null)
         {
-            await ctx.TriggerTypingAsync();
             isEnabled = isEnabled.ToLower();
             string output;
             string[] turnOn = { "on", "true", "1" };
             string[] turnOff = { "off", "false", "0" };
-
             if (File.Exists(s_fileName))
             {
                 if (turnOn.Contains(isEnabled))
@@ -313,7 +272,6 @@ namespace StarsiegeBot
                 {
                     _isEnabled = false;
                 }
-
                 output = $"Quickchats {(_isEnabled ? "Enabled" : "Disabled")}";
             }
             else
@@ -323,7 +281,6 @@ namespace StarsiegeBot
             }
             await ctx.RespondAsync(StartEmbed(output));
         }
-
         private DiscordEmbedBuilder StartEmbed(string description)
         {
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder
@@ -334,7 +291,6 @@ namespace StarsiegeBot
             return embed;
         }
     }
-
     public class Quickchat
     {
         [JsonProperty("text")]
@@ -354,7 +310,6 @@ namespace StarsiegeBot
         public ulong UserId { get; set; }
         public string Reason { get; set; }
         public string Timestamp { get; set; }
-
         public FlagEvent(ulong UserId, string Reason, string Timestamp)
         {
             this.UserId = UserId;

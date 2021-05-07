@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
 namespace StarsiegeBot
 {
     class GameCommands : BaseCommandModule
@@ -21,19 +20,16 @@ namespace StarsiegeBot
             "{0} slaps {1} around a bit with a rubber chicken."
         };
         private List<string> _insultCopy;
-
         public GameCommands()
         {
             // Let the console know we've loaded basic commands.
             Console.WriteLine("Basic Commands Loaded");
             _insultCopy = _insultMaster.ToList<string>();
         }
-
         [Command("8ball"), Aliases(new string[] { "ball", "8" })]
         [Description("The Magic 8-Ball is a fortune-telling or seeking advice")]
         public async Task Eightball(CommandContext ctx, [RemainingText, Description("Your question to the 8 ball")] string remainingText = "")
         {
-            await ctx.TriggerTypingAsync();
             // Load all the traditional 8-Ball answers into an array.
             string[] results = new string[] { "It is certain.", "It is decidedly so.", "Without a doubt.", "Yes - definitely.", "You may rely on it.", "As I see it, yes.", "Most likely.", "Outlook good.", "Yes.", "Signs point to yes.", "Reply hazy, try again", "Ask again later.", "Better not tell you now.", "Cannot predict now.", "Concentrate and ask again.", "Don't count on it.", "My reply is no.", "My sources say no", "Outlook not so good.", "Very doubtful." };
             // give the end user the randomly choosen result.
@@ -43,7 +39,6 @@ namespace StarsiegeBot
         [Description("Gives some basic info about the bot")]
         public async Task About(CommandContext ctx)
         {
-            await ctx.TriggerTypingAsync();
             // delcare an embed builder.
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
             // Title the ebemd with the bot's name and discrim.
@@ -65,7 +60,6 @@ namespace StarsiegeBot
             {
                 owners += owner.Username + "#" + owner.Discriminator + "\r\n";
             }
-
             embed.AddField("Owner(s)", owners, false);
             // send the data to the end user.
             await ctx.RespondAsync(embed);
@@ -75,7 +69,6 @@ namespace StarsiegeBot
         public async Task Coinflip(CommandContext ctx)
         {
             // We're going to randomly select heads or tails and then give it to the user.
-            await ctx.TriggerTypingAsync();
             string[] choices = { "heads", "tails" };
             await ctx.RespondAsync(StartEmbed($"The coin landed on... {choices[Program.rnd.Next(0, choices.Length)]}"));
         }
@@ -83,7 +76,6 @@ namespace StarsiegeBot
         [Description("Shows all those that have helped with my bot(s) over the years!")]
         public async Task Credits(CommandContext ctx)
         {
-            await ctx.TriggerTypingAsync();
             // just some people that have helped me build the bot.
             string credits = "```asciidoc\r\n= CREDITS (Outdated) =\r\n" +
                 "• UndeadShadow            :: Flood Protection. Keepign teh bot from killing itself, and others.\r\n" +
@@ -102,7 +94,6 @@ namespace StarsiegeBot
         public async Task Dice(CommandContext ctx, [RemainingText, Description("XdY")] string throwing = "d")
         {
             // let the end user know the bot is doing something...
-            await ctx.TriggerTypingAsync();
             // in case the end user used caps, lower them.
             throwing = throwing.ToLower();
             // set some int items.
@@ -120,19 +111,17 @@ namespace StarsiegeBot
                 // if we have a match, do some stuff!
                 if (m.Success)
                 {
-                    // set an empty string, set a counter. 
+                    // set an empty string, set a counter.
                     string dieResults = string.Empty;
                     int dieResult = 0;
                     // attempt to get the number of dice being "thrown" and the number of sides those die have.
                     bool volTest = int.TryParse(m.Groups[1].ToString(), out int volume);
                     bool sideTest = int.TryParse(m.Groups[3].ToString(), out int sides);
-
                     // They failed? Make some stuff up... We default to a 1d6 throw.
                     if (!volTest)
                         volume = 1;
                     if (!sideTest)
                         sides = 6;
-
                     // for each die we roll, get a result.
                     for (int i = 0; i < volume; i++)
                     {
@@ -151,7 +140,7 @@ namespace StarsiegeBot
                         totalResult += roll;
                         dieResult += roll;
                     }
-                    // If the end user is rolling more than 10 of any kind of die, dont show the results of the rolls. Just 
+                    // If the end user is rolling more than 10 of any kind of die, dont show the results of the rolls. Just
                     if (volume < 11)
                         dieResults = $"{volume}d{sides}: Total: " + dieResult + " Avg: " + Math.Round(dieResult * 1.0 / volume, 2) + " Results: " + dieResults;
                     else
@@ -175,13 +164,10 @@ namespace StarsiegeBot
             }
             await ctx.RespondAsync(output);
         }
-
-
         [Command("random")]
         [Description("Random number generator.")]
         public async Task Random(CommandContext ctx, [Description("Lowest number choice. (Inclusive)")] int min, [Description("Highest Number Choice. (Inclusive)")] int max)
         {
-            await ctx.TriggerTypingAsync();
             // Find which number given is lower, which is higher.
             // since rnd.Nex is inclusive, exclusive, increase the max by one.
             int i = Math.Min(min, max);
@@ -192,7 +178,6 @@ namespace StarsiegeBot
         [Command("random")]
         public async Task Random(CommandContext ctx)
         {
-            await ctx.TriggerTypingAsync();
             // some one didn't read the HELP file on Random. Explain it to them.
             await ctx.RespondAsync(StartEmbed($"Gives you a random number between <Option 1> and <Option 2> Try someething like `random 3 30`!"));
         }
@@ -200,7 +185,6 @@ namespace StarsiegeBot
         [Description("Rock Paper Scissors")]
         public async Task Rps(CommandContext ctx, [RemainingText, Description("Your choice of hand sign to  use.")] string text = "")
         {
-            await ctx.TriggerTypingAsync();
             /* --- THIS FUNCTION IS A COPY AND PASTE OF RPSLS. AND ALL LOGIC IS IDENTICAL TO IT. PLEASE REFER TO THAT METHOD. ---
             // --- THIS FUNCTION IS A COPY AND PASTE OF RPSLS. AND ALL LOGIC IS IDENTICAL TO IT. PLEASE REFER TO THAT METHOD. ---
             // --- THIS FUNCTION IS A COPY AND PASTE OF RPSLS. AND ALL LOGIC IS IDENTICAL TO IT. PLEASE REFER TO THAT METHOD. --- */
@@ -208,7 +192,6 @@ namespace StarsiegeBot
             text = text.ToLower();
             string botChoice = choices[Program.rnd.Next(0, choices.Length)];
             string result;
-
             if (text.Equals(""))
             {
                 result = "I'm handing you a";
@@ -256,7 +239,6 @@ namespace StarsiegeBot
         [Description("Rock Paper Scissors Lizard Spock")]
         public async Task Rpsls(CommandContext ctx, [RemainingText, Description("Your choice of hand sign to  use.")] string text = "")
         {
-            await ctx.TriggerTypingAsync();
             // load up the correct choices.
             string[] choices = new string[] { "rock", "paper", "scissors", "lizard", "spock" };
             // lets work in all lower case letters. makes life easier.
@@ -265,7 +247,6 @@ namespace StarsiegeBot
             string botChoice = choices[Program.rnd.Next(0, choices.Length)];
             // create a result string.
             string result;
-
             // the end user didn't pick anything... lets hand them something instead.
             if (text.Equals(""))
             {
@@ -337,7 +318,6 @@ namespace StarsiegeBot
             // This is a redundant bot check. We really wanna make sure that we're not spamming an unprotected bot with commands, and that they are spamming us back.
             if (ctx.Message.Author.IsBot)
                 return;
-            await ctx.TriggerTypingAsync();
             // did the end user supply us something to say? no whine about it.
             string result;
             if (msg != "")
@@ -349,12 +329,10 @@ namespace StarsiegeBot
         [Command("slap")]
         public async Task Slap(CommandContext ctx, DiscordMember user = null)
         {
-            await ctx.TriggerTypingAsync();
             // we're going to find out who we're slapping. Declare their place holders now.
             string user1;
             string user2;
-
-            // If we have some one not slapping some one, or they're trying to slap themself, the one getting slapped is the 
+            // If we have some one not slapping some one, or they're trying to slap themself, the one getting slapped is the
             // author, the one doing the slapping is the bot.
             if (user == null || user.Mention == ctx.Message.Author.Mention)
             {
@@ -369,7 +347,6 @@ namespace StarsiegeBot
             }
             // pick a random insult, and populate the names correctly.
             int randInt = Program.rnd.Next(0, _insultCopy.Count);
-
             await ctx.RespondAsync(StartEmbed(string.Format(_insultCopy[randInt], user1, user2)));
             _insultCopy.RemoveAt(randInt);
             if (_insultCopy.Count == 0)
@@ -377,7 +354,6 @@ namespace StarsiegeBot
                 _insultCopy = _insultMaster.ToList<string>();
             }
         }
-
         private DiscordEmbedBuilder StartEmbed(string desc)
         {
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder
@@ -387,6 +363,5 @@ namespace StarsiegeBot
             };
             return embed;
         }
-
     }
 }

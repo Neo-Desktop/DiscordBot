@@ -11,7 +11,6 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-
 namespace StarsiegeBot
 {
     class Program
@@ -26,12 +25,10 @@ namespace StarsiegeBot
             DiscordColor.Rose, DiscordColor.SapGreen, DiscordColor.Sienna, DiscordColor.SpringGreen, DiscordColor.Teal, DiscordColor.Turquoise, DiscordColor.VeryDarkGray,
             DiscordColor.Violet, DiscordColor.Wheat, DiscordColor.White, DiscordColor.Yellow, DiscordColor.Red };
         public static readonly Random rnd = new Random();
-
         public DiscordClient Client { get; set; }
         public CommandsNextExtension Commands { get; set; }
         public VoiceNextExtension Voice { get; set; }
         public string BotName { get; protected set; }
-
         public static void Main(string[] args)
         {
             // since we cannot make the entry method asynchronous,
@@ -42,89 +39,90 @@ namespace StarsiegeBot
                 GetAwaiter().
                 GetResult();
         }
-
         public Program(string[] args)
         {
             if (args.Length > 0)
                 BotName = args[0].ToLower();
             else
                 BotName = "sspdev";
-
             BotEventId = new EventId(276, BotName);
             Events = new Triggers(BotEventId);
         }
-
         public async Task RunBotAsync()
         {
-
             // next, let's load the values from that file
             // to our client's configuration
             var cfg = new DiscordConfiguration
             {
                 Token = Environment.GetEnvironmentVariable(BotName + "Token"),
                 TokenType = TokenType.Bot,
-
                 AutoReconnect = true,
                 MinimumLogLevel = LogLevel.Debug,
                 Intents = DiscordIntents.All,
             };
-
             // then we want to instantiate our client
             Client = new DiscordClient(cfg);
-
             // next, let's hook some events, so we know
             // what's going on
-
             Client.UseInteractivity(new InteractivityConfiguration()
             {
                 PollBehaviour = PollBehaviour.KeepEmojis,
                 Timeout = TimeSpan.FromSeconds(15)
             });
-
             // up next, let's set up our commands
             var ccfg = new CommandsNextConfiguration
             {
                 // let's use the string prefix defined in config.json
                 StringPrefixes = new[] { Environment.GetEnvironmentVariable("CommandPrefix") },
-
                 // enable responding in direct messages
                 EnableDms = true,
-
                 // enable mentioning the bot as a command prefix
                 EnableMentionPrefix = true,
-
                 UseDefaultCommandHandler = false
             };
-
             // and hook them up
             Commands = Client.UseCommandsNext(ccfg);
-
             // up next, let's register our commands
+            // These commands are available to all bots.
             Commands.RegisterCommands<BotSettings>(); // Main Folder. Test Items.
-            Commands.RegisterCommands<ExperiemntalCommands>(); // Experimental commands file.
-            Commands.RegisterCommands<GameCommands>();
-            Commands.RegisterCommands<GroupManagement>(); // Main Folder. Test Items.
-            Commands.RegisterCommands<GroupRoleManagement>(); // Main Folder. Test Items.
-            Commands.RegisterCommands<LevelManagement>(); // Main Folder. Test Items.
-            Commands.RegisterCommands<LevelRoleManagement>(); // Main Folder. Test Items.
-            Commands.RegisterCommands<NotFacts>(); // Raven Folder.
             Commands.RegisterCommands<PrefixManagement>();
-            Commands.RegisterCommands<RoleManagement>(); // Main Folder. Test Items.
-            Commands.RegisterCommands<SnappleFacts>(); // Raven folder.
-            Commands.RegisterCommands<WelcomeMessage>(); // Main Folder. Test Items.
-
+            // These are in-dev commands. Experimental, may break things.
+            if (BotName.Contains("sspdev"))
+            {
+                Commands.RegisterCommands<ExperiemntalCommands>(); // Experimental commands file.
+            }
+            // These are bot specific.
+            if (BotName.Contains("ssp") || BotName.Contains("phoenix"))
+            {
+                Commands.RegisterCommands<WelcomeMessage>(); // Main Folder. Test Items.
+            }
+            // Server management options, reserved for PhoenixBot
+            if (BotName.Contains("phoenix"))
+            {
+                Commands.RegisterCommands<GroupManagement>(); // Main Folder. Test Items.
+                Commands.RegisterCommands<GroupRoleManagement>(); // Main Folder. Test Items.
+                Commands.RegisterCommands<LevelManagement>(); // Main Folder. Test Items.
+                Commands.RegisterCommands<LevelRoleManagement>(); // Main Folder. Test Items.
+                Commands.RegisterCommands<RoleManagement>(); // Main Folder. Test Items.
+            }
+            // Game related, commands of luck. Pure entertainment commands. Reserved for RavenBot.
+            if (BotName.Contains("raven"))
+            {
+                Commands.RegisterCommands<GameCommands>();
+                Commands.RegisterCommands<NotFacts>(); // Raven Folder.
+                Commands.RegisterCommands<SnappleFacts>(); // Raven folder.
+            }
             // All these commands are in the STARSIEGE folder.
-            //if (BotName.Contains("ssp"))
-            //{
-            Commands.RegisterCommands<QuickchatHandler>();
-            Commands.RegisterCommands<Functions>();
-            Commands.RegisterCommands<DeathMessages>();
-            Commands.RegisterCommands<GameInfo>();
-            //}
-
+            // Commands for the Starsiege Players bot, on the Starsiege Server.
+            if (BotName.Contains("ssp"))
+            {
+                Commands.RegisterCommands<QuickchatHandler>();
+                Commands.RegisterCommands<Functions>();
+                Commands.RegisterCommands<DeathMessages>();
+                Commands.RegisterCommands<GameInfo>();
+            }
             // let's enable voice
             Voice = Client.UseVoiceNext();
-
             // Hook all possible Event Handlers in the system.
             Client.ChannelCreated += Events.ChannelCreated;
             Client.ChannelDeleted += Events.ChannelDeleted;
@@ -180,24 +178,19 @@ namespace StarsiegeBot
             Client.InteractionCreated += Events.InteractionCreated;
             Commands.CommandExecuted += Events.CommandExecuted;
             Commands.CommandErrored += Events.CommandErrored;
-
             // finally, let's connect and log in
             await Client.ConnectAsync();
-
             // and this is to prevent premature quitting
             await Task.Delay(-1);
         }
-
         // this structure will hold data from config.json
         public struct ConfigJson
         {
             [JsonProperty("token")]
             public string Token { get; private set; }
-
             [JsonProperty("prefix")]
             public string CommandPrefix { get; private set; }
         }
-
         public static string YesNo(bool test)
         {
             return (test ? "Enabled" : "Disabled");

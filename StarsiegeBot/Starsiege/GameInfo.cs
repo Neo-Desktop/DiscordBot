@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
 namespace StarsiegeBot
 {
     [Group("servers")]
@@ -42,7 +41,6 @@ namespace StarsiegeBot
         [GroupCommand]
         public async Task Overview(CommandContext ctx)
         {
-            await ctx.TriggerTypingAsync();
             Update();
             // setup an exit point check.
             bool exit = false;
@@ -65,12 +63,10 @@ namespace StarsiegeBot
             embed.AddField("Errors", _gameData.Errors.Length.ToString(), true);
             await ctx.RespondAsync(embed);
         }
-
         [Command("Errors"), Aliases("e")]
         [Description("Lists all the errors from the server listing.")]
         public async Task ErrorsServer(CommandContext ctx)
         {
-            await ctx.TriggerTypingAsync();
             Update();
             // setup an exit point check.
             bool exit = false;
@@ -93,12 +89,10 @@ namespace StarsiegeBot
             }
             await ctx.RespondAsync(msg);
         }
-
         [Command("Masters"), Aliases("m")]
         [Description("Gives all the master servers as a script to be improted into `master.cs`.")]
         public async Task MasterServers(CommandContext ctx)
         {
-            await ctx.TriggerTypingAsync();
             Update();
             // setup an exit point check.
             bool exit = false;
@@ -124,12 +118,10 @@ namespace StarsiegeBot
             msg.Content += "```";
             await ctx.RespondAsync(msg);
         }
-
         [Command("games"), Aliases("g")]
         [Description("Currently: Lists games that have been started (Player dropped in). End Result: Lists all games that have a player in the server (either dropped in or not)")]
         public async Task GameServers(CommandContext ctx, [Description("Number of players you want to check for. Game servers will need at least this meaning or more to be listed.")] int playerCount = 1)
         {
-            await ctx.TriggerTypingAsync();
             Update();
             playerCount = Math.Abs(playerCount);
             // setup an exit point check.
@@ -174,7 +166,6 @@ namespace StarsiegeBot
         [JsonProperty("games")]
         public GameServer[] Games { get; private set; }
     }
-
     class MasterServer
     {
         [JsonProperty("address")]
@@ -188,7 +179,6 @@ namespace StarsiegeBot
         [JsonProperty("Ping")]
         public int Ping { get; private set; }
     }
-
     class GameServer
     {
         [JsonProperty("GameName")]

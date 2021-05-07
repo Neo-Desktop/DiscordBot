@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 namespace StarsiegeBot
 {
     class Triggers
@@ -19,14 +18,12 @@ namespace StarsiegeBot
         public static DiscordMember notify;
         // protected string BotName { get; set; }
         private readonly BotSettings _guilds = new BotSettings();
-
         public Triggers(EventId botEventId) => BotEventId = botEventId;
         public Task CommandExecuted(CommandsNextExtension ext, CommandExecutionEventArgs e)
         {
             //     e.Context.Client.Logger.LogCritical(BotEventId, $"Client is in {e.Context.Client.Guilds.Count}");
             // let's log the name of the command and user
             // e.Context.Client.Logger.LogInformation(BotEventId, $"{e.Context.User.Username} successfully executed '{e.Command.QualifiedName}'");
-
             // since this method is not async, let's return
             // a completed task, so that no additional work
             // is done
@@ -34,22 +31,18 @@ namespace StarsiegeBot
         }
         public Task MessageCreated(DiscordClient d, MessageCreateEventArgs e)
         {
-            // d.Logger.LogDebug(BotEventId, "MessageCreated.");
-
             // Ignore all bots. We don't care.
             if (e.Author.IsBot)
             {
                 return Task.CompletedTask;
             }
-
+            // d.Logger.LogDebug(BotEventId, "MessageCreated.");
             CommandsNextExtension cnext = d.GetCommandsNext();
             DiscordMessage msg = e.Message;
-
             // Check if message has valid prefix.
-            // json file loaded...
-            int cmdStart = msg.GetStringPrefixLength("!");
+            int cmdStart = msg.GetStringPrefixLength(d.CurrentUser.Mention.Insert(2, "!"));
             List<string> prefixes = BotSettings.GuildSettings["default"].Prefixes;
-            prefixes.Add(d.CurrentUser.Mention);
+            // if Guild is not null, we're on a guild. Check for Guild Prefixes.
             if (!(e.Guild is null))
             {
                 string gId = e.Guild.Id.ToString();
@@ -69,6 +62,8 @@ namespace StarsiegeBot
                     }
                 }
             }
+            // hard code the bot's mention as a possible prefix.
+            prefixes.Add(d.CurrentUser.Mention.Insert(2, "!"));
             foreach (string item in prefixes)
             {
                 cmdStart = msg.GetStringPrefixLength(item);
@@ -76,21 +71,16 @@ namespace StarsiegeBot
             }
             // we didn't find a command prefix... Break.
             if (cmdStart == -1) return Task.CompletedTask;
-
             // Retrieve prefix.
             string prefix = msg.Content.Substring(0, cmdStart);
-            string cmdString = msg.Content[cmdStart..];
-
+            string cmdString = msg.Content.Substring(cmdStart);
             // Retrieve full command string.
             Command command = cnext.FindCommand(cmdString, out string args);
             if (command == null) return Task.CompletedTask;
-
             CommandContext ctx = cnext.CreateContext(msg, prefix, command, args);
             Task.Run(async () => await cnext.ExecuteCommandAsync(ctx));
-
             return Task.CompletedTask;
         }
-
         public Task CommandErrored(CommandsNextExtension ext, CommandErrorEventArgs e)
         {
             e.Context.Client.Logger.LogError(BotEventId, $"{e.Context.User.Username} tried executing '{e.Command?.QualifiedName ?? "<unknown command>"}' but it errored: {e.Exception.GetType()}: {e.Exception.Message ?? "<no message>"}", DateTime.Now);
@@ -101,12 +91,10 @@ namespace StarsiegeBot
                 {
                     output += item.ToString() + "\r\n";
                 }
-
                 Console.WriteLine(output);
             }
             return Task.CompletedTask;
         }
-
         public Task InteractionCreated(DiscordClient d, InteractionCreateEventArgs e)
         {
             // d.Logger.LogDebug(BotEventId, $"{e.Interaction.User.Username} started an interaction. {e.Interaction.Data.Name}");
@@ -149,10 +137,9 @@ namespace StarsiegeBot
         }
         public Task ClientErrored(DiscordClient d, ClientErrorEventArgs e)
         {
-            // let's log the details of the error that just 
+            // let's log the details of the error that just
             // occured in our client
             d.Logger.LogError(BotEventId, e.Exception, "Exception occured");
-
             // since this method is not async, let's return
             // a completed task, so that no additional work
             // is done
@@ -193,7 +180,6 @@ namespace StarsiegeBot
                     BotSettings.GuildSettings.Add(gId, item);
                 }
             }
-
             // let's log the name of the guild that was just
             // sent to our client
             d.Logger.LogInformation(BotEventId, $"Guild available: {e.Guild.Name}");
@@ -201,7 +187,6 @@ namespace StarsiegeBot
                 // notify the *primary bot owner if the Guild count is above 75. So we can start bot verification process.
                 if (d.Guilds.Count > 75 && !(notify is null))
                     notify.SendMessageAsync("**__WARNING__: BOT IS IN OVER 75 SERVERS.");
-
             // since this method is not async, let's return
             // a completed task, so that no additional work
             // is done
@@ -246,7 +231,6 @@ namespace StarsiegeBot
             // notify the *primary bot owner if the Guild count is above 75. So we can start bot verification process.
             if (e.Guilds.Count > 75)
                 notify.SendMessageAsync("**__WARNING__: BOT IS IN OVER 75 SERVERS.");
-
             return Task.CompletedTask;
         }
         public Task GuildEmojisUpdated(DiscordClient d, GuildEmojisUpdateEventArgs e)
@@ -266,7 +250,6 @@ namespace StarsiegeBot
             {
                 return Task.CompletedTask;
             }
-
             string gId = e.Guild.Id.ToString();
             if (BotSettings.GuildSettings[gId].UseWelcome &&
                 !(BotSettings.GuildSettings[gId].WelcomeChannel is null) &&
@@ -275,7 +258,6 @@ namespace StarsiegeBot
                 string msg = WelcomeMessage.WelcomeMessageProcessing(BotSettings.GuildSettings[gId].WelcomeMessage, e.Member, e.Guild);
                 BotSettings.GuildSettings[gId].WelcomeChannel.SendMessageAsync(msg);
             }
-
             return Task.CompletedTask;
         }
         public Task GuildMemberRemoved(DiscordClient d, GuildMemberRemoveEventArgs e)
@@ -382,7 +364,6 @@ namespace StarsiegeBot
         {
             // let's log the fact that this event occured
             d.Logger.LogInformation(BotEventId, $"Client is ready to process events. Client is in: {d.Guilds.Count} Guilds.");
-
             // since this method is not async, let's return
             // a completed task, so that no additional work
             // is done
