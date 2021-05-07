@@ -157,5 +157,7 @@ namespace StarsiegeBot
         public DiscordChannel WelcomeChannel { get; set; }
         public bool UseWelcome { get; set; }
         public string WelcomeMessage { get; set; }
+        public List<string> AllowChannels { get; set; }
+        public List<string> DenyChannels { get; set; }
     }
 }

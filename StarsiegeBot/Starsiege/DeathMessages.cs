@@ -1,15 +1,15 @@
-﻿using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using Newtonsoft.Json;
 namespace StarsiegeBot
 {
     [Group("deathmessage"), Aliases("dm")]
@@ -59,12 +59,12 @@ namespace StarsiegeBot
                 _dmLines = JsonConvert.DeserializeObject<DeathMessageLines>(json);
                 // Enable all the commands.
                 _isEnabled = true;
-                await ctx.RespondAsync("Loading Death Messages successul.");
+                await ctx.RespondAsync(StartEmbed("Loading Death Messages successul."));
             }
             else
             {
                 // Echo out that we're missing a file. Disable the commands due to that.
-                await ctx.RespondAsync("Can't load Death Messages. File missing.");
+                await ctx.RespondAsync(StartEmbed("Can't load Death Messages. File missing."));
                 _isEnabled = false;
             }
         }
@@ -96,7 +96,7 @@ namespace StarsiegeBot
                 _isEnabled = false;
                 output = $"{s_fileName} file is missing, and it can not be enabled.";
             }
-            await ctx.RespondAsync(output);
+            await ctx.RespondAsync(StartEmbed(output));
         }
         [GroupCommand]
         public async Task DeathMessage(CommandContext ctx, [Description("Optional. Person you want to see kill you. If blank, will show generic death message.")] DiscordMember target = null)
@@ -136,10 +136,10 @@ namespace StarsiegeBot
                     line = _dmLines.Passive[choice];
                 }
                 // Give the selected death message to the user.
-                await ctx.RespondAsync(string.Format(line, ctx.Message.Author.Mention, target.Mention));
+                await ctx.RespondAsync(StartEmbed(string.Format(line, ctx.Message.Author.Mention, target.Mention)));
             }
         }
-        [Command("inventory"), Aliases("count")]
+        [Command("count")]
         [Description("Gets the total of each type of death message")]
         public async Task DeathMessageCount(CommandContext ctx)
         {
@@ -147,12 +147,11 @@ namespace StarsiegeBot
             // If disabled, let the person know the command set is disabled, and return.
             if (!_isEnabled)
             {
-                await ctx.RespondAsync("Death Messages Commands have been disabled. Please contact the bot owners.");
                 return;
             }
             // We're typing here!
             // List all the types of Death Message types, and how many we have of each one.
-            await ctx.RespondAsync($"\r\nActive: {_dmLines.Active.Length}\r\nPassive: {_dmLines.Passive.Length}\r\nGeneric: {_dmLines.Generic.Length}");
+            await ctx.RespondAsync(StartEmbed($"Active: {_dmLines.Active.Length}\r\nPassive: {_dmLines.Passive.Length}\r\nGeneric: {_dmLines.Generic.Length}"));
         }
         [Command("Add")]
         [Description("Adds a message to the Pending Death Message Queue. Generic Death Messages require just a [Killed] while any other death message requires both a [Killed] and a [Killer] tags. These will be replaced with the correct information in game, and in the usage of random DM generation.")]
@@ -176,7 +175,7 @@ namespace StarsiegeBot
             // Store the new stuff to file...
             await StoreDeathMessages();
             // Tell the person that the message has been added to a 'queue'.
-            await ctx.RespondAsync("Your request has been added to the pending queue of requests.");
+            await ctx.RespondAsync(StartEmbed("Your request has been added to the pending queue of requests."));
         }
         [Command("script")]
         [Description("Gets a script file for all the death messages on the bot.")]
@@ -236,6 +235,16 @@ namespace StarsiegeBot
             // We're done with the file, so close access to it.
             sound.Close();
         }
+        private DiscordEmbedBuilder StartEmbed(string description)
+        {
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder
+            {
+                Description = description,
+                Color = Program.colours[Program.rnd.Next(0, Program.colours.Length)]
+            };
+            return embed;
+        }
+
         private async Task StoreDeathMessages()
         {
             string output = JsonConvert.SerializeObject(_dmLines);

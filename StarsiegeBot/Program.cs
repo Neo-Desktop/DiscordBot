@@ -86,6 +86,7 @@ namespace StarsiegeBot
             // These commands are available to all bots.
             Commands.RegisterCommands<BotSettings>(); // Main Folder. Test Items.
             Commands.RegisterCommands<PrefixManagement>();
+            Commands.RegisterCommands<ChannelManagement>();
             // These are in-dev commands. Experimental, may break things.
             if (BotName.Contains("sspdev"))
             {
