@@ -46,7 +46,11 @@ namespace StarsiegeBot
             {
                 string gId = e.Guild.Id.ToString();
                 bool allowedToPost = false;
-                if (BotSettings.GuildSettings[gId].DenyChannels.Contains("all"))
+                if (BotSettings.GuildSettings[gId].DenyChannels is null)
+                {
+                    allowedToPost = true;
+                }
+                else if (BotSettings.GuildSettings[gId].DenyChannels.Contains("all"))
                 {
                     if (BotSettings.GuildSettings[gId].AllowChannels.Contains(e.Channel.Id.ToString()))
                     {

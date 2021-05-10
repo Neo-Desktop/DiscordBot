@@ -141,8 +141,8 @@ namespace StarsiegeBot
             int count = 0;
             foreach (GameServer item in _gameData.Games)
             {
-                // if (item.PlayerCount > playerCount)
-                if (item.GameStatus["Started"])
+                if (item.PlayerCount > playerCount)
+                // if (item.GameStatus["Started"])
                 {
                     count++;
                     msg.Content += $"{count} | {item.Name} | {item.PlayerCount}/{item.MaxPlayers} | {item.Address}\r\n";

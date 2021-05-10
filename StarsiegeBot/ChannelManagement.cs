@@ -23,6 +23,13 @@ namespace StarsiegeBot
             Console.WriteLine("Channel Management Module loaded.");
         }
 
+        [GroupCommand]
+        public async Task NothingHere (CommandContext ctx)
+        {
+            await ctx.TriggerTypingAsync();
+        }
+
+
         [Group("allow")]
         class Allow
         {
@@ -120,7 +127,6 @@ namespace StarsiegeBot
 
 
 
-        [Command("deny")]
 
         private static DiscordEmbedBuilder StartEmbed(string desc)
         {
