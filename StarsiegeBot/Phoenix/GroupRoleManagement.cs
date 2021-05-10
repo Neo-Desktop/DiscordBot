@@ -20,6 +20,7 @@ namespace StarsiegeBot
         [GroupCommand]
         public async Task ListGroups(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
         }
         [Command("add")]
         [Description("Work in progress. Does nothing yet.")]
@@ -50,6 +51,7 @@ namespace StarsiegeBot
             [Description("The role to delete.")] DiscordRole role,
             [Description("The group to remove the role from. If left blank, will remove from all groups."), RemainingText] string group = null)
         {
+            await ctx.TriggerTypingAsync();
             // Verify role is in a group.
             // Verify group selected exists.
             // If group null, remove from all groups?
@@ -58,6 +60,7 @@ namespace StarsiegeBot
         [Description("Work in progress. Does nothing yet.")]
         public async Task EditRole(CommandContext ctx, DiscordRole role, int newPrice = 0, [RemainingText] string newGroup = null)
         {
+            await ctx.TriggerTypingAsync();
         }
         private DiscordEmbedBuilder StartEmbed(string desc)
         {

@@ -26,17 +26,18 @@ namespace StarsiegeBot
         [Command("Allow")]
         public async Task AllowChannels(CommandContext ctx, [Description("List of discord channels to allow the bot to respond on.")]params DiscordChannel[] discordChannels)
         {
-
+            await ctx.TriggerTypingAsync();
         }
         [Command("Allow")]
         public async Task AllowChannels(CommandContext ctx, string discordChannels = "")
         {
-
+            await ctx.TriggerTypingAsync();
         }
 
         [Command("deny")]
         public async Task DenyChannels(CommandContext ctx, params DiscordChannel[] discordChannels)
         {
+            await ctx.TriggerTypingAsync();
             foreach (DiscordChannel chan in discordChannels)
             {
                 Console.WriteLine(chan.Id.ToString());
@@ -45,6 +46,7 @@ namespace StarsiegeBot
         [Command("deny")]
         public async Task DenyChannels(CommandContext ctx, [Description("List of discord channels to deny the bot to respond on.")] string discordChannels = "")
         {
+            await ctx.TriggerTypingAsync();
 
         }
     }

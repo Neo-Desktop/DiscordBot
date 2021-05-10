@@ -17,7 +17,6 @@ namespace StarsiegeBot
         public readonly EventId BotEventId;
         public static DiscordMember notify;
         // protected string BotName { get; set; }
-        private readonly BotSettings _guilds = new BotSettings();
         public Triggers(EventId botEventId) => BotEventId = botEventId;
         public Task CommandExecuted(CommandsNextExtension ext, CommandExecutionEventArgs e)
         {
@@ -46,6 +45,33 @@ namespace StarsiegeBot
             if (!(e.Guild is null))
             {
                 string gId = e.Guild.Id.ToString();
+                bool allowedToPost = false;
+                if (BotSettings.GuildSettings[gId].DenyChannels.Contains("all"))
+                {
+                    if (BotSettings.GuildSettings[gId].AllowChannels.Contains(e.Channel.Id.ToString()))
+                    {
+                        allowedToPost = true;
+                    }
+                }
+                else
+                {
+                    if (!BotSettings.GuildSettings[gId].DenyChannels.Contains(e.Channel.Id.ToString()))
+                    {
+                        allowedToPost = true;
+                    }
+                }
+                if (allowedToPost)
+                {
+                    Console.WriteLine("We're allowed to post.");
+                }
+                if (!allowedToPost)
+                {
+                    Console.WriteLine("We're *NOT* allowed to post.");
+                    return Task.CompletedTask;
+                }
+
+
+
                 // Check to see if the guild has settings.
                 if (BotSettings.GuildSettings.ContainsKey(gId))
                 {
@@ -62,6 +88,8 @@ namespace StarsiegeBot
                     }
                 }
             }
+
+
             // hard code the bot's mention as a possible prefix.
             prefixes.Add(d.CurrentUser.Mention.Insert(2, "!"));
             foreach (string item in prefixes)
